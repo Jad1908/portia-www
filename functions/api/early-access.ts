@@ -17,6 +17,11 @@
  *
  * Set them in the Cloudflare Pages project (Settings → Environment variables),
  * or in `.dev.vars` locally. See `.env.example`.
+ *
+ * Spam is handled by a honeypot field and nothing else. That is enough for a
+ * page nobody has linked to yet; if the volume ever justifies more, the next
+ * step is Turnstile, which is a widget in the island and one verify call here.
+ * `scripts/early-access-sheet.gs` is the webhook receiver this was built for.
  */
 
 interface Env {
@@ -36,11 +41,36 @@ const json = (body: unknown, status = 200) =>
   });
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
-  let payload: { email?: unknown; context?: unknown };
+  let payload: {
+    email?: unknown;
+    context?: unknown;
+    "company-website"?: unknown;
+  };
   try {
     payload = await request.json();
   } catch {
     return json({ message: "Expected JSON." }, 400);
+  }
+
+  // The honeypot. The field is off-screen, aria-hidden and out of the tab
+  // order, so a value in it did not come from a person reading the page.
+  //
+  // This is the one place the endpoint answers 200 without recording anything,
+  // which is the behaviour the rest of this file exists to refuse. The argument
+  // for it: the lie is told to a crawler, and telling it the truth — a 400 that
+  // names the trap — is how the trap stops working. The cost is the false
+  // positive, some agent filling inputs by name on a person's behalf, and the
+  // mitigation is that it is logged. A submission that vanishes silently is bad;
+  // one that vanishes into `wrangler pages deployment tail` is recoverable.
+  if (
+    typeof payload["company-website"] === "string" &&
+    payload["company-website"].trim() !== ""
+  ) {
+    console.warn("early-access: honeypot filled, dropped", {
+      email: typeof payload.email === "string" ? payload.email : null,
+      country: request.headers.get("cf-ipcountry") ?? null,
+    });
+    return json({ ok: true });
   }
 
   const email = typeof payload.email === "string" ? payload.email.trim() : "";
