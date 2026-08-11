@@ -10,25 +10,28 @@
  * the column, so this adds **zero** script. That observer is two-way, so the
  * drawing unwinds on the way up and redraws on the way back down.
  *
- * The box is `64` units drawn at `80px`, and the stroke is `1.5` so that the
- * rendered weight lands where the old 48-unit/56px box put it. The size is what
- * buys the detail below: three stacks, a six-node pipeline and a seven-node
- * graph are all illegible smudges at 56px and read as diagrams at 80.
+ * The box is `64` units drawn at `112px`, and the stroke is `1.1` so that the
+ * rendered weight lands where the old 48-unit/56px box put it — the size buys
+ * detail, never heft. Three piles of plates, a six-node pipeline and a
+ * twelve-node network are illegible smudges at 56px and read as drawings at
+ * 112.
  *
  * Three rules the geometry has to obey, each of which an early draft broke:
  *
  *  - **Nothing overlaps.** Two strokes crossing in a small box merge into a
  *    smudge — the first tables icon put one card on top of another and the
- *    shared corner read as a printing error. So the stacks here are dense but
- *    never overlapping: the gap within a stack is half the gap between stacks,
- *    which is what makes three columns of cards read as three *stacks* rather
- *    than as a grid. The one deliberate exception is an arrowhead sitting on
- *    the last unit of its own connector, which is a join and not a collision.
+ *    shared corner read as a printing error. The plates in a pile are 8 units
+ *    apart, which leaves about 8px of daylight between one plate's V and the
+ *    next at render size; closer and five plates fuse into one hatched block.
+ *    The two deliberate exceptions are joins rather than collisions: an
+ *    arrowhead sitting on the last unit of its own connector, and a plate's V
+ *    meeting the flank of its own pile at the endpoint they share.
  *  - **Every line ends somewhere.** The graph had a satellite-to-satellite edge
  *    that crossed the whole box and looked like a scratch. Every stroke here
- *    starts on one object's edge and stops on another's — the radials meet the
- *    hub and the satellites exactly on their circumferences, and the three
- *    chords run between adjacent satellites only, so no edge crosses another.
+ *    starts on one object's edge and stops on another's, and the network is
+ *    laid out planar — no two of its fourteen edges cross, which is checked by
+ *    hand and is the only reason twelve nodes read as a network instead of as
+ *    a scribble.
  *  - **Connectors are orthogonal, with one arrowhead each.** The first pipeline
  *    used rounded corner curves and a floating chevron; right angles and a
  *    single head at the point of entry read as a diagram instead of as debris.
@@ -37,9 +40,10 @@
  *
  * Held to the page's ranking rule: one ink colour, one stroke weight, one size,
  * for all three. These sit in columns LANDING.md forbids from ranking, and an
- * icon that ranked would rank them. It is why the three stacks are the same
- * height and hold the same number of cards — stacks of unequal height in a row
- * are a bar chart, and a bar chart is a ranking.
+ * icon that ranked would rank them. It is why the three piles hold the same
+ * number of plates at the same height — piles of unequal height in a row are a
+ * bar chart, and a bar chart is a ranking — and why every node in the network
+ * is the same radius, including the ones the edges converge on.
  *
  * The declaration order is the draw order — containers first, then what joins
  * them — because a pipeline whose arrows arrive before its boxes reads as noise.
@@ -56,41 +60,58 @@ const { name } = Astro.props;
   viewBox="0 0 64 64"
   fill="none"
   stroke="currentColor"
-  stroke-width="1.5"
+  stroke-width="1.1"
   stroke-linecap="round"
   stroke-linejoin="round"
   aria-hidden="true"
 >
   {
-    /* 01 — tables. Three stacks of four, drawn stack by stack, because a data
-       scientist's problem is never one table and rarely one source. The top
-       card of each stack carries a header rule: what gets measured is the
-       contents, and the stack behind it is the rest of the same shape. */
+    /* 01 — tables. Three piles of five, drawn in profile rather than flat on: a
+       rhombus is what a rectangle looks like from the side and slightly above,
+       and only the topmost plate of a pile shows its whole face — the four
+       under it show the front half of theirs, which is the V, and the two
+       verticals down the flanks are the side of the pile. Flat-on, five
+       rectangles in a column are a list, and a list is not a stack. A data
+       scientist's problem is never one table and rarely one source, hence
+       three. The top face carries a band parallel to its upper-right edge: the
+       header rule, in the same perspective as the plate holding it, which is
+       what makes the pile read as tables rather than as layers. Every V meets
+       the flank verticals at their ends — a join, like the arrowhead on its
+       connector, not a crossing. */
     name === "tables" && (
       <>
-        <rect x="2" y="8" width="15" height="10" rx="1.5" pathLength="1" />
-        <rect x="2" y="20.5" width="15" height="10" rx="1.5" pathLength="1" />
-        <rect x="2" y="33" width="15" height="10" rx="1.5" pathLength="1" />
-        <rect x="2" y="45.5" width="15" height="10" rx="1.5" pathLength="1" />
-        <path d="M2 11.5h15" pathLength="1" />
-        <rect x="24.5" y="8" width="15" height="10" rx="1.5" pathLength="1" />
-        <rect x="24.5" y="20.5" width="15" height="10" rx="1.5" pathLength="1" />
-        <rect x="24.5" y="33" width="15" height="10" rx="1.5" pathLength="1" />
-        <rect x="24.5" y="45.5" width="15" height="10" rx="1.5" pathLength="1" />
-        <path d="M24.5 11.5h15" pathLength="1" />
-        <rect x="47" y="8" width="15" height="10" rx="1.5" pathLength="1" />
-        <rect x="47" y="20.5" width="15" height="10" rx="1.5" pathLength="1" />
-        <rect x="47" y="33" width="15" height="10" rx="1.5" pathLength="1" />
-        <rect x="47" y="45.5" width="15" height="10" rx="1.5" pathLength="1" />
-        <path d="M47 11.5h15" pathLength="1" />
+        <path d="M1.5 16 10.5 12.4 19.5 16 10.5 19.6Z" pathLength="1" />
+        <path d="M7.35 13.66 16.35 17.26" pathLength="1" />
+        <path d="M1.5 24 10.5 27.6 19.5 24" pathLength="1" />
+        <path d="M1.5 32 10.5 35.6 19.5 32" pathLength="1" />
+        <path d="M1.5 40 10.5 43.6 19.5 40" pathLength="1" />
+        <path d="M1.5 48 10.5 51.6 19.5 48" pathLength="1" />
+        <path d="M1.5 16V48" pathLength="1" />
+        <path d="M19.5 16V48" pathLength="1" />
+        <path d="M23 16 32 12.4 41 16 32 19.6Z" pathLength="1" />
+        <path d="M28.85 13.66 37.85 17.26" pathLength="1" />
+        <path d="M23 24 32 27.6 41 24" pathLength="1" />
+        <path d="M23 32 32 35.6 41 32" pathLength="1" />
+        <path d="M23 40 32 43.6 41 40" pathLength="1" />
+        <path d="M23 48 32 51.6 41 48" pathLength="1" />
+        <path d="M23 16V48" pathLength="1" />
+        <path d="M41 16V48" pathLength="1" />
+        <path d="M44.5 16 53.5 12.4 62.5 16 53.5 19.6Z" pathLength="1" />
+        <path d="M50.35 13.66 59.35 17.26" pathLength="1" />
+        <path d="M44.5 24 53.5 27.6 62.5 24" pathLength="1" />
+        <path d="M44.5 32 53.5 35.6 62.5 32" pathLength="1" />
+        <path d="M44.5 40 53.5 43.6 62.5 40" pathLength="1" />
+        <path d="M44.5 48 53.5 51.6 62.5 48" pathLength="1" />
+        <path d="M44.5 16V48" pathLength="1" />
+        <path d="M62.5 16V48" pathLength="1" />
       </>
     )
   }
 
   {
-    /* 02 — the pipeline. Three sources, two steps that stand on them, one
-       result: depth, because the point is that each stage is built on what the
-       stage before it measured. Every connector is orthogonal and arrives at an
+    /* 02 — the pipeline. Three sources into two steps into one result. Depth is
+       the point: the middle column is a stage standing on what the column
+       before it measured. Every connector is orthogonal and arrives at an
        arrowhead on the edge of the node it enters. */
     name === "pipeline" && (
       <>
@@ -115,29 +136,41 @@ const { name } = Astro.props;
   }
 
   {
-    /* 03 — the knowledge graph. A hub, six satellites around it, and nine edges
-       — six radial, three between neighbours — so what it draws is a network
-       and not a star. The layout is planar on purpose: no edge crosses another,
-       every one of them leaves one circumference and stops on the next, and
-       nothing runs off into the box. */
+    /* 03 — the knowledge graph. Twelve nodes and fourteen edges, placed by hand
+       and deliberately not symmetrical: dense and cyclic at the lower left,
+       thinning as it reaches up and to the right, which is what a network that
+       grew looks like and what a rosette drawn around a hub does not. It has no
+       centre — the tenth question is easier than the first because of what the
+       first nine attached to, not because everything hangs off one node. Every
+       node is the same radius, and no edge crosses another. */
     name === "graph" && (
       <>
-        <circle cx="32" cy="32" r="6.5" pathLength="1" />
-        <circle cx="32" cy="9" r="4" pathLength="1" />
-        <circle cx="51.9" cy="20.5" r="4" pathLength="1" />
-        <circle cx="51.9" cy="43.5" r="4" pathLength="1" />
-        <circle cx="32" cy="55" r="4" pathLength="1" />
-        <circle cx="12.1" cy="43.5" r="4" pathLength="1" />
-        <circle cx="12.1" cy="20.5" r="4" pathLength="1" />
-        <path d="M32 25.5V13" pathLength="1" />
-        <path d="m37.6 28.8 10.9-6.3" pathLength="1" />
-        <path d="m37.6 35.2 10.9 6.3" pathLength="1" />
-        <path d="M32 38.5V51" pathLength="1" />
-        <path d="m26.4 35.2-10.9 6.3" pathLength="1" />
-        <path d="m26.4 28.8-10.9-6.3" pathLength="1" />
-        <path d="m35.5 11 12.9 7.5" pathLength="1" />
-        <path d="m48.4 45.5-12.9 7.5" pathLength="1" />
-        <path d="M12.1 39.5v-15" pathLength="1" />
+        <circle cx="7.2" cy="52.2" r="3.2" pathLength="1" />
+        <circle cx="16.6" cy="43.9" r="3.2" pathLength="1" />
+        <circle cx="6" cy="35.6" r="3.2" pathLength="1" />
+        <circle cx="21.4" cy="57" r="3.2" pathLength="1" />
+        <circle cx="28.5" cy="32" r="3.2" pathLength="1" />
+        <circle cx="17.8" cy="22.5" r="3.2" pathLength="1" />
+        <circle cx="36.7" cy="47.5" r="3.2" pathLength="1" />
+        <circle cx="41.5" cy="20.1" r="3.2" pathLength="1" />
+        <circle cx="30.8" cy="7" r="3.2" pathLength="1" />
+        <circle cx="53.3" cy="35.6" r="3.2" pathLength="1" />
+        <circle cx="58" cy="53.4" r="3.2" pathLength="1" />
+        <circle cx="55.6" cy="8.2" r="3.2" pathLength="1" />
+        <path d="M9.6 50.1 14.2 46" pathLength="1" />
+        <path d="M10.2 53.2 18.4 56" pathLength="1" />
+        <path d="M14.1 41.9 8.5 37.6" pathLength="1" />
+        <path d="M18.9 41.6 26.2 34.3" pathLength="1" />
+        <path d="M8.1 33.2 15.7 24.9" pathLength="1" />
+        <path d="M20.2 24.6 26.1 29.9" pathLength="1" />
+        <path d="M30 34.8 35.2 44.7" pathLength="1" />
+        <path d="M30.9 29.8 39.1 22.3" pathLength="1" />
+        <path d="M19.9 20 28.7 9.5" pathLength="1" />
+        <path d="M32.8 9.5 39.5 17.6" pathLength="1" />
+        <path d="M43.4 22.6 51.4 33.1" pathLength="1" />
+        <path d="M43.9 18 53.2 10.3" pathLength="1" />
+        <path d="M39.8 48.4 54.9 52.5" pathLength="1" />
+        <path d="M54.1 38.7 57.2 50.3" pathLength="1" />
       </>
     )
   }

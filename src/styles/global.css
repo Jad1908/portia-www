@@ -490,13 +490,17 @@ pre {
  * rank them. ---- */
 .p-icon {
   display: block;
-  width: 80px;
-  height: 80px;
+  width: 112px;
+  height: 112px;
   color: var(--portia-mute);
   /* Last in the column, and pushed to the bottom of it — so the three icons sit
-   * on one line whatever the paragraphs above them do. */
+   * on one line whatever the paragraphs above them do. Centred across the
+   * column rather than flush with the text: at this size a left-aligned drawing
+   * hangs off the end of a paragraph, and three of them centred read as one
+   * row of drawings under three columns of prose. */
   margin-top: auto;
-  padding-top: var(--spacing-lg);
+  margin-inline: auto;
+  padding-top: var(--spacing-xl);
 }
 .p-icon > * {
   stroke-dasharray: 1;
