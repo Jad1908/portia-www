@@ -11,6 +11,14 @@ import { useState } from "react";
  * The second field is optional and is the point of the form. The project's own
  * open question is whether people who do this work would use it or merely agree
  * that it sounds useful, and an address alone cannot tell you which.
+ *
+ * The third field is a honeypot and is not for a human. It is off-screen,
+ * `aria-hidden`, out of the tab order and `autocomplete="off"`, so nothing that
+ * reads or drives this form on a person's behalf should reach it; a value in it
+ * means something walked the DOM filling inputs by name. It is called
+ * `company-website` rather than `website` or `url` on purpose — the common
+ * names are the ones password managers autofill, and an autofilled honeypot
+ * would silently drop a real signup.
  */
 
 type State =
@@ -22,6 +30,7 @@ type State =
 export default function EarlyAccessForm() {
   const [email, setEmail] = useState("");
   const [context, setContext] = useState("");
+  const [trap, setTrap] = useState("");
   const [state, setState] = useState<State>({ kind: "idle" });
 
   async function submit(e: React.FormEvent) {
@@ -42,7 +51,11 @@ export default function EarlyAccessForm() {
       const res = await fetch("/api/early-access", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ email: trimmed, context: context.trim() }),
+        body: JSON.stringify({
+          email: trimmed,
+          context: context.trim(),
+          "company-website": trap,
+        }),
       });
 
       if (!res.ok) {
@@ -115,6 +128,20 @@ export default function EarlyAccessForm() {
         <p className="ea__help">A person reads these.</p>
       </div>
 
+      {/* Not for you. See the note at the top of this file. */}
+      <div className="ea__trap" aria-hidden="true">
+        <label htmlFor="ea-company-website">Company website</label>
+        <input
+          id="ea-company-website"
+          name="company-website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={trap}
+          onChange={(e) => setTrap(e.target.value)}
+        />
+      </div>
+
       {state.kind === "error" && (
         <p className="ea__error" id="ea-error" role="alert">
           {state.message}
@@ -156,6 +183,17 @@ const CSS = `
   color: var(--portia-error);
 }
 .ea__submit { align-self: flex-start; }
+
+/* The honeypot. Absolute, so it leaves the flex flow entirely and cannot open
+   a gap; off-screen rather than display:none, because a crawler that skips
+   hidden inputs is exactly the one worth catching. */
+.ea__trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
 
 .ea--sent {
   border: 1px solid var(--portia-hairline);

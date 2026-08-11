@@ -39,6 +39,73 @@ Python projects/
 | `src/content/mockup.yaml` | What the three panes of the hero mockup show. All of it off real runs. |
 | `src/lib/mark.ts` | The spider's geometry, shared by the nav lockup and the scroll creature. |
 | `functions/api/early-access.ts` | The form's Cloudflare Pages Function. See `.env.example`. |
+| `scripts/early-access-sheet.gs` | The webhook receiver — Apps Script, appends to a Sheet, emails you. |
+
+## Wiring up the early-access form
+
+The form posts to `/api/early-access`, a Pages Function that validates and then **forwards**. It
+owns no datastore. Two destinations, and they are alternatives rather than a chain — the webhook is
+checked first and returns, so setting both means the Resend branch never runs.
+
+With neither configured the endpoint answers `503` and the form says the form is not connected.
+That is deliberate and it is not a broken state to rush past: a form that accepts a submission and
+drops it is a control that lies, and this is the wrong page for one.
+
+### The Sheet
+
+1. New Google Sheet → **Extensions → Apps Script**. Paste `scripts/early-access-sheet.gs` over
+   `Code.gs`. Set `NOTIFY` to your address if you want a mail per signup; leave it `""` and you
+   still get the rows.
+2. **Deploy → New deployment**, type **Web app**.
+3. **Execute as: Me**, **Who has access: Anyone**. Both matter. "Me" is what lets the script write
+   to your Sheet; "Anyone" is what lets Cloudflare POST without a Google session. Anything else and
+   the Function sees a sign-in page, not your script — which Google serves with a 2xx, so the
+   Function checks the content type and answers 502 rather than believing it.
+4. Authorize when prompted. The unverified-app warning is expected — it is your own script.
+5. Copy the deployment URL. It must end in **`/exec`**, not `/dev`.
+
+Re-deploying after an edit: **Deploy → Manage deployments → edit → Version: New version.** Same
+URL, new code. A brand-new deployment gives you a different URL and the old one keeps running the
+old code, which is the confusing failure.
+
+### The Cloudflare side
+
+In the Pages project → **Settings → Environment variables**, set `EARLY_ACCESS_WEBHOOK_URL` to the
+`/exec` URL, **for Preview as well as Production** — otherwise every preview deploy answers 503 and
+looks broken. Also set `SITE_URL` (build-time; feeds canonical and OG), and pin a compatibility date
+under Settings → Functions.
+
+### Testing it before you merge
+
+Put the URL in `.dev.vars` (gitignored — wrangler reads that file, not `.env`), then:
+
+```sh
+pnpm build && pnpm preview       # 8788, the page *and* the function
+
+# a real signup — expect {"ok":true} and a row in the Sheet
+curl -i -X POST localhost:8788/api/early-access \
+  -H 'content-type: application/json' \
+  -d '{"email":"you@example.com","context":"testing the wiring"}'
+
+# the honeypot — expect {"ok":true} and NO row
+curl -i -X POST localhost:8788/api/early-access \
+  -H 'content-type: application/json' \
+  -d '{"email":"bot@example.com","company-website":"http://spam"}'
+```
+
+`pnpm dev` does not serve Pages Functions, so the form 404s there. That is expected. In production
+the log for a dropped submission is `wrangler pages deployment tail`; on the Sheet side, failures
+are in the Apps Script **Executions** view.
+
+### Spam
+
+A honeypot field and nothing else — off-screen, `aria-hidden`, out of the tab order, named
+`company-website` because the obvious names are the ones password managers autofill. Filling it gets
+a `200` and no row: the endpoint lies here, and only here, because a `400` that names the trap is
+how the trap stops working. It logs, so a false positive is recoverable rather than invisible.
+
+If the volume ever justifies more, the next step is Turnstile — a widget in the island and one
+verify call in the Function. It is not needed for a page nobody has linked to yet.
 
 ## The two rules that shape the code
 
