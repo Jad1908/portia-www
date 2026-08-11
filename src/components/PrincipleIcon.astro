@@ -10,23 +10,42 @@
  * the column, so this adds **zero** script. That observer is two-way, so the
  * drawing unwinds on the way up and redraws on the way back down.
  *
- * Three rules the geometry has to obey, each of which the first draft broke:
+ * The box is `64` units drawn at `112px`, and the stroke is `1.1` so that the
+ * rendered weight lands where the old 48-unit/56px box put it — the size buys
+ * detail, never heft. Three piles of plates, a six-node pipeline and a
+ * fourteen-node network are illegible smudges at 56px and read as drawings at
+ * 112.
  *
- *  - **Nothing overlaps.** Two strokes crossing in a 56px box merge into a
+ * Three rules the geometry has to obey, each of which an early draft broke:
+ *
+ *  - **Nothing overlaps.** Two strokes crossing in a small box merge into a
  *    smudge — the first tables icon put one card on top of another and the
- *    shared corner read as a printing error. Shapes are separated, never
- *    stacked, because a fill that occludes what is behind it would have to
- *    appear before it was drawn.
+ *    shared corner read as a printing error. The plates in a pile are 8 units
+ *    apart, which leaves about 8px of daylight between one plate's V and the
+ *    next at render size; closer and five plates fuse into one hatched block.
+ *    The two deliberate exceptions are joins rather than collisions: an
+ *    arrowhead sitting on the last unit of its own connector, and a plate's V
+ *    meeting the flank of its own pile at the endpoint they share.
  *  - **Every line ends somewhere.** The graph had a satellite-to-satellite edge
  *    that crossed the whole box and looked like a scratch. Every stroke here
- *    starts at one object and stops at another.
- *  - **Connectors are orthogonal, with one arrowhead.** The first pipeline used
- *    rounded corner curves and a floating chevron; right angles and a single
- *    head at the point of entry read as a diagram instead of as debris.
+ *    starts on one object's edge and stops on another's, and the network is
+ *    laid out planar — no two of its fourteen edges cross, which is checked by
+ *    hand and is the only reason fourteen nodes read as a network instead of
+ *    as a scribble.
+ *  - **Connectors are orthogonal, with one arrowhead each.** The first pipeline
+ *    used rounded corner curves and a floating chevron; right angles and a
+ *    single head at the point of entry read as a diagram instead of as debris.
+ *    Where two connectors enter the same node they enter at different points on
+ *    its edge, because two arrowheads landing on one point is the smudge again.
  *
- * Held to the page's ranking rule: one ink colour, one stroke weight, one size,
- * for all three. These sit in columns LANDING.md forbids from ranking, and an
- * icon that ranked would rank them.
+ * Held to the page's ranking rule: one ink colour, one stroke weight, one drawn
+ * size, for all three. These sit in columns LANDING.md forbids from ranking,
+ * and an icon that ranked would rank them. It is why the three piles hold the
+ * same number of plates at the same height — piles of unequal height in a row
+ * are a bar chart, and a bar chart is a ranking. The graph's two node sizes are
+ * the one place a size varies, and they are `DESIGN.md`'s own distinction:
+ * prominence communicates **kind** — entity or measurement — and every node of
+ * a kind is drawn identically, so nothing on the page grows with its degree.
  *
  * The declaration order is the draw order — containers first, then what joins
  * them — because a pipeline whose arrows arrive before its boxes reads as noise.
@@ -40,61 +59,160 @@ const { name } = Astro.props;
 
 <svg
   class="p-icon"
-  viewBox="0 0 48 48"
+  viewBox="0 0 64 64"
   fill="none"
   stroke="currentColor"
-  stroke-width="1.6"
+  stroke-width="1.1"
   stroke-linecap="round"
   stroke-linejoin="round"
   aria-hidden="true"
 >
   {
-    /* 01 — tables. Two of them, diagonally apart and never touching, because a
-       data scientist's problem is never one table. The lower one carries a
-       header rule and a column divider: what gets measured is the contents. */
+    /* 01 — tables. Three piles of five, drawn in profile rather than flat on: a
+       rhombus is what a rectangle looks like from the side and slightly above,
+       and only the topmost plate of a pile shows its whole face — the four
+       under it show the front half of theirs, which is the V, and the two
+       verticals down the flanks are the side of the pile. Flat-on, five
+       rectangles in a column are a list, and a list is not a stack. A data
+       scientist's problem is never one table and rarely one source, hence
+       three. The top face carries a band parallel to its upper-right edge: the
+       header rule, in the same perspective as the plate holding it, which is
+       what makes the pile read as tables rather than as layers. Every V meets
+       the flank verticals at their ends — a join, like the arrowhead on its
+       connector, not a crossing. */
     name === "tables" && (
       <>
-        <rect x="26" y="4" width="19" height="15" rx="2" pathLength="1" />
-        <path d="M26 10h19" pathLength="1" />
-        <rect x="3" y="26" width="24" height="18" rx="2" pathLength="1" />
-        <path d="M3 32.5h24" pathLength="1" />
-        <path d="M13 32.5V44" pathLength="1" />
+        <path d="M1.5 16 10.5 12.4 19.5 16 10.5 19.6Z" pathLength="1" />
+        <path d="M7.35 13.66 16.35 17.26" pathLength="1" />
+        <path d="M1.5 24 10.5 27.6 19.5 24" pathLength="1" />
+        <path d="M1.5 32 10.5 35.6 19.5 32" pathLength="1" />
+        <path d="M1.5 40 10.5 43.6 19.5 40" pathLength="1" />
+        <path d="M1.5 48 10.5 51.6 19.5 48" pathLength="1" />
+        <path d="M1.5 16V48" pathLength="1" />
+        <path d="M19.5 16V48" pathLength="1" />
+        <path d="M23 16 32 12.4 41 16 32 19.6Z" pathLength="1" />
+        <path d="M28.85 13.66 37.85 17.26" pathLength="1" />
+        <path d="M23 24 32 27.6 41 24" pathLength="1" />
+        <path d="M23 32 32 35.6 41 32" pathLength="1" />
+        <path d="M23 40 32 43.6 41 40" pathLength="1" />
+        <path d="M23 48 32 51.6 41 48" pathLength="1" />
+        <path d="M23 16V48" pathLength="1" />
+        <path d="M41 16V48" pathLength="1" />
+        <path d="M44.5 16 53.5 12.4 62.5 16 53.5 19.6Z" pathLength="1" />
+        <path d="M50.35 13.66 59.35 17.26" pathLength="1" />
+        <path d="M44.5 24 53.5 27.6 62.5 24" pathLength="1" />
+        <path d="M44.5 32 53.5 35.6 62.5 32" pathLength="1" />
+        <path d="M44.5 40 53.5 43.6 62.5 40" pathLength="1" />
+        <path d="M44.5 48 53.5 51.6 62.5 48" pathLength="1" />
+        <path d="M44.5 16V48" pathLength="1" />
+        <path d="M62.5 16V48" pathLength="1" />
       </>
     )
   }
 
   {
-    /* 02 — the pipeline. Two sources converging into one table: a *merge*,
-       because the merge is the job. Orthogonal connectors meeting a single
-       arrowhead at the point of entry. */
+    /* 02 — the pipeline. Three sources into two steps into one result. Depth is
+       the point: the middle column is a stage standing on what the column
+       before it measured. Every connector is orthogonal and arrives at an
+       arrowhead on the edge of the node it enters. */
     name === "pipeline" && (
       <>
-        <rect x="3" y="5" width="15" height="11" rx="2" pathLength="1" />
-        <rect x="3" y="32" width="15" height="11" rx="2" pathLength="1" />
-        <rect x="32" y="18.5" width="13" height="11" rx="2" pathLength="1" />
-        <path d="M18 10.5h7V24" pathLength="1" />
-        <path d="M18 37.5h7V24" pathLength="1" />
-        <path d="M25 24h5.5" pathLength="1" />
-        <path d="m28 21.5 2.5 2.5-2.5 2.5" pathLength="1" />
+        <rect x="2" y="4" width="13" height="10" rx="2" pathLength="1" />
+        <rect x="2" y="27" width="13" height="10" rx="2" pathLength="1" />
+        <rect x="2" y="50" width="13" height="10" rx="2" pathLength="1" />
+        <rect x="26" y="12" width="13" height="12" rx="2" pathLength="1" />
+        <rect x="26" y="40" width="13" height="12" rx="2" pathLength="1" />
+        <rect x="49" y="26" width="13" height="12" rx="2" pathLength="1" />
+        <path d="M15 9h5.5V15H26" pathLength="1" />
+        <path d="M15 32h5.5V21H26" pathLength="1" />
+        <path d="M15 55h5.5V46H26" pathLength="1" />
+        <path d="M39 18h5.5V29H49" pathLength="1" />
+        <path d="M39 46h5.5V35H49" pathLength="1" />
+        <path d="m23.5 12.5 2.5 2.5-2.5 2.5" pathLength="1" />
+        <path d="m23.5 18.5 2.5 2.5-2.5 2.5" pathLength="1" />
+        <path d="m23.5 43.5 2.5 2.5-2.5 2.5" pathLength="1" />
+        <path d="m46.5 26.5 2.5 2.5-2.5 2.5" pathLength="1" />
+        <path d="m46.5 32.5 2.5 2.5-2.5 2.5" pathLength="1" />
       </>
     )
   }
 
   {
-    /* 03 — the knowledge graph. One node at the centre, four around it, and
-       exactly four edges — every one of them running between two nodes and
-       stopping at both. Nothing crosses the box. */
+    /* 03 — the knowledge graph. Fourteen nodes in two kinds, placed by hand and
+       deliberately not symmetrical.
+
+       Four large nodes are the entities — a table, a source, a spec. Ten small
+       ones are what portia measured about them, and the structure is the whole
+       point of the drawing: **no edge runs between two large nodes.** Every
+       small node hangs off exactly one large one, and where two entities are
+       related it is because a small node of the first is joined to a small node
+       of the second. So a path from one entity to another always goes through
+       the facts that connect them, which is the claim the column is making —
+       what it knows about your data is a graph of measurements, not a graph of
+       names. Two of the small nodes are joined to nothing else: not everything
+       measured turns out to connect, and a network where it all did would be a
+       diagram of a wish.
+
+       **The scatter is the drawing, and it took two tries.** The first layout
+       put the four entities near the four corners of the box at near-equal
+       distance from its centre; four points spread evenly on a ring is a
+       rhombus, and the eye reads the shape before it reads the graph. Moving
+       them to an irregular scatter fixed the rhombus and produced the second
+       failure, which was worse: with every cluster joined to its two
+       neighbours, the fourteen nodes closed into a single loop around an empty
+       middle and the icon read as a necklace. Both are the same mistake — a
+       network that resolves into an outline looks authored rather than grown.
+
+       So the entities sit at unequal distances and unequal angles, one of them
+       (`31 40`) pulled into the middle so the interior carries structure rather
+       than a hole; the satellites hang at radii from 10.2 to 14.6, which keeps
+       the silhouette ragged; and the clusters are joined in a chain with one
+       cross-link, not a cycle, so the bottom-right entity trails off the
+       structure the way a real subgraph does. Three of the small nodes join
+       nothing but their own entity. The lower-left stays empty on purpose:
+       filling every quadrant evenly is how the necklace came back.
+
+       Three constraints survive the irregularity, and each is what stops the
+       drawing smudging at 112px: nothing sits within 4 units of anything it is
+       not joined to, two edges arriving at one node land at different points on
+       its circumference (the closest pair is 75° apart, at `43 33`), and no
+       edge crosses another — checked by hand, and the only reason fourteen
+       nodes read as a network rather than as a scribble.
+
+       The two radii are kinds, not ranks. Every entity is the same size as
+       every other entity and every measurement the same size as every other
+       measurement; nothing here grows with its degree or its importance, which
+       is the thing this page may not draw. */
     name === "graph" && (
       <>
-        <circle cx="24" cy="24" r="5" pathLength="1" />
-        <path d="M20.2 20.7 10.6 12.3" pathLength="1" />
-        <path d="M28.1 21.2 37.1 15" pathLength="1" />
-        <path d="M20.6 27.7 12.4 36.4" pathLength="1" />
-        <path d="M27.7 27.4 36.4 35.6" pathLength="1" />
-        <circle cx="8" cy="10" r="3.5" pathLength="1" />
-        <circle cx="40" cy="13" r="3.5" pathLength="1" />
-        <circle cx="10" cy="39" r="3.5" pathLength="1" />
-        <circle cx="39" cy="38" r="3.5" pathLength="1" />
+        <circle cx="11" cy="22" r="5" pathLength="1" />
+        <circle cx="41" cy="12" r="5" pathLength="1" />
+        <circle cx="31" cy="40" r="5" pathLength="1" />
+        <circle cx="53" cy="47" r="5" pathLength="1" />
+        <circle cx="5" cy="10" r="2.6" pathLength="1" />
+        <circle cx="7" cy="34" r="2.6" pathLength="1" />
+        <circle cx="23" cy="25" r="2.6" pathLength="1" />
+        <circle cx="55" cy="8" r="2.6" pathLength="1" />
+        <circle cx="33" cy="23" r="2.6" pathLength="1" />
+        <circle cx="17" cy="42" r="2.6" pathLength="1" />
+        <circle cx="43" cy="33" r="2.6" pathLength="1" />
+        <circle cx="34" cy="53" r="2.6" pathLength="1" />
+        <circle cx="58" cy="34" r="2.6" pathLength="1" />
+        <circle cx="46" cy="58" r="2.6" pathLength="1" />
+        <path d="M6.16 12.33 8.76 17.53" pathLength="1" />
+        <path d="M7.82 31.53 9.42 26.74" pathLength="1" />
+        <path d="M20.48 24.37 15.85 23.21" pathLength="1" />
+        <path d="M52.5 8.71 45.81 10.63" pathLength="1" />
+        <path d="M34.53 20.9 38.06 16.04" pathLength="1" />
+        <path d="M19.57 41.63 26.05 40.71" pathLength="1" />
+        <path d="M40.75 34.31 35.32 37.48" pathLength="1" />
+        <path d="M33.42 50.47 32.12 44.87" pathLength="1" />
+        <path d="M57.07 36.43 54.8 42.33" pathLength="1" />
+        <path d="M47.4 55.81 50.32 51.22" pathLength="1" />
+        <path d="M25.55 24.49 30.45 23.51" pathLength="1" />
+        <path d="M9.03 35.62 14.97 40.38" pathLength="1" />
+        <path d="M34.84 24.84 41.16 31.16" pathLength="1" />
+        <path d="M36.4 54 43.6 57" pathLength="1" />
       </>
     )
   }

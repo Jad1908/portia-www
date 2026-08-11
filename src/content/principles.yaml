@@ -14,7 +14,7 @@
   index: "01"
   group: principles
   icon: tables
-  title: "It measures, then it speaks."
+  title: "Everything is measured."
   body: >-
     Every fact it works from is one it went and got. Nothing is inferred from a
     sample.
@@ -23,7 +23,7 @@
   index: "02"
   group: principles
   icon: pipeline
-  title: "It builds on facts."
+  title: "No hallucinations."
   body: >-
     Each step of the pipeline stands on something measured. Nothing is invented
     along the way.
@@ -32,7 +32,7 @@
   index: "03"
   group: principles
   icon: graph
-  title: "It gets sharper as you work."
+  title: "Everything is remembered."
   body: >-
     Everything it learns joins what it already knows. The tenth question is
     easier than the first.

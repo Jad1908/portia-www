@@ -490,13 +490,17 @@ pre {
  * rank them. ---- */
 .p-icon {
   display: block;
-  width: 56px;
-  height: 56px;
+  width: 112px;
+  height: 112px;
   color: var(--portia-mute);
   /* Last in the column, and pushed to the bottom of it — so the three icons sit
-   * on one line whatever the paragraphs above them do. */
+   * on one line whatever the paragraphs above them do. Centred across the
+   * column rather than flush with the text: at this size a left-aligned drawing
+   * hangs off the end of a paragraph, and three of them centred read as one
+   * row of drawings under three columns of prose. */
   margin-top: auto;
-  padding-top: var(--spacing-lg);
+  margin-inline: auto;
+  padding-top: var(--spacing-xl);
 }
 .p-icon > * {
   stroke-dasharray: 1;
@@ -511,23 +515,33 @@ pre {
 .reveal.is-in .p-icon > * {
   stroke-dashoffset: 0;
 }
+/* The stagger is banded rather than per-shape, because the icons now carry
+ * fifteen or sixteen strokes each and one step per stroke would still be
+ * drawing a second and a half after the column arrived. Later shapes share a
+ * band: what has to read in sequence is *kind* — the boxes, then the
+ * connectors, then the arrowheads — not each individual line. The declaration
+ * order in `PrincipleIcon.astro` is what puts them in that order. */
 .p-icon > *:nth-child(2) {
-  --draw-step: 90ms;
+  --draw-step: 60ms;
 }
 .p-icon > *:nth-child(3) {
-  --draw-step: 180ms;
+  --draw-step: 120ms;
 }
 .p-icon > *:nth-child(4) {
-  --draw-step: 250ms;
+  --draw-step: 180ms;
 }
-.p-icon > *:nth-child(5) {
-  --draw-step: 320ms;
-}
+.p-icon > *:nth-child(5),
 .p-icon > *:nth-child(6) {
-  --draw-step: 390ms;
+  --draw-step: 240ms;
 }
-.p-icon > *:nth-child(n + 7) {
-  --draw-step: 460ms;
+.p-icon > *:nth-child(n + 7):nth-child(-n + 9) {
+  --draw-step: 300ms;
+}
+.p-icon > *:nth-child(n + 10):nth-child(-n + 12) {
+  --draw-step: 360ms;
+}
+.p-icon > *:nth-child(n + 13) {
+  --draw-step: 420ms;
 }
 .pillar__title {
   font-size: var(--text-heading-md);
