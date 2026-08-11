@@ -116,7 +116,10 @@ product whose entire pitch is that two surfaces must never disagree about a numb
   `prefers-reduced-motion`. Escalate to GSAP ScrollTrigger only if a pinned scroll scene is added.
 - **Inter** (variable, `ss03` on) + **JetBrains Mono**, both self-hosted. No third face, no 700
   weight, no italics.
-- **pnpm.** Deployed to **Cloudflare Pages** (not Vercel — its Hobby tier prohibits commercial use).
+- **pnpm.** Deployed to **Cloudflare Workers** with static assets (not Vercel — its Hobby tier
+  prohibits commercial use). `wrangler.jsonc` is the config, `worker/` holds the one dynamic route.
+  Note this is Workers, *not* Pages: the `functions/` directory convention does not exist here, and
+  a route placed there compiles locally under `wrangler pages dev` and 404s in production.
 
 ## Conventions
 

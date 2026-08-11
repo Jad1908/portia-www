@@ -1,5 +1,6 @@
 /**
- * `POST /api/early-access` — a Cloudflare Pages Function.
+ * `POST /api/early-access`, the one dynamic route on an otherwise static site.
+ * `worker/index.ts` routes to it; everything else is served from `dist`.
  *
  * It validates, then forwards. It deliberately does **not** own a datastore:
  * this repo is a landing page, and a signup list living in the same place as
@@ -15,8 +16,8 @@
  * and dropping it — is a form that lies, and this page is the wrong place for
  * a control that reports success it did not achieve.
  *
- * Set them in the Cloudflare Pages project (Settings → Environment variables),
- * or in `.dev.vars` locally. See `.env.example`.
+ * Set them on the Worker (Settings → Variables and Secrets), or in `.dev.vars`
+ * locally. See `.env.example`.
  *
  * Spam is handled by a honeypot field and nothing else. That is enough for a
  * page nobody has linked to yet; if the volume ever justifies more, the next
@@ -24,7 +25,7 @@
  * `scripts/early-access-sheet.gs` is the webhook receiver this was built for.
  */
 
-interface Env {
+export interface EarlyAccessEnv {
   EARLY_ACCESS_WEBHOOK_URL?: string;
   RESEND_API_KEY?: string;
   EARLY_ACCESS_TO?: string;
@@ -57,7 +58,14 @@ const json = (body: unknown, status = 200) =>
     headers: { "content-type": "application/json; charset=utf-8" },
   });
 
-export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+export async function earlyAccess(
+  request: Request,
+  env: EarlyAccessEnv,
+): Promise<Response> {
+  // Stated rather than left to a 404, so a mistyped method reads as a mistake
+  // rather than as a missing endpoint.
+  if (request.method !== "POST") return json({ message: "POST only." }, 405);
+
   let payload: {
     email?: unknown;
     context?: unknown;
@@ -164,11 +172,4 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     },
     503,
   );
-};
-
-/** Anything but POST. Stated rather than left to a 404, so a mistyped method
- *  reads as a mistake rather than as a missing endpoint. */
-export const onRequest: PagesFunction<Env> = async ({ request, next }) => {
-  if (request.method === "POST") return next();
-  return json({ message: "POST only." }, 405);
-};
+}

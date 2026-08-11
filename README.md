@@ -10,9 +10,9 @@ the product repo is the source of truth, `src/styles/tokens.css` here is generat
 
 ```sh
 pnpm install
-pnpm dev          # astro dev, port 4321 — the page, no Pages Functions
+pnpm dev          # astro dev, port 4321 — the page, no /api
 pnpm build
-pnpm preview      # wrangler pages dev dist — the page *and* /api/early-access
+pnpm preview      # wrangler dev — the page *and* /api/early-access, as deployed
 pnpm check        # astro check
 pnpm og           # regenerate public/og.png from public/og.svg
 ```
@@ -38,12 +38,14 @@ Python projects/
 | `src/content/evidence.yaml` | **Every number on the page**, each with what produced it and where it was checked. |
 | `src/content/mockup.yaml` | What the three panes of the hero mockup show. All of it off real runs. |
 | `src/lib/mark.ts` | The spider's geometry, shared by the nav lockup and the scroll creature. |
-| `functions/api/early-access.ts` | The form's Cloudflare Pages Function. See `.env.example`. |
+| `wrangler.jsonc` | The deploy config: Worker name, the `dist` asset binding, what runs first. |
+| `worker/index.ts` | Routes `/api/*` to the Worker and everything else to the built site. |
+| `worker/early-access.ts` | The form's endpoint. See `.env.example`. |
 | `scripts/early-access-sheet.gs` | The webhook receiver — Apps Script, appends to a Sheet, emails you. |
 
 ## Wiring up the early-access form
 
-The form posts to `/api/early-access`, a Pages Function that validates and then **forwards**. It
+The form posts to `/api/early-access`, a Worker route that validates and then **forwards**. It
 owns no datastore. Two destinations, and they are alternatives rather than a chain — the webhook is
 checked first and returns, so setting both means the Resend branch never runs.
 
@@ -70,32 +72,33 @@ old code, which is the confusing failure.
 
 ### The Cloudflare side
 
-In the Pages project → **Settings → Environment variables**, set `EARLY_ACCESS_WEBHOOK_URL` to the
-`/exec` URL, **for Preview as well as Production** — otherwise every preview deploy answers 503 and
-looks broken. Also set `SITE_URL` (build-time; feeds canonical and OG), and pin a compatibility date
-under Settings → Functions.
+In the Worker → **Settings → Variables and Secrets**, set `EARLY_ACCESS_WEBHOOK_URL` to the `/exec`
+URL. Variables apply to the *next* deploy, not to the running one, so redeploy after adding it or
+the endpoint keeps answering 503. `SITE_URL` is different: it is read at build time by
+`astro.config.mjs`, so it belongs in the build settings, not here. The compatibility date is pinned
+in `wrangler.jsonc` rather than in the dashboard.
 
 ### Testing it before you merge
 
 Put the URL in `.dev.vars` (gitignored — wrangler reads that file, not `.env`), then:
 
 ```sh
-pnpm build && pnpm preview       # 8788, the page *and* the function
+pnpm build && pnpm preview       # 8787, the page *and* the endpoint
 
 # a real signup — expect {"ok":true} and a row in the Sheet
-curl -i -X POST localhost:8788/api/early-access \
+curl -i -X POST localhost:8787/api/early-access \
   -H 'content-type: application/json' \
   -d '{"email":"you@example.com","context":"testing the wiring"}'
 
 # the honeypot — expect {"ok":true} and NO row
-curl -i -X POST localhost:8788/api/early-access \
+curl -i -X POST localhost:8787/api/early-access \
   -H 'content-type: application/json' \
   -d '{"email":"bot@example.com","company-website":"http://spam"}'
 ```
 
-`pnpm dev` does not serve Pages Functions, so the form 404s there. That is expected. In production
-the log for a dropped submission is `wrangler pages deployment tail`; on the Sheet side, failures
-are in the Apps Script **Executions** view.
+`pnpm dev` is Astro alone and serves no `/api`, so the form 404s there. That is expected — `pnpm
+preview` is the one that runs what deploys. In production the log for a dropped submission is
+`wrangler tail`; on the Sheet side, failures are in the Apps Script **Executions** view.
 
 ### Spam
 
@@ -134,7 +137,7 @@ answer key in `../portia/tests/fixtures/hotels.answers.yaml`.
 ## Stack
 
 Astro 5 · Tailwind v4 · Motion · Lenis · Inter + JetBrains Mono, self-hosted · pnpm ·
-deployed to Cloudflare Pages.
+deployed to Cloudflare Workers.
 
 Three React islands and no more: the spider, the early-access form, the FAQ. Everything else ships
 zero JavaScript.
