@@ -1,5 +1,5 @@
 ---
-import Mark from "./Mark.astro";
+import Brandmark from "./Brandmark.astro";
 
 interface Props {
   links: { href: string; label: string }[];
@@ -17,7 +17,7 @@ const { links } = Astro.props;
 <header class="nav">
   <div class="wrap wrap--frame nav__inner">
     <a class="nav__lockup" href="#top">
-      <Mark size={24} title={null} idle />
+      <Brandmark size={44} class="nav__mark" />
       <span class="nav__wordmark">portia</span>
     </a>
 
@@ -32,28 +32,6 @@ const { links } = Astro.props;
     </nav>
 
     <div class="nav__actions">
-      <button
-        class="nav__icon-btn"
-        type="button"
-        data-mode-toggle
-        aria-label="Switch between light and dark"
-      >
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.4"
-          aria-hidden="true"
-        >
-          <circle cx="8" cy="8" r="3.2"></circle>
-          <path
-            d="M8 1v1.8M8 13.2V15M15 8h-1.8M2.8 8H1M12.95 3.05l-1.27 1.27M4.32 11.68l-1.27 1.27M12.95 12.95l-1.27-1.27M4.32 4.32L3.05 3.05"
-            stroke-linecap="round"></path>
-        </svg>
-      </button>
-
       <a class="btn btn--primary nav__cta" href="#early-access"
         >Request early access</a
       >
@@ -96,28 +74,6 @@ const { links } = Astro.props;
 </header>
 
 <script>
-  const root = document.documentElement;
-
-  // The manual half of the mode override. The system preference is the default
-  // and stays the default: clearing the key is a real state, not a third mode.
-  document
-    .querySelector<HTMLButtonElement>("[data-mode-toggle]")
-    ?.addEventListener("click", () => {
-      const systemDark = window.matchMedia(
-        "(prefers-color-scheme: dark)",
-      ).matches;
-      const current = root.dataset.mode ?? (systemDark ? "dark" : "light");
-      const next = current === "dark" ? "light" : "dark";
-
-      if ((next === "dark") === systemDark) {
-        delete root.dataset.mode;
-        localStorage.removeItem("portia-mode");
-      } else {
-        root.dataset.mode = next;
-        localStorage.setItem("portia-mode", next);
-      }
-    });
-
   const drawerBtn = document.querySelector<HTMLButtonElement>(
     "[data-drawer-toggle]",
   );
@@ -161,6 +117,16 @@ const { links } = Astro.props;
     color: var(--portia-ink);
     text-decoration: none;
     margin-right: auto;
+  }
+  /* The mark runs **larger than the bar is tall is comfortable with** — 44px in
+   * a 56px row — because the creature is the brand and at 30px it read as a
+   * favicon that had wandered onto the page. It does not thicken the bar: the
+   * asset is trimmed hard to the ink by `pnpm mark`, so what grew is the
+   * spider and not the box around it. `overflow: hidden` on the bar is not
+   * needed at this size, but the negative margin keeps the lockup's optical
+   * left edge on the same line as the content column below it. */
+  .nav__mark {
+    margin-left: -3px;
   }
   .nav__wordmark {
     font-size: var(--text-heading-sm);

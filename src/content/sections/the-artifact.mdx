@@ -1,20 +1,16 @@
 ---
 order: 3
 anchor: the-artifact
-nav: "The artifact"
-label: "The artifact"
-title: "Not a chat log. A pipeline you hand to a data team."
-lede: "Every decision persists as YAML in your repo — the operation, the keys, the prediction the checks made at the time, and the sentence saying why. That spec compiles to one committed .sql per table, dbt-shaped, so what you hand over is SQL and what gets reviewed in a PR is a diff."
+nav: "What you keep"
+label: "What you keep"
+title: "Not a chat log."
+titleSecond: "A pipeline you can hand over."
+lede: "The conversation is where the work happens. What is left afterwards is what you ship — and you can see all of it."
 ---
 
-The spec holds what SQL cannot: the `rationale`, the `expect` block recording
-what was predicted when the decision was made, and the `grain` claim about what
-one output row is meant to be. The `.sql` is a build output — regenerated, never
-hand-edited — and committed anyway, because the pipeline is the deliverable and
-someone has to read it.
+The body of this file is not rendered. The three claims are in `claims.yaml`.
 
-Run it again next quarter against a source that has shifted underneath you and
-**drift is reported against those predictions**, rather than found later in a
-dashboard. A downstream spec refers to an upstream table by its plain name; no
-paths, no `depends_on` list. portia scans the specs and derives the build order
-itself.
+Nothing in this section names a file format. The first version of it did, and
+what that bought was precision about the wrong thing: the reader does not care
+what the artifact is written in, only whether it survives being handed to
+somebody else.

@@ -112,10 +112,7 @@ export default function EarlyAccessForm() {
           value={context}
           onChange={(e) => setContext(e.target.value)}
         />
-        <p className="ea__help">
-          This is the more useful half. It is read by a person and it is not
-          stored anywhere it can be sold from.
-        </p>
+        <p className="ea__help">A person reads these.</p>
       </div>
 
       {state.kind === "error" && (

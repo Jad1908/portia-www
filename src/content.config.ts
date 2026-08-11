@@ -8,10 +8,24 @@ import { glob, file } from "astro/loaders";
  * reason — the copy is the least stable, most consequential part of the page.
  *
  * Four collections:
- *   sections — one MDX file per section of the page, in reading order
- *   faq      — one MD file per question
- *   evidence — measured facts, each with what produced it
- *   mockup   — what the three panes of the hero mockup show
+ *   sections   — one MDX file per section of the page, in reading order
+ *   principles — the three columns under the manifesto band
+ *   claims     — short lines of consequence, grouped by section
+ *   faq        — one MD file per question
+ *
+ * The `mockup` collection is gone with the three-pane screenshot it fed. The
+ * page shows no pictures of the app: what a screenshot bought was texture, and
+ * what it cost was a section that read as a manual.
+ *
+ * **The `evidence` collection is gone too, and its rule is not.** It held three
+ * engine timings under the warehouse section, each properly cited. They were
+ * true and they were still wrong to publish: a visitor deciding whether this
+ * tool is for them does not care how many seconds an index took, and three
+ * mono figures under a marketing claim read as a benchmark whatever the caption
+ * says. The rule they existed to serve — **no number appears on this page that
+ * portia did not measure** — is unchanged, and is now satisfied by there being
+ * no numbers at all. If one is ever needed again, it comes back as a cited row
+ * and never as a stat block.
  */
 
 /** One section of the page. `order` is LANDING.md's reading order, which is a
@@ -23,10 +37,23 @@ const sections = defineCollection({
     order: z.number(),
     /** The `id` an in-page anchor targets. */
     anchor: z.string(),
-    /** `section-label` — mono, uppercase, above the headline. */
+    /** `section-label` — mono, uppercase, above the headline. **An empty
+     *  string means the section renders no label at all**, which the manifesto
+     *  band uses: its one sentence *is* the section, so a heading for it was a
+     *  heading for nothing. */
     label: z.string(),
     title: z.string(),
-    /** `body-lg`, and only ever here or in the hero subhead. */
+    /**
+     * The second line of a two-line headline, set in `mute` against the first
+     * line's `ink`.
+     *
+     * It is a field rather than a `<br>` in `title` for two reasons: each line
+     * rises out of its own clipped box, so the split has to be structural; and
+     * the tonal contrast between the lines is the page's main typographic
+     * device, so it should be visible to whoever edits the copy.
+     */
+    titleSecond: z.string().optional(),
+    /** The lede. Fluid 17→22px, and only ever here or in the hero subhead. */
     lede: z.string().optional(),
     /** Shown in the nav only if set. Not every section earns a link. */
     nav: z.string().optional(),
@@ -42,94 +69,38 @@ const faq = defineCollection({
 });
 
 /**
- * `evidence-row` — portia's replacement for a decorative chart tile.
+ * The three columns under the manifesto band.
  *
- * **Every number on this page is one of these or it is not on the page.**
- * `source` is not optional and is not a citation style choice: a figure with
- * nothing named beside it is the invented statistic this product exists to
- * prevent. `verified` records where it was checked, so the next person can
- * re-check it instead of trusting this file.
+ * `index` is a position and not a rank — see the file's own header. It is data
+ * rather than MDX because the three are laid out as a grid, and a component
+ * should not have to parse headings back out of rendered markdown to find them.
  */
-const evidence = defineCollection({
-  loader: file("./src/content/evidence.yaml"),
+const principles = defineCollection({
+  loader: file("./src/content/principles.yaml"),
   schema: z.object({
     group: z.string(),
-    /** The claim, in prose. Inter. */
-    fact: z.string(),
-    /** The measurement. Mono, always. */
-    value: z.string(),
-    /** What produced it. Mono caption. */
-    source: z.string(),
-    /** Where this was checked against, for whoever re-checks it. */
-    verified: z.string(),
+    index: z.string(),
+    /** Which linework drawing sits above the column. See `PrincipleIcon`. */
+    icon: z.enum(["tables", "pipeline", "graph"]),
+    title: z.string(),
+    body: z.string(),
   }),
 });
 
-/** The hero mockup's contents. It may not fake-colorize and it may not invent
- *  a number, so this file is data rather than decoration and every value in it
- *  came off a real run. See its own header comment. */
-const mockup = defineCollection({
-  loader: file("./src/content/mockup.yaml"),
+/**
+ * `claim` — one short line of consequence, set at heading size.
+ *
+ * Split into `lead` (ink) and `rest` (body) so the claim lands before its
+ * qualification does. Grouped rather than ordered: nothing in a group ranks
+ * above anything else in it.
+ */
+const claims = defineCollection({
+  loader: file("./src/content/claims.yaml"),
   schema: z.object({
-    tree: z.array(
-      z.object({
-        depth: z.number(),
-        name: z.string(),
-        kind: z.enum(["folder", "source", "spec", "model", "output", "pinned"]),
-        meta: z.string().optional(),
-        open: z.boolean().optional(),
-        selected: z.boolean().optional(),
-      }),
-    ),
-    graph: z.object({
-      sources: z.array(z.string()),
-      steps: z.array(
-        z.object({
-          id: z.string(),
-          op: z.enum(["normalize", "sql", "join"]),
-          flags: z.array(z.string()).default([]),
-        }),
-      ),
-    }),
-    report: z.object({
-      step: z.string(),
-      op: z.string(),
-      provenance: z.array(z.tuple([z.string(), z.string()])),
-      outcome: z.array(z.tuple([z.string(), z.string()])),
-      grain: z.string(),
-      flags: z.array(z.string()),
-    }),
-    transcript: z.object({
-      run: z.object({
-        prompt: z.string(),
-        model: z.string(),
-        effort: z.string(),
-        sha: z.string(),
-        at: z.string(),
-        source: z.string(),
-      }),
-      rows: z.array(
-        z.discriminatedUnion("kind", [
-          z.object({ kind: z.literal("text"), text: z.string() }),
-          z.object({
-            kind: z.literal("tool"),
-            name: z.string(),
-            args: z.string(),
-            result: z.string(),
-          }),
-          z.object({
-            kind: z.literal("question"),
-            header: z.string(),
-            question: z.string(),
-            options: z.array(
-              z.object({ label: z.string(), description: z.string() }),
-            ),
-            answered: z.string(),
-          }),
-        ]),
-      ),
-    }),
+    group: z.string(),
+    lead: z.string(),
+    rest: z.string(),
   }),
 });
 
-export const collections = { sections, faq, evidence, mockup };
+export const collections = { sections, principles, claims, faq };

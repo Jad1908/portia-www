@@ -1,23 +1,52 @@
 ---
+/**
+ * The heading block every section opens with: mono label, headline, lede.
+ *
+ * `titleSecond` is the page's main typographic device — the second line of a
+ * headline set in `mute` against the first line's `ink`. It is **tone, never
+ * colour**: an accent on half a sentence would spend the teal on emphasis, and
+ * the teal belongs to the one primary action per section.
+ */
 interface Props {
   label: string;
   title: string;
+  titleSecond?: string;
   lede?: string;
   /** Reveal stagger, in steps of `{motion.stagger}` (60ms). */
   delay?: number;
 }
-const { label, title, lede, delay = 0 } = Astro.props;
+const { label, title, titleSecond, lede, delay = 0 } = Astro.props;
 ---
 
-<div class="reveal" style={`--reveal-delay:${delay * 60}ms`}>
-  <p class="section-label">{label}</p>
-  <h2 class="t-display-lg">{title}</h2>
-  {lede && <p class="t-body-lg section-head__lede">{lede}</p>}
+<div class="section-head">
+  <p class="section-label reveal" style={`--reveal-delay:${delay * 60}ms`}>
+    {label}
+  </p>
+  <h2 class="t-display-xl rise-lines section-head__title">
+    <span class="rise-line"><span>{title}</span></span>
+    {
+      titleSecond && (
+        <span class="rise-line">
+          <span class="t-dim">{titleSecond}</span>
+        </span>
+      )
+    }
+  </h2>
+  {
+    lede && (
+      <p class="t-lede section-head__lede rise" style="--reveal-delay:180ms">
+        {lede}
+      </p>
+    )
+  }
 </div>
 
 <style>
+  .section-head__title {
+    max-width: 20ch;
+  }
   .section-head__lede {
-    margin-top: var(--spacing-lg);
-    max-width: 68ch;
+    margin-top: var(--spacing-xl);
+    max-width: 54ch;
   }
 </style>

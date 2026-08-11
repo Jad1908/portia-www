@@ -160,17 +160,32 @@ pre {
  * Type — the hierarchy, as classes, so a component never states a size
  * ====================================================================== */
 
-.t-display-xl {
-  font-size: var(--text-display-xl);
-  line-height: 1.15;
-  letter-spacing: -0.2px;
+/* The display ramp is fluid — the sizes live in `tokens.css` and the reason
+ * they moved off 44px is documented there. No `@media` steps below: `clamp()`
+ * already carries the mobile band, and a breakpoint on top of it would fight it. */
+
+.t-display-2xl {
+  font-size: var(--text-display-2xl);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
   font-weight: 600;
   color: var(--portia-ink);
 }
-@media (max-width: 640px) {
-  .t-display-xl {
-    font-size: 1.875rem; /* 30px — the mobile band in LANDING.md */
-  }
+
+.t-statement {
+  font-size: var(--text-statement);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  color: var(--portia-ink);
+}
+
+.t-display-xl {
+  font-size: var(--text-display-xl);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  color: var(--portia-ink);
 }
 
 .t-display-lg {
@@ -183,6 +198,22 @@ pre {
   .t-display-lg {
     font-size: 1.625rem;
   }
+}
+
+/* The second half of a two-line headline, set in `mute` against `ink`. This is
+ * the page's main source of typographic contrast now that it has one, and it is
+ * the *only* sanctioned way to split a headline: tone, never colour. An accent
+ * on half a sentence would spend the teal on emphasis, and the teal belongs to
+ * the primary action. */
+.t-dim {
+  color: var(--portia-mute);
+}
+
+.t-lede {
+  font-size: var(--text-lede);
+  line-height: 1.5;
+  color: var(--portia-body);
+  text-wrap: pretty;
 }
 
 .t-heading-md {
@@ -355,45 +386,6 @@ pre {
   white-space: pre;
 }
 
-/* ---- evidence-row. The replacement for a decorative chart tile: a measured
- * fact in mono, with what produced it named beside it. Every number on this
- * page is one of these or it is not on the page. ---- */
-.evidence-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: baseline;
-  gap: var(--spacing-lg);
-  padding-block: var(--spacing-sm);
-  border-top: 1px solid var(--portia-hairline);
-}
-.evidence-row:last-child {
-  border-bottom: 1px solid var(--portia-hairline);
-}
-.evidence-row__fact {
-  font-family: var(--font-mono);
-  font-size: var(--text-mono);
-  line-height: 1.6;
-  color: var(--portia-body);
-}
-.evidence-row__value {
-  color: var(--portia-ink);
-}
-.evidence-row__source {
-  font-family: var(--font-mono);
-  font-size: var(--text-mono-caption);
-  color: var(--portia-mute);
-  text-align: right;
-}
-@media (max-width: 640px) {
-  .evidence-row {
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--spacing-xs);
-  }
-  .evidence-row__source {
-    text-align: left;
-  }
-}
-
 /* ---- list-row. The marker rule, decided in LANDING.md: a list of *facts or
  * artifacts* leads with a mono `[+]`; a list of *prose claims* gets no marker
  * at all, because bracketing an English sentence is the collapse the whole
@@ -436,6 +428,155 @@ pre {
   border: 1px solid var(--portia-hairline);
   color: var(--portia-mute);
   padding: 1px 7px;
+}
+
+/* ---- band. The one full-bleed `canvas-deep` surface on the page.
+ *
+ * LANDING.md reserved this for a three-pane app mockup. There is no mockup any
+ * more — the page shows no screenshots — so the single dark surface is spent on
+ * the argument instead of on a picture of the product. It is the same device
+ * doing the same job: one inversion, once, at the moment the page stops
+ * describing and starts asserting.
+ *
+ * `.mode-dark` is put on the element by the markup, which re-declares the app's
+ * whole dark palette over the subtree. The band is therefore *the app's dark
+ * mode running in a box*, not a hand-picked dark grey — which is the mechanism
+ * that stops it drifting from the product. ---- */
+.band {
+  background-color: var(--portia-canvas-deep);
+  color: var(--portia-body);
+  /* In dark page mode `canvas-deep` equals the page's own canvas, so the band
+   * would vanish. The hairline carries the whole boundary — this is the open
+   * edge LANDING.md → "Known gaps" flagged, resolved in favour of the rule
+   * rather than in favour of a one-notch lift that would desync it. */
+  border-block: 1px solid var(--portia-hairline);
+}
+
+/* ---- pillars. Equal columns, equal weight, no ordering signal.
+ *
+ * The mono index (`01`, `02`, `03`) is a position and not a rank — it is in
+ * `ash`, it does not grow, and the three read left-to-right because a row has
+ * to. Nothing here is coloured, ticked, or sized by importance. ---- */
+.pillars {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-xl);
+}
+.pillar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--portia-hairline);
+}
+.pillar__index {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono-caption);
+  color: var(--portia-ash);
+  letter-spacing: 0.08em;
+}
+
+/* ---- The pillar icons, and the one place on this page where a drawing moves.
+ *
+ * Every shape in `PrincipleIcon.astro` carries `pathLength="1"`, which
+ * normalises its geometry to a unit length — so this single dash rule animates
+ * a rect, a circle and a bezier identically, with nothing measured in JS. The
+ * offset resolves off `.is-in`, the class the page's existing observer already
+ * puts on the column, so the whole effect costs no script at all.
+ *
+ * `mute`, not `ink`: the icon labels the column, it does not compete with the
+ * title under it. One colour, one weight, one size for all three — these sit
+ * above columns that are forbidden from ranking, and an icon that ranked would
+ * rank them. ---- */
+.p-icon {
+  display: block;
+  width: 56px;
+  height: 56px;
+  color: var(--portia-mute);
+  /* Last in the column, and pushed to the bottom of it — so the three icons sit
+   * on one line whatever the paragraphs above them do. */
+  margin-top: auto;
+  padding-top: var(--spacing-lg);
+}
+.p-icon > * {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 620ms var(--ease-reveal);
+  /* The column's own reveal, then a beat, then an internal stagger — so the
+   * shapes appear to be drawn in sequence rather than to switch on together. */
+  transition-delay: calc(
+    var(--reveal-delay, 0ms) + 180ms + var(--draw-step, 0ms)
+  );
+}
+.reveal.is-in .p-icon > * {
+  stroke-dashoffset: 0;
+}
+.p-icon > *:nth-child(2) {
+  --draw-step: 90ms;
+}
+.p-icon > *:nth-child(3) {
+  --draw-step: 180ms;
+}
+.p-icon > *:nth-child(4) {
+  --draw-step: 250ms;
+}
+.p-icon > *:nth-child(5) {
+  --draw-step: 320ms;
+}
+.p-icon > *:nth-child(6) {
+  --draw-step: 390ms;
+}
+.p-icon > *:nth-child(n + 7) {
+  --draw-step: 460ms;
+}
+.pillar__title {
+  font-size: var(--text-heading-md);
+  line-height: 1.25;
+  font-weight: 500;
+  color: var(--portia-ink);
+  text-wrap: balance;
+}
+.pillar__body {
+  font-size: var(--text-body-md);
+  line-height: 1.6;
+  color: var(--portia-body);
+}
+@media (max-width: 850px) {
+  .pillars {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--spacing-xxl);
+  }
+}
+
+/* ---- claim. A short line of consequence under a section headline, set at
+ * heading size so it is read rather than skimmed. Two or three per section is
+ * the budget; more and it is prose again. ---- */
+.claims {
+  display: grid;
+  gap: var(--spacing-lg);
+}
+.claim {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--spacing-md);
+  align-items: baseline;
+  padding-block: var(--spacing-md);
+  border-top: 1px solid var(--portia-hairline);
+  font-size: var(--text-heading-md);
+  line-height: 1.4;
+  color: var(--portia-body);
+}
+.claim::before {
+  /* The mono bracket marker, from LANDING.md's marker rule. These are
+   * artifacts and facts, which is what earns the bracket; a list of prose
+   * claims would get no marker at all. */
+  content: "[+]";
+  font-family: var(--font-mono);
+  font-size: var(--text-mono-caption);
+  color: var(--portia-mute);
+}
+.claim strong {
+  font-weight: 600;
 }
 
 /* ---- link-inline ---- */
@@ -500,6 +641,53 @@ pre {
   transform: none;
 }
 
+/* `.rise` — the reveal's louder sibling, for the two blocks that are meant to
+ * *arrive*: the hero lines and the manifesto. Same easing curve, so it reads as
+ * the same gesture performed at a larger size — 780ms and 28px rather than
+ * 420ms and 12px. It is deliberately scarce: applied to a feature list it would
+ * turn the page into a slideshow, which is the failure mode of scroll animation
+ * and the reason LANDING.md was austere about motion in the first place. */
+.rise {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 780ms var(--ease-rise), transform 780ms var(--ease-rise);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.rise.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* A headline set line-by-line, each line rising out of its own clipped box, so
+ * the type appears to be *set* rather than to fade in. `.rise-line` is the mask
+ * and the span inside it is what moves. */
+.rise-lines {
+  display: block;
+}
+.rise-line {
+  display: block;
+  overflow: hidden;
+  /* A descender on the last line is clipped by `overflow` unless the box is
+   * given the room back. */
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.rise-line > span {
+  display: block;
+  transform: translateY(105%);
+  transition: transform 900ms var(--ease-rise);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+/* The second line follows the first by one `{motion.stagger}` step and a half.
+ * Simultaneous, the two lines read as one block sliding; staggered, they read as
+ * a sentence being set — which is the whole point of clipping them separately. */
+.rise-line:nth-child(2) > span {
+  transition-delay: calc(var(--reveal-delay, 0ms) + 90ms);
+}
+.rise-lines.is-in .rise-line > span {
+  transform: none;
+}
+
 /* The mark's idle leg keyframes — low amplitude, and independent of scroll. */
 .portia-mark--idle .portia-mark__legs--left {
   animation: portia-leg-idle 4.2s ease-in-out infinite;
@@ -531,9 +719,19 @@ pre {
   html {
     scroll-behavior: auto;
   }
-  .reveal {
+  .reveal,
+  .rise {
     opacity: 1;
     transform: none;
+    transition: none;
+  }
+  .rise-line > span {
+    transform: none;
+    transition: none;
+  }
+  /* The drawn icon is the designed state — not a frame of the drawing. */
+  .p-icon > * {
+    stroke-dashoffset: 0;
     transition: none;
   }
   .portia-mark--idle .portia-mark__legs--left,

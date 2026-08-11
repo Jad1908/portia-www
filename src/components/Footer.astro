@@ -1,5 +1,5 @@
 ---
-import Mark from "./Mark.astro";
+import Brandmark from "./Brandmark.astro";
 
 const year = new Date().getFullYear();
 ---
@@ -8,19 +8,19 @@ const year = new Date().getFullYear();
 <footer class="footer">
   <div class="wrap wrap--wide footer__inner">
     <div class="footer__lockup">
-      <Mark size={20} title={null} />
+      <Brandmark size={24} />
       <span>portia</span>
     </div>
 
     <p class="t-caption footer__line">
-      Analysis-time data preparation — everything between N ugly sources and one
-      table you trust.
+      A copilot for data scientists — for the part of the week you spend finding
+      out what your data actually is.
     </p>
 
     <p class="t-caption footer__meta">
       <span>© {year}</span>
       <span class="footer__dot" aria-hidden="true">·</span>
-      <span>Pre-launch. Nothing on this page is a benchmark.</span>
+      <span>Pre-launch</span>
     </p>
   </div>
 </footer>

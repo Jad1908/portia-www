@@ -1,0 +1,172 @@
+---
+import type { Logo } from "~/lib/logos";
+
+/**
+ * A logo band that drifts sideways.
+ *
+ * This is the page's second piece of motion-as-content after the spider, and
+ * it earns the exception the same way: **it carries the claim it sits under.**
+ * A grid of eleven logos says "here is a list"; a band with no beginning and no
+ * end says "and more where these came from", which is the actual claim.
+ *
+ * Two rules from LANDING.md constrain it, and both are visible in the CSS:
+ *
+ *  - **Nothing here ranks.** One ink colour, one glyph size, one wordmark size,
+ *    even spacing. No logo is larger, first, or brighter than another, and the
+ *    band's own motion means there is no fixed first position to hold.
+ *  - **The static state is the designed one.** Under `prefers-reduced-motion`
+ *    the animation is dropped and the track wraps into a plain centred row —
+ *    not a frozen frame of a scroll with a logo sliced in half at the edge.
+ *
+ * The track is duplicated once and translated by exactly -50%, which is what
+ * makes the loop seamless; the copy is `aria-hidden` so the names are announced
+ * once. Pure CSS — no island, no JS, no `requestAnimationFrame`.
+ */
+interface Props {
+  items: Logo[];
+  /** One full pass, in seconds. Slower reads as deliberate; faster reads as a
+   *  ticker, which is a different and more frantic genre. */
+  duration?: number;
+  /** Right-to-left by default. A second band running the other way is what
+   *  keeps two stacked rows from reading as one wide one. */
+  reverse?: boolean;
+  label: string;
+}
+
+const { items, duration = 46, reverse = false, label } = Astro.props;
+---
+
+<div
+  class="marquee"
+  role="group"
+  aria-label={label}
+  style={`--marquee-duration:${duration}s`}
+>
+  <div class:list={["marquee__track", reverse && "marquee__track--reverse"]}>
+    {
+      [0, 1].map((copy) => (
+        <ul class="marquee__group" aria-hidden={copy === 1 ? "true" : undefined}>
+          {items.map((logo) => (
+            <li class="marquee__item">
+              <svg
+                class="marquee__glyph"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                fill-rule="evenodd"
+                aria-hidden="true"
+                set:html={logo.inner}
+              />
+              <span class="marquee__name">{logo.name}</span>
+            </li>
+          ))}
+        </ul>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .marquee {
+    /* The band bleeds past the content column on purpose — a logo wall that
+     * stops at the text margin reads as a table of contents. */
+    width: 100%;
+    overflow: hidden;
+    /* Feathered edges, so a wordmark leaves the band rather than being cut by
+     * it. A mask is not a gradient in the sense the system forbids: nothing is
+     * tinted, and the fill underneath stays flat canvas. */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 12%,
+      #000 88%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 12%,
+      #000 88%,
+      transparent
+    );
+  }
+
+  .marquee__track {
+    display: flex;
+    width: max-content;
+    animation: marquee-drift var(--marquee-duration) linear infinite;
+  }
+  .marquee__track--reverse {
+    animation-direction: reverse;
+  }
+  /* Pause on hover: someone who stopped to read a name should be able to. */
+  .marquee:hover .marquee__track {
+    animation-play-state: paused;
+  }
+
+  .marquee__group {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxl);
+    margin: 0;
+    padding: 0 var(--spacing-lg);
+    list-style: none;
+  }
+
+  .marquee__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 0;
+    /* `mute`, not `ink`. These are somebody else's brands sitting on portia's
+     * page; they name an integration, they do not compete with the headline. */
+    color: var(--portia-mute);
+    white-space: nowrap;
+    transition: color 160ms linear;
+  }
+  .marquee__item:hover {
+    color: var(--portia-ink);
+  }
+
+  .marquee__glyph {
+    width: 22px;
+    height: 22px;
+    flex: none;
+  }
+
+  .marquee__name {
+    font-size: var(--text-heading-sm);
+    font-weight: 500;
+    letter-spacing: 0.1px;
+  }
+
+  @keyframes marquee-drift {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  /* The designed resting state: a static, centred, wrapping row. The duplicate
+   * group is removed from layout entirely rather than left off-screen. */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee {
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+    .marquee__track {
+      animation: none;
+      width: 100%;
+    }
+    .marquee__group[aria-hidden="true"] {
+      display: none;
+    }
+    .marquee__group {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--spacing-lg) var(--spacing-xl);
+      width: 100%;
+    }
+  }
+</style>

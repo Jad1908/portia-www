@@ -5,14 +5,19 @@ description: |
   The design system for portia's public landing page — a separate surface from the app, adapted
   from OpenCode's terminal-native marketing system and re-pointed onto portia's own tokens. It
   inherits the app's entire palette, its Inter/mono split and its hairline discipline from
-  `DESIGN.md`, and adds only what a marketing page genuinely needs and an app does not: a 44px
-  hero, a 96px section rhythm, and one full-bleed dark surface that mocks up the three-pane app.
-  It keeps OpenCode's austerity — flat on canvas, no gradients, no glows, no atmospheric
-  backgrounds, hairlines as the only divider — with exactly one named exception: the portia
-  spider, drawn as geometric linework, hanging from a dragline that tracks the scroll. Light and
-  dark are equal first-class modes, as in the app. The product rule carries over unchanged and
-  binds hardest here, where marketing instinct pushes against it: **color and prominence
-  communicate kind, never rank.**
+  `DESIGN.md`, and adds only what a marketing page genuinely needs and an app does not: a fluid
+  44→88px display ramp, a fluid 64→144px section rhythm, and one full-bleed dark surface carrying
+  the manifesto. It keeps OpenCode's austerity — flat on canvas, no gradients, no glows, no
+  atmospheric backgrounds, hairlines as the only divider — with two named exceptions: the portia
+  spider hanging from a dragline that tracks the scroll, and two counter-drifting logo marquees.
+  There are no screenshots of the app anywhere on the page, and the brand image is the
+  application's own logo rather than a redraw of it. Light and dark are equal first-class modes,
+  as in the app. The product rule carries over unchanged and binds hardest here, where marketing
+  instinct pushes against it: **color and prominence communicate kind, never rank.**
+
+  READ "The second build" BEFORE TRUSTING ANY OTHER SECTION. The page was built once to this spec
+  and then substantially rebuilt; that section records the four places the original spec was wrong
+  and what replaced them.
 
 inherits: ../portia/DESIGN.md
 inherits-sha: fa34c888e76eea9264b08fab457ce18e9f55ce93
@@ -45,8 +50,14 @@ colors:
   success-soft:          { light: "rgba(31,154,99,0.10)", dark: "rgba(95,212,155,0.16)" }
 
 typography:
-  display-xl:   { fontFamily: Inter, fontSize: 44px, fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.2px" }
+  # The display ramp is FLUID. The floor of each clamp is the flat value this file
+  # originally specified, so a narrow viewport gets the original scale unchanged;
+  # the ceiling is the revision. See "The second build", item 1.
+  display-2xl:  { fontFamily: Inter, fontSize: "clamp(44px, 7.2vw, 88px)", fontWeight: 600, lineHeight: 1.02, letterSpacing: "-0.03em" }
+  statement:    { fontFamily: Inter, fontSize: "clamp(30px, 5.2vw, 60px)", fontWeight: 600, lineHeight: 1.1,  letterSpacing: "-0.02em" }
+  display-xl:   { fontFamily: Inter, fontSize: "clamp(32px, 4.2vw, 52px)", fontWeight: 600, lineHeight: 1.08, letterSpacing: "-0.02em" }
   display-lg:   { fontFamily: Inter, fontSize: 32px, fontWeight: 600, lineHeight: 1.2,  letterSpacing: 0 }
+  lede:         { fontFamily: Inter, fontSize: "clamp(17px, 1.1vw + 12.8px, 22px)", fontWeight: 400, lineHeight: 1.5, letterSpacing: 0 }
   heading-md:   { fontFamily: Inter, fontSize: 20px, fontWeight: 500, lineHeight: 1.3,  letterSpacing: "0.2px" }
   heading-sm:   { fontFamily: Inter, fontSize: 16px, fontWeight: 500, lineHeight: 1.4,  letterSpacing: "0.2px" }
   body-lg:      { fontFamily: Inter, fontSize: 17px, fontWeight: 400, lineHeight: 1.6,  letterSpacing: 0 }
@@ -75,9 +86,9 @@ spacing:
   xl:  24px
   xxl: 32px
   xxxl: 48px
-  section: 96px
-  section-tablet: 64px
-  section-mobile: 48px
+  # Fluid, so the gap tracks the type it separates: 96px flat under an 88px
+  # headline reads as cramped, and under a 44px one on mobile it reads as loose.
+  section: "clamp(64px, 9vw, 144px)"
 
 motion:
   reveal:       { duration: 420ms, easing: "cubic-bezier(0.16, 1, 0.3, 1)", distance: 12px }
@@ -131,18 +142,37 @@ components:
     typography: "{typography.mono-sm}"
     rounded: "{rounded.md}"
     padding: 16px
-  hero-app-mockup:
+  # The page's one full-bleed inversion. It replaced `hero-app-mockup`, which is
+  # deleted along with the screenshot it framed — see "The second build", item 2.
+  band:
     backgroundColor: "{colors.canvas-deep}"
-    textColor: "{colors.ink.dark}"
-    border: "1px solid {colors.hairline.dark}"
-    rounded: "{rounded.lg}"
-    padding: 0px
-  mockup-pane:
-    backgroundColor: "{colors.surface.dark}"
-    textColor: "{colors.body.dark}"
-    typography: "{typography.mono-sm}"
+    textColor: "{colors.body}"
+    border: "1px solid {colors.hairline}"
+    typography: "{typography.statement}"
     rounded: "{rounded.none}"
-    padding: 16px
+    padding: "clamp(72px, 10vw, 160px) 0px"
+  pillar:
+    backgroundColor: "transparent"
+    textColor: "{colors.body}"
+    typography: "{typography.body-md}"
+    border-top: "1px solid {colors.hairline}"
+    rounded: "{rounded.none}"
+  claim:
+    backgroundColor: "transparent"
+    textColor: "{colors.body}"
+    typography: "{typography.heading-md}"
+    border-top: "1px solid {colors.hairline}"
+    rounded: "{rounded.none}"
+    padding: 12px 0px
+  marquee-item:
+    backgroundColor: "transparent"
+    textColor: "{colors.mute}"
+    typography: "{typography.heading-sm}"
+    rounded: "{rounded.none}"
+    glyphSize: 22px
+  # Retired 2026-08-11 along with every number on the page. Kept in the spec,
+  # unreferenced, because it is the only sanctioned way a figure comes back.
+  # See "The third build", item 3.
   evidence-row:
     backgroundColor: "transparent"
     textColor: "{colors.body}"
@@ -187,6 +217,20 @@ components:
   link-inline:
     textColor: "{colors.accent-text}"
     typography: "{typography.body-md}"
+  # The application's own logo, generated by `pnpm mark`. The only brand image on
+  # the page — see "The second build", item 3.
+  brandmark:
+    source: public/portia-mark.png
+    navSize: 44px   # in a 56px bar. See "The third build", item 6.
+    footerSize: 24px
+  # The linework drawing above each of the three columns. One colour, one
+  # weight, one size for all three — see "The third build", item 7.
+  pillar-icon:
+    strokeColor: "{colors.mute}"
+    strokeWidth: "1.5px at 40px"
+    size: 40px
+    rounded: "{rounded.none}"
+  # The linework creature. No longer the brand mark; the scroll spider only.
   spider:
     strokeColor: "{colors.ink}"
     accentColor: "{colors.accent-text}"
@@ -220,11 +264,15 @@ product that looks like two products.
 - **Inter for prose, mono for anything measured** — the split is semantic, not decorative (below).
 - One teal primary action per section. `{colors.accent-primary}` is the only chroma in the chrome.
 - 1px `{colors.hairline}` is the only divider. No shadows, no gradients, no glows, no washes.
-- `{spacing.section}` (96px) between every block; 64px tablet, 48px mobile.
-- Exactly one full-bleed `{colors.canvas-deep}` surface per page: the three-pane app mockup.
+- **A wide, fluid display ramp** — 44→88px at the hero against a 12px mono label. Contrast is bought
+  with size only: weights still cap at 600, there is no third face, and a headline is never coloured.
+- `{spacing.section}`, fluid 64→144px, between every block.
+- Exactly one full-bleed `{colors.canvas-deep}` surface per page: `{components.band}`, carrying the
+  manifesto. **No screenshots of the app anywhere**, and no artifact excerpts.
 - Radius vocabulary of two working values — `{rounded.md}` (8px) on interactive, `{rounded.none}` on
   full-bleed bands — matching the app, not OpenCode's 4px.
-- **One piece of ornament exists on the whole page and it is named**: the spider.
+- **Two pieces of ornament exist on the whole page and both are named**: the spider, and the two
+  counter-drifting logo marquees.
 
 ### The rule that is specific to this product
 
@@ -259,14 +307,160 @@ Five overrides, and only five:
 
 | # | `DESIGN.md` says | This page does | Why |
 |---|---|---|---|
-| 1 | `display` caps at **32px** | `{typography.display-xl}` at **44px** | A hero read from two feet away, not a pane title read from twenty inches. Held to 44 rather than the genre's 64–72 because portia is a quiet surface; OpenCode's 38px is the evidence that this is survivable. |
+| 1 | `display` caps at **32px** | `{typography.display-2xl}`, fluid **44 → 88px** | A hero read from two feet away, not a pane title read from twenty inches. **Revised** — see "The second build" below. |
 | 2 | Body is **13px** | `{typography.body-md}` at **16px** | 13px is tuned for scanning a dense pane. This is prose across a 720px column. |
-| 3 | *"Never pad a surface 32px+ on all sides"* | `{spacing.section}` = **96px** | The app rule exists so data runs tight. There is no data in a section gap. |
+| 3 | *"Never pad a surface 32px+ on all sides"* | `{spacing.section}`, fluid **64 → 144px** | The app rule exists so data runs tight. There is no data in a section gap. |
 | 4 | *"At most one accent per view"* | One primary per **section** | A page is not a view. Secondaries stay `{components.button-secondary}` — hairline, no fill. |
-| 5 | *"No hero stripe, no brand moment"* | The spider | The single named carve-out. See below. |
+| 5 | *"No hero stripe, no brand moment"* | The logo, and the spider | The single named carve-out. **Revised** — see below. |
 
 Everything else in `DESIGN.md` — the palette, the type split, the hairline discipline, the radius
 ladder, the no-shadow rule, and the product rule above — applies here **unchanged**.
+
+---
+
+## The second build — what this file got wrong the first time
+
+The page was built once to the spec above and then substantially rebuilt. Four things changed, and
+they are recorded here rather than quietly patched, because each one contradicts a sentence
+elsewhere in this document and the contradiction should be visible to whoever reads it next.
+
+**1. The 44px ceiling was wrong, and the reason it was wrong is instructive.** The argument for it
+— *portia is a quiet surface, and OpenCode survives at 38px* — held for the hero in isolation and
+failed for the page. With display at 44, section headlines at 32 and body at 16, **every block on
+the page landed within 12px of every other**, and the result read as cheap rather than as
+restrained. Austerity and flatness are not the same property: OpenCode is austere *and* has enormous
+typographic contrast, and this file borrowed only the first half. The ramp is now fluid — the hero
+at `clamp(2.75rem, 7.2vw, 5.5rem)`, section headlines at `clamp(2rem, 4.2vw, 3.25rem)` — and the
+**floor is the old ceiling**, so a narrow viewport still gets exactly the scale originally specified.
+Weights still top out at 600 and there is still no third face; the contrast is bought with size,
+never with weight or colour.
+
+**2. There are no screenshots, and no artifact excerpts.** The three-pane `hero-app-mockup` and the
+spec-beside-its-compiled-SQL pairing are both gone, along with `mockup.yaml` and the `CodeBlock`
+component. They were the two most detailed things on the page and they were what made it read as
+documentation rather than as an argument. Consequences worth naming:
+
+- **The single `{colors.canvas-deep}` surface is now spent on the manifesto**, not on a picture of
+  the product. It is a better use of the page's one inversion: it lands exactly where the page stops
+  describing and starts asserting. The `.band` component replaces `hero-app-mockup`; it still works
+  by scoping `.mode-dark` over its subtree, so it is still the app's dark mode rather than a
+  hand-picked grey.
+- **"Don't put a terminal in the hero" is now moot**, and so is the fake-colorize rule for the
+  mockup. The rule those two protected — status colour is state, never decoration — is unchanged and
+  still binds everywhere else.
+- **The three panes are not mentioned anywhere.** How the window is divided is not a reason to try
+  the product; it was an implementation detail wearing a section heading.
+
+**3. The brand mark is the application's own logo, not a redraw of it.** This file specified a
+geometric linework mark for the nav, footer, favicon and OG card, and explicitly ruled the existing
+raster out. That is reversed. `public/portia-mark.png` is generated by `pnpm mark` from
+`../portia/portia/ui/assets/cute-portia.png` — trimmed to the ink and re-padded square — and is the
+only brand image on the page. The reasoning is this file's own reasoning applied one level up: the
+whole `tokens.css` mechanism exists so the page and the app cannot disagree about a colour, and a
+page that draws its own version of the animal is that same disagreement in a different medium.
+
+The linework mark survives in **exactly one place**, the scroll spider, because a raster cannot take
+`currentColor` and cannot animate its legs. Its geometry stays in `src/lib/mark.ts`;
+`components/Mark.astro` and `public/favicon.svg` are deleted. The drawing rules below still govern
+the creature. **`assets/the-portia-spider.jpg` is still never shipped.**
+
+**4. Present-tense copy about warehouses and model providers, decided deliberately.** `CLAUDE.md`'s
+honesty rule says vision rows are written as where portia is going, never in the present tense. The
+warehouse band and the model band both break that: they say *"It runs where your data already
+lives"* and *"Any model, including the one on your laptop"*, and today portia is DuckDB-local and
+runs on the Claude Agent SDK.
+
+This was raised and then chosen — the page's brief is the final vision, and the two bands are the
+clearest statement of it. It is recorded here so it is a decision on the record rather than a drift.
+**What did not move**: every *number* on the page is still one portia actually measured, still
+rendered in mono with its source named beside it, and there is still no benchmark and no claim about
+the copilot's quality anywhere. The line that cannot be crossed is the invented measurement, and it
+is not crossed.
+
+**6. The mark runs at 44px in a 56px bar, and the asset lost its padding.** At 30px the app's logo
+read as a favicon that had wandered onto the page — the creature is the brand and it was the
+smallest thing in the chrome. `pnpm mark` now trims to the ink with **no re-padding at all**, so
+every pixel of the 44px box is spider rather than transparent margin, and exports at 176px for a
+3× display. The bar did not get taller; the drawing inside it got bigger.
+
+**7. Each of the three columns carries a linework icon that draws itself in.** Tables, a pipeline
+merging two sources into one, and a knowledge graph — `PrincipleIcon.astro`. Two things make this
+consistent with a system that has been austere about ornament:
+
+- **It costs no script.** Every shape carries `pathLength="1"`, which normalises its geometry to a
+  unit length, so one `stroke-dashoffset: 1 → 0` rule animates a rect, a circle and a bezier
+  identically off the `.is-in` class the page's observer already sets. No path measured in JS, no
+  fourth island.
+- **It cannot rank.** One colour (`{colors.mute}`), one stroke weight, one size, for all three.
+  These sit above columns the system forbids from ranking, and an icon that grew or coloured with
+  its column would perform exactly the ranking the engine refuses. Under `prefers-reduced-motion`
+  the offset resolves to 0 with no transition — the icon is simply *there*, which is the designed
+  state and not a frame of the drawing.
+
+**8. There is no light/dark toggle.** The mode follows `prefers-color-scheme` and nothing else. A
+switch in the chrome asks a visitor to state a preference they have already given their OS, and it
+costs a blocking pre-paint script to stop the stored answer flashing. **Both modes are still
+first-class** — this removed the control, not dark mode, and the band still renders by scoping the
+app's dark tokens exactly as before.
+
+
+**A note on the logo bands.** Two marquees, drifting in opposite directions, are the second piece of
+motion-as-content after the spider. They earn it the same way: a grid of logos says "here is a
+list", a band with no beginning says "and more where these came from", which is the actual claim.
+They are held to the ranking rule like everything else — one ink colour, one glyph size, even
+spacing, no logo first or larger than another — and under `prefers-reduced-motion` they resolve to a
+static centred row, which is the designed state and not a frozen frame.
+
+---
+
+## The third build — the copy pass that moved what the page is about
+
+**2026-08-11.** The structure above survived; every word inside it was replaced. This section is
+here because four sentences elsewhere in this file are now wrong, and the contradiction should be
+visible rather than patched out.
+
+**1. The thesis moved from the artifact to the context.** The page argued that portia's value was a
+durable, git-diffable spec you keep. That framing is **legacy** — it is what the product docs still
+lead with, and it is no longer what the product is for. The claim now is that portia builds real
+context on data that cannot fit in a model's window, by **measuring rather than sampling**, and then
+**keeps** what it learned. The band carries it (*no model can read a billion rows; so portia never
+asks one to*), the three columns argue it, and the artifact section — still on the page, still
+fourth — is now a **consequence** of it rather than the point.
+
+The overrides table's line about the reading order is unchanged: the page still argues before it
+demonstrates. What changed is which argument.
+
+**2. The audience is named, once.** The page is for **data scientists** and says so in the hero
+lede and in the footer, and nowhere else — twice is a tagline, three times is a pitch deck.
+Everything after that is carried by vocabulary: this page talks about sources, joins, grain and
+modelling, and **never** about orchestration, scheduling, SLAs or DAG runners. A visitor should be
+able to tell in one screen that this is not a data-engineering tool, without the page saying so.
+
+**3. There are no numbers on the page, and the rule that forbade fake ones is unchanged.** Three
+engine timings used to sit under the warehouse claim, each correctly cited to what measured it.
+They were true and they were still wrong: a data scientist deciding whether this tool is for them
+does not care how many seconds an index took, and **three mono figures under a marketing sentence
+read as a benchmark whatever the caption says.** `evidence.yaml` and `EvidenceRow.astro` are
+deleted; `{components.evidence-row}` stays in the spec above, unreferenced, because it remains the
+only sanctioned way a figure ever comes back — cited, in a row, never as a stat block.
+
+**4. No file format, subsystem or library is named in rendered copy.** YAML, SQL, dbt, DuckDB and
+Neo4j are all gone from the page. They were precise about things the reader has not yet decided
+they care about, and precision spent there is what made the page read as a technical report. The
+app's two pictures — **the pipeline canvas and the knowledge graph** — are alluded to as *pictures*
+in a `{components.claim}`, which is the level of detail a landing page earns.
+
+This does **not** relax the mono/prose split. The split is still the identity; there is simply very
+little left on the page that qualifies as mono, because measurements now live in the product rather
+than in the marketing. Where mono survives, it survives for the same reason it always did.
+
+**5. Nothing on the page justifies itself.** The old copy explained why each decision was
+defensible — why there are no benchmarks, why early access is not a mailing list, why a small model
+is enough. Read together, that is insecurity, and it was the single biggest thing making the page
+feel like a defence rather than an offer. A claim is now stated and then left alone. The FAQ is
+capped at **three questions, two sentences each**, and the two that were cut (benchmarks, lock-in)
+were cut because they invited a doubt the page had not raised.
+
 
 ---
 
@@ -281,12 +475,12 @@ Every token is inherited from `DESIGN.md` verbatim. This section documents only 
 only token in this file that does not resolve per mode. It is not a new color: it is the app's
 dark-mode `canvas`, pinned.
 
-**The mechanism matters more than the token.** The hero mockup is rendered by scoping the app's
+**The mechanism matters more than the token.** The band is rendered by scoping the app's
 **dark-mode token values** over that subtree — a `.mode-dark` class that re-declares the custom
 properties — rather than by defining a parallel family of `deep-surface`, `deep-elevated`,
 `deep-hairline` tokens. Two consequences, both wanted:
 
-1. The mockup **cannot drift from the app**. It is not a picture of the dark mode; it is the dark
+1. The band **cannot drift from the app**. It is not a picture of the dark mode; it is the dark
    mode, running in a box.
 2. In light mode, a visitor sees the product's dark theme in the hero and the page's light chrome
    around it — which is honest, because that is a real thing the app looks like.
@@ -325,7 +519,7 @@ emphasis. Check every `stone`/`ash` reference against `DESIGN.md`'s table, not a
 system.
 
 **The semantic ramp must not be spent decoratively.** OpenCode ships the full Apple HIG ramp and
-uses it, on marketing surfaces, as *syntax-highlight stand-ins inside the hero mockup* — color as
+uses it, on marketing surfaces, as *syntax-highlight stand-ins inside its hero mockup* — color as
 chrome. portia forbids that: status color is state, never decoration. The consequence is concrete
 and it constrains the most tempting element on the page:
 
@@ -376,26 +570,34 @@ the two kinds of thing held apart, on every screen of the page.
 
 | Token | Size | Weight | Line height | Use |
 |---|---|---|---|---|
-| `{typography.display-xl}` | 44px | 600 | 1.15 | The hero headline. Once per page. |
-| `{typography.display-lg}` | 32px | 600 | 1.2 | Section headline. |
-| `{typography.heading-md}` | 20px | 500 | 1.3 | Subsection, mockup caption heading. |
-| `{typography.heading-sm}` | 16px | 500 | 1.4 | Card title, list-row label, form legend. |
-| `{typography.body-lg}` | 17px | 400 | 1.6 | Hero subhead and section ledes only. |
+| `{typography.display-2xl}` | 44 → 88px | 600 | 1.02 | The hero headline. Once per page. |
+| `{typography.statement}` | 30 → 60px | 600 | 1.1 | The manifesto band. Once per page. |
+| `{typography.display-xl}` | 32 → 52px | 600 | 1.08 | Section headline. |
+| `{typography.display-lg}` | 32px | 600 | 1.2 | Subsection headline. |
+| `{typography.heading-md}` | 20px | 500 | 1.3 | Pillar title, `{components.claim}` line. |
+| `{typography.heading-sm}` | 16px | 500 | 1.4 | Card title, marquee wordmark, form legend. |
+| `{typography.lede}` | 17 → 22px | 400 | 1.5 | Hero subhead and section ledes only. |
+| `{typography.body-lg}` | 17px | 400 | 1.6 | Long-form prose, where any remains. |
 | `{typography.body-md}` | 16px | 400 | 1.6 | Default body. |
 | `{typography.body-strong}` | 16px | 500 | 1.6 | Inline emphasis. |
 | `{typography.caption}` | 13px | 400 | 1.5 | Footer, fine print, form help text. |
 | `{typography.button}` | 15px | 500 | 1.4 | Every button label. |
 | `{typography.mono}` | 14px | 400 | 1.6 | Every measured number, identifier, column name, key. |
-| `{typography.mono-sm}` | 13px | 400 | 1.55 | Inside `{components.code-block}` and the mockup. |
+| `{typography.mono-sm}` | 13px | 400 | 1.55 | Reserved. No code block survives on the page. |
 | `{typography.mono-caption}` | 12px | 400 | 1.5 | Section labels, row counts, provenance annotations. |
 
-Three notes where these numbers came from a decision rather than a scale:
+Four notes where these numbers came from a decision rather than a scale:
 
-- **Weights top out at 600.** OpenCode runs its hero and its section labels at 700. `DESIGN.md`'s
-  heaviest weight is 600, and a 700 headline sitting above an app screenshot rendered at 500 reads
-  as two products.
-- **Display line-height stays tight.** OpenCode runs `1.5` on its 38px hero, which is a paragraph
-  line-height on a headline. portia holds display at 1.15–1.2, per `DESIGN.md`.
+- **Weights top out at 600**, and this is what makes the wide ramp safe. OpenCode runs its hero at
+  700. `DESIGN.md`'s heaviest weight is 600, and the whole contrast budget on this page is spent on
+  *size*: nothing gets heavier, nothing gets coloured, and the only tonal move available is
+  `{colors.mute}` against `{colors.ink}` on the second line of a headline.
+- **The two-line headline is the page's main device.** First line `{colors.ink}`, second line
+  `{colors.mute}`, split as a real field in the content (`titleSecond`) rather than a `<br>`, because
+  each line rises out of its own clipped box. It is **tone, never colour** — an accent on half a
+  sentence would spend the teal on emphasis, and the teal belongs to the primary action.
+- **Display line-height gets tighter as the size grows**, which is why it is 1.02 at the hero and
+  1.2 at `display-lg`. A fixed 1.15 that reads correctly at 44px opens into a gap at 88px.
 - **Mono is 14px against 16px Inter**, not matched. JetBrains Mono runs optically larger at equal
   px; 14 against 16 is where the two settle onto the same baseline weight. The app's 12px mono is
   tuned for a dense pane and is too small here.
@@ -416,29 +618,42 @@ Everything below 32px is `DESIGN.md`'s scale unchanged. `{spacing.xxxl}` (48px) 
 
 ### Container
 
-- Content column **720px** for prose; **960px** for sections holding a code block, a table or a
-  two-column split; **1160px** outer frame for the hero mockup.
-- Content is **left-flush** to the column edge. No indentation, no centered body paragraphs. The
-  hero headline and subhead are the only centered text on the page.
-- Two-column splits (the early-access form; the spec-and-compiled-SQL pairing) go 50/50 at desktop
-  and stack at tablet, form or output below.
+- Content column **720px** for prose (the FAQ); **960px** for everything else, including the hero
+  and the band. The logo marquees are **full-bleed** and bounded only by their feathered mask.
+- Content is **left-flush** to the column edge. **Nothing on the page is centred, including the
+  hero** — this reverses the original spec. At 88px a centred headline sitting over a left-flush
+  page reads as a different page's header, and left-flush is also what gives the two headline lines
+  a shared edge, which is what makes the ink/mute split legible as one sentence.
+- The two-column split (the early-access form) goes 50/50 at desktop and stacks at tablet.
 
 ### Reading order
 
-The page argues before it demonstrates. This is a layout constraint, not a copy suggestion:
+The page argues before it demonstrates. This is a layout constraint, not a copy suggestion. The
+sequence below survived the rebuild; what changed is the **length of each step**, not their order.
 
-1. **Hero** — one sentence. The spider drops on its dragline as the page settles.
-2. **The line** — *the agent may author a transform; it may never author a number.* Deterministic
-   code owns facts and consequences; the copilot owns judgment. This sits above the feature tour
-   because it is the reason to keep reading, and because everything below it is evidence for it.
-3. **The app** — the three-pane mockup on `{colors.canvas-deep}`. The one dark surface.
-4. **The artifact** — a spec YAML beside its compiled `.sql`, as a diff. This is the section that
-   convinces a data scientist: it is not a chat log, it is a pipeline you hand to a data team.
-5. **The graph** — what your tables are to each other, measured.
-6. **Collaborative & cloud** — the shared catalog as team memory, and the constraint that sells
-   itself: **the data never moves.** Measurements are queries that run where the data is; only small
-   results come back (`VISION.md` → "a cloud-hosted project").
-7. **Early access + demo.**
+1. **Hero** — two lines and one sentence. The spider drops on its dragline as the page settles.
+2. **The band** — *data has no value without context; portia builds yours.* On
+   `{components.band}`, the page's one dark surface, with **no body copy and no section label**:
+   its one sentence is the section, and a heading above it was a heading for nothing. It is the
+   only block on the page that drops its label.
+3. **How it works** — three columns: measure · build on what was measured · get sharper. Each
+   carries a `{components.pillar-icon}` that draws itself in. This is the argument the band just
+   asserted, and the two are read as one movement.
+4. **What you keep** — not a chat log, a pipeline you can hand over. Three `{components.claim}`
+   lines, and the only place the app's two pictures are alluded to: the pipeline canvas and the
+   knowledge graph. **No file format is named anywhere in it.**
+5. **Your data** — **two** counter-drifting rails, split by kind: the warehouse somebody
+   administers, and what is already on your own machine. Two claims. **No numbers.**
+6. **Your model** — the provider marquee, then a counter-drifting second band for the local
+   runtimes, because the claim about those is different.
+7. **Early access.**
+8. **FAQ** — a closing appendix rather than a step in the argument. Five questions, and an answer
+   that runs past four sentences is a signal the page failed to make its case earlier.
+
+**Two sections were cut and are not coming back.** *The app* (the three panes) described an
+implementation detail wearing a section heading. *The graph* was true, well-written, and the third
+consecutive block of dense prose — it is the kind of thing that belongs in docs, and the page is not
+docs.
 
 ---
 
@@ -448,8 +663,8 @@ The page argues before it demonstrates. This is a layout constraint, not a copy 
 |---|---|---|
 | 0 — flat | no border, no shadow | Body sections, list rows, hero text, footer |
 | 1 — hairline | 1px `{colors.hairline}` | Code blocks, inputs, cards, section rules |
-| 2 — strong | 1px `{colors.hairline-strong}` | Secondary button edge, table row rules, mockup pane dividers |
-| 3 — inverted | `{colors.canvas-deep}` fill | The hero mockup. The only "elevated" surface, and it uses color, not shadow |
+| 2 — strong | 1px `{colors.hairline-strong}` | Secondary button edge, table row rules |
+| 3 — inverted | `{colors.canvas-deep}` fill | `{components.band}`. The only "elevated" surface, and it uses color, not shadow |
 
 **No drop shadows.** Nothing lifts and nothing floats, in either mode. The single exception matches
 the app's: a transient overlay (a dropdown, a toast, a dialog) may carry one soft shadow. There are
@@ -477,17 +692,22 @@ it worked out in advance. That is the product in one sentence, and it is the pag
 dragline is also not a liberty: jumping spiders trail one continuously as a safety line.
 
 **Drawing rules.**
-- Derived from the current logo by **keeping** the large forward-facing eyes (the anterior median
-  pair is the jumping-spider tell and the whole reason the mark reads as charming rather than
-  unsettling), the compact silhouette, and the teal-on-light palette; and **dropping** the fur, the
-  gradients, the bubbles, the drop shadow and the grey backdrop.
-- Constant stroke, round caps and joins, ~2.5px at a 32px mark. Legs are symmetric paired curves.
+- Derived from the app's logo by **keeping** the large forward-facing eyes (the anterior median pair
+  is the jumping-spider tell and the whole reason it reads as charming rather than unsettling), the
+  compact silhouette, and the teal; and **dropping** the fur, the gradients, the bubbles, the drop
+  shadow and the grey backdrop.
+- Constant stroke, round caps and joins, **2.2px** at a 32px mark — 2.5 was drawn and rejected,
+  because at eight legs plus two body shapes the ink merges and the abdomen and cephalothorax read
+  as one blob. Legs are symmetric paired curves, the left side generated from the right.
 - Stroke takes `{colors.ink}` via `currentColor`, so it inverts with the page mode for free. The
   abdomen saddle is the only fill: `{colors.accent-text}`. Eyes are filled circles with one offset
   catchlight each.
-- **It must scale from a 20px favicon to a 400px hero.** The current PNG does not; this is why the
-  mark is net-new work and why it is the first asset built — the nav lockup, the favicon, the OG
-  image and the scroll creature all derive from it.
+- **The abdomen sits above the cephalothorax**, because a hanging spider trails its dragline from
+  the spinnerets at the rear of the abdomen. The silk attaches at the top and the creature hangs the
+  right way up without being positioned by eye.
+- **It is not the brand mark and does not need to be.** The nav, footer, favicon and OG card all
+  carry the app's real logo (item 3 above). This creature exists only here, which is why the
+  geometry lives in `src/lib/mark.ts` with a single consumer.
 
 **Motion rules.** Position alone reads as dead. Velocity is what makes it alive:
 - Scroll position → `{motion.spider-drop}` spring. The spider **lags** and settles with slight
@@ -560,21 +780,52 @@ no accordion chrome.
 `{typography.mono-caption}`, `{rounded.xs}`. For status-of-the-product tags ("in development",
 "early access"). **Never** for a metric, and it never scales with a number.
 
-### The hero mockup
+**`pillar`** — one of three equal columns under the manifesto. A mono index in `{colors.ash}`, a
+`{typography.heading-md}` title, two sentences of `{typography.body-md}`. **The index is a position,
+never a rank**: it does not grow, it is not coloured, and the three are not sorted by weight.
 
-**`hero-app-mockup`** — full-bleed `{colors.canvas-deep}` within the 1160px frame, `{rounded.lg}`,
-1px hairline at the app's dark value. Contains three `{components.mockup-pane}` columns divided by
-1px hairlines: the file tree, the workflow canvas, the transcript.
+**`claim`** — one short line of consequence, set at `{typography.heading-md}` so it is read rather
+than skimmed, with a mono `[+]` marker and a hairline top rule. `lead` in `{colors.ink}`, the rest
+in `{colors.body}`, so the claim lands before its qualification does. **Two or three per section is
+the budget.** More than that and it is prose with brackets on it.
 
-Rules:
-- **Not a terminal.** `VISION.md`'s V0 audit is explicit that portia's job is to keep the user out
-  of one; a terminal mockup in the hero would misrepresent the product to sell a texture. This is
-  the sharpest place the OpenCode system does not transfer — its entire hero is a TUI.
+**`marquee-item`** — a brand glyph at 22px beside its wordmark in `{typography.heading-sm}`, the
+pair in `{colors.mute}`. See "The logo bands" below.
+
+### The band
+
+**`band`** — full-bleed `{colors.canvas-deep}`, square corners, a 1px `{colors.hairline}` rule top
+and bottom, holding one `{typography.statement}` headline and nothing else.
+
+It replaced `hero-app-mockup`, which is deleted; the rules that carry over are the ones that were
+never about the screenshot:
+
 - **One per page**, and the only use of `{colors.canvas-deep}` anywhere.
-- **Real content.** Real column names, real null rates, a real copilot question. See the
-  fake-colorize rule under Colors.
-- Text inside is `{typography.mono-sm}` for data and `{typography.body-md}` at the dark tokens for
-  the copilot's prose — the split holds inside the mockup too, because it holds inside the app.
+- **It is rendered by scoping `.mode-dark` over the subtree**, which re-declares the app's whole
+  dark palette. So it is the app's dark mode running in a box rather than a hand-picked grey, and it
+  cannot drift from the product.
+- **The hairline carries the boundary in dark page mode**, where `canvas-deep` equals the page's own
+  `canvas`. This resolves the open edge that used to be listed under Known gaps, and it resolves it
+  in favour of the rule rather than in favour of a one-notch lift that would desync the two.
+- **No body copy inside it.** The band asserts; the section beneath it argues.
+
+### The logo bands
+
+Two `{components.marquee}` rows — warehouses in one section, model providers in another, with a
+second counter-drifting row for local runtimes. They are the page's second named ornament and they
+earn it the way the spider does: **the motion carries the claim.** A grid of eleven logos says "here
+is a list"; a band with no beginning and no end says "and more where these came from".
+
+Held to the ranking rule like everything else:
+- One ink colour (`{colors.mute}`, lifting to `{colors.ink}` on hover), one glyph size, one wordmark
+  size, even spacing. **No logo is larger, brighter or first** — and the drift means there is no
+  fixed first position to hold.
+- Order in `src/lib/logos.ts` is presentation order and nothing else. Not alphabetical, not a tier
+  list; a marquee has to start somewhere.
+- **The static state is the designed state.** Under `prefers-reduced-motion` the animation is
+  dropped and the track wraps into a plain centred row — not a frozen frame with a logo sliced in
+  half at the mask edge.
+- Pure CSS, duplicated track translated -50%, the copy `aria-hidden`. No island and no JS.
 
 ### Chrome
 
@@ -596,38 +847,64 @@ uses.
 
 ### Do
 - Keep the split: mono for anything measured or typed as an identifier, Inter for English.
+- **Let the mark be big.** 44px in a 56px bar, on an asset with no padding baked into it.
 - Spend `{colors.accent-primary}` on exactly one action per section, and nowhere else.
 - Cite every number on the page to something portia measured.
-- Use 1px `{colors.hairline}` as the only divider, and 96px as the only section gap.
-- Render the hero mockup by scoping the app's dark tokens, so it cannot drift from the app.
+- Use 1px `{colors.hairline}` as the only divider.
+- **Buy contrast with size.** The ramp is wide on purpose; that is what keeps the palette quiet.
+- **Split a headline with tone** — `{colors.ink}` then `{colors.mute}` — and never with colour.
+- Render the band by scoping the app's dark tokens, so it cannot drift from the app.
+- **Use the app's real logo** for anything that reads as the brand.
 - Keep the spider suppressible: reduced-motion static, plus a persistent dismiss.
+- Give every marquee a designed static state, not a frozen frame.
 - Check every `stone` / `ash` reference against `DESIGN.md`, not against the OpenCode source.
 
 ### Don't
 - **Don't put a green tick beside a feature, a section or a table.** `{colors.success}` may only
   sit beside a measurement. `DESIGN.md`: *"Do not build a screen that can say a table is good."*
 - **Don't invent a number, a chart, or a stat block.** No `Fig 1.` sparse-line decoration, no
-  "10× faster", no metric portia did not produce.
+  "10× faster", no metric portia did not produce. **This is the one rule no rebuild has relaxed**
+  — the provider bands moved to present tense, the measurements never moved at all. As of the
+  third build there are **no numbers on the page whatsoever**, which is the strongest available
+  form of the same rule.
+- **Don't name a file format, a subsystem or a library in rendered copy.** No YAML, no SQL, no dbt,
+  no DuckDB, no Neo4j. The reader has not yet decided they care.
+- **Don't justify a claim.** State it and stop. If a sentence begins "because" or defends a choice
+  nobody has challenged, cut it — that tone is what made the second build read as a defence.
+- **Don't write like a data-engineering tool.** No orchestration, no scheduling, no SLAs, no DAG
+  runners. This page is for data scientists and its vocabulary is the main thing that says so.
+- **Don't render the measured numbers as three big figures across a band.** They are
+  `{components.evidence-row}`s: a list, in mono, at body size, each with its source beside it.
+  `CLAUDE.md` names the stat block as one of the genre conventions that performs the ranking the
+  engine refuses to do.
 - **Don't sort or color by severity**, and don't let a badge grow with its figure.
+- **Don't put a screenshot of the app on the page**, and don't put a spec or a SQL excerpt on it.
+- **Don't redraw the logo.** One brand image, generated by `pnpm mark` from the app's asset.
+- **Don't add a mode toggle back.** The system preference is the whole mechanism.
+- **Don't let an icon rank its column.** One colour, one weight, one size, or it does not ship.
 - Don't add a gradient, a glow, an atmospheric background, or a shadow on persistent chrome.
-- Don't put a terminal in the hero.
-- Don't fake-colorize the mockup for visual interest.
 - Don't introduce a third font, a 700 weight, or an italic style.
-- Don't use OpenCode's 4px interactive radius — it desynchronizes the page from app screenshots.
+- Don't use OpenCode's 4px interactive radius — it desynchronizes the page from the app.
 - Don't let anything warm back into the palette.
+- Don't reach for `.rise` on a feature list. It is for the hero and the band; applied broadly it
+  turns the page into a slideshow, which is the failure mode of scroll animation.
 - Don't ship `assets/the-portia-spider.jpg`.
 
 ---
 
 ## Responsive behavior
 
+Most of the responsive behaviour is now carried by `clamp()` rather than by breakpoints — the
+display ramp, the ledes and the section rhythm all scale continuously, so the table below only lists
+the changes that genuinely need a media query.
+
 | Name | Width | Key changes |
 |---|---|---|
-| desktop-large | 1280px+ | Default. 720/960px columns, 1160px mockup frame, 96px rhythm |
-| desktop | 1024px | Mockup frame shrinks to the content width; nav stays horizontal |
-| tablet | 850px | 64px rhythm; two-column splits stack; mockup drops to two panes (tree hidden) |
+| desktop-large | 1280px+ | Default. 720/960px columns, full-bleed marquees, rhythm at its 144px ceiling |
+| desktop | 1024px | Nav stays horizontal; type and rhythm shed size continuously |
+| tablet | 850px | Pillars go from three columns to one; the early-access split stacks |
 | tablet-narrow | 768px | Nav collapses to a drawer; the primary CTA stays visible |
-| mobile | 640px | 48px rhythm; hero 44px → 30px; mockup becomes a single pane, horizontally scrollable |
+| mobile | 640px | The clamps have reached their floors: hero at 44px, rhythm at 64px |
 
 `DESIGN.md`'s width bands (1400 / 1024) govern **the app's pane visibility** and do not apply to
 this page. They are a different mechanism for a different problem.
@@ -649,24 +926,43 @@ reading column is not charming.
   palette and the two cannot silently diverge.
 - **Astro 5** with React islands for the three interactive pieces only: the spider, the early-access
   form, and the FAQ. Everything else ships zero JS.
-- **Motion** (`motion`) for the spider and reveals; **Lenis** for smooth scroll, disabled under
-  reduced-motion. Escalate to GSAP ScrollTrigger only if a pinned scroll scene is added.
-- **Build order matters**: the mark first (everything derives from it), then static page with no
-  motion, then the motion pass. A scroll-linked spider tuned before the page has its real scroll
-  height gets tuned twice.
+- **Motion** (`motion`) for the spider; **Lenis** for smooth scroll, disabled under reduced-motion.
+  Everything else is CSS — the reveals, the two `.rise` gestures and both marquees. Escalate to GSAP
+  ScrollTrigger only if a pinned scroll scene is added.
+- **Three motion primitives, and they are a ladder.** `.reveal` (420ms, 12px) is the default and
+  goes on almost everything. `.rise` (780ms, 28px) is for a block that should *arrive* — the hero
+  lines and the manifesto, and nothing else. `.rise-lines` clips each line into its own box so the
+  type appears to be set rather than to fade in; it is what the two-line headlines use. All three
+  resolve to their arrived state under `prefers-reduced-motion`.
+- **Brand images are generated, not drawn**: `pnpm mark` derives `portia-mark.png` and `favicon.png`
+  from the app's asset, and `pnpm og` composites the former into the social card. There is one
+  brand image and three files that reference it.
+- **Third-party logos are resolved at build time** in `src/lib/logos.ts`, from `simple-icons` and
+  `@lobehub/icons-static-svg`. Both are dev dependencies; the paths are inlined into the HTML, so a
+  marquee of eleven logos costs zero requests and zero JS.
+- **Build order matters**: brand images first, then the static page with no motion, then the motion
+  pass. A scroll-linked spider tuned before the page has its real scroll height gets tuned twice —
+  and this rebuild changed the scroll height substantially.
 
 ---
 
 ## Known gaps
 
-- **The mark does not exist yet.** There is no SVG anywhere in the repo and no wordmark lockup —
-  only a raster cartoon used at 80px in the README and in `ui/theme.py`.
-- **Hover states are undocumented**, following the source system's policy. Default and pressed only.
-- **The dark-mode hero mockup in dark page mode** has an unresolved edge: `{colors.canvas-deep}`
-  equals the page's own `{colors.canvas}` in dark mode, so the mockup loses its figure/ground
-  separation. It will need its 1px hairline to carry the whole boundary, or a one-notch lift to
-  `{colors.surface}`. Decide when it is drawn, not before.
+- **The brand image is a 128px raster.** It is the app's real logo, which is the point, but it does
+  not scale to a 400px hero and it carries a contact shadow drawn for a light UI (the `Brandmark`
+  component lifts brightness in dark mode rather than shipping a second asset that could drift). If
+  the app ever gets a vector logo, `pnpm mark` is the one place that changes.
+- **Hover states are undocumented**, following the source system's policy. Default and pressed only,
+  with two exceptions that are real interactions rather than decoration: the marquee pauses on hover
+  and its items lift to `{colors.ink}`.
+- **The provider lists are a claim the code does not yet make.** `src/lib/logos.ts` names ten
+  warehouses and eighteen model providers in the present tense; today portia is DuckDB-local on the
+  Claude Agent SDK. This is a recorded decision, not an oversight — "The second build", item 4 — but
+  it is the thing on this page most likely to need revisiting, and the lists should be pruned to
+  what is real the moment a first customer can check.
 - **No pricing surface** is specified. The product is pre-launch and the page has no pricing grid;
   when one arrives it needs its own section here, and it is the single most likely place the
   "prominence communicates kind, never rank" rule gets broken.
-- **OG image and social card** are unspecified beyond deriving from the mark.
+- **The FAQ has no home for a long answer.** Answers are capped at four sentences, which was the
+  right cut, but two of the old ones contained genuinely useful material (the coding-agent bake-off
+  and its caveats; the model-discipline argument). That material now exists nowhere public.
