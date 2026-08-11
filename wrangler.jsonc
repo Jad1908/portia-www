@@ -1,0 +1,31 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+
+  // Must match the Worker that already exists — this is the name in
+  // portia-copilot-landing-www.mohamed-jad-aouad.workers.dev. Changing it here
+  // does not rename that Worker, it deploys a second one.
+  "name": "portia-copilot-landing-www",
+
+  "main": "worker/index.ts",
+
+  // Pinned, not defaulted. Wrangler falls back to "today" when this is unset,
+  // which means the runtime a deploy gets depends on the day it ran.
+  "compatibility_date": "2026-08-11",
+
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+
+    // The Worker runs first only for the API. Everything else — the page, the
+    // fonts, the mark, the island bundles — is served straight from the asset
+    // layer, so a visitor who never submits the form never invokes the script.
+    "run_worker_first": ["/api/*"]
+  },
+
+  "observability": {
+    // `console.error` in the Worker is how a dropped submission is recovered:
+    // a honeypot false positive and an unhandled failure both log, and neither
+    // is retrievable if logs are off.
+    "enabled": true
+  }
+}
