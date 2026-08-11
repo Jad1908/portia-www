@@ -59,7 +59,8 @@ drops it is a control that lies, and this is the wrong page for one.
 2. **Deploy → New deployment**, type **Web app**.
 3. **Execute as: Me**, **Who has access: Anyone**. Both matter. "Me" is what lets the script write
    to your Sheet; "Anyone" is what lets Cloudflare POST without a Google session. Anything else and
-   the Function sees a sign-in page, not your script.
+   the Function sees a sign-in page, not your script — which Google serves with a 2xx, so the
+   Function checks the content type and answers 502 rather than believing it.
 4. Authorize when prompted. The unverified-app warning is expected — it is your own script.
 5. Copy the deployment URL. It must end in **`/exec`**, not `/dev`.
 

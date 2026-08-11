@@ -34,6 +34,23 @@ interface Env {
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_CONTEXT = 4000;
 
+/**
+ * Whether a webhook answered with a web page rather than a result.
+ *
+ * A 2xx is not on its own evidence that anything was recorded. The case this
+ * exists for is Google Apps Script: a web app deployed with the wrong "Who has
+ * access" answers a POST with a sign-in page, and it does so with a status in
+ * the 200s. Trusting `res.ok` there makes the form say "On the list." to
+ * someone who is on no list — the exact failure the 503 branch below refuses to
+ * commit, arrived at by a different route.
+ *
+ * HTML rather than "not JSON", because a webhook is allowed to answer with an
+ * empty body or bare text, and a receiver that means to say "recorded" never
+ * says it in a document with a `<head>`.
+ */
+const isHtml = (res: Response) =>
+  (res.headers.get("content-type") ?? "").toLowerCase().includes("text/html");
+
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
     status,
@@ -101,7 +118,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       headers: { "content-type": "application/json" },
       body: JSON.stringify(record),
     });
-    if (!res.ok) {
+    if (!res.ok || isHtml(res)) {
       return json(
         { message: "That did not go through, and nothing was recorded." },
         502,
