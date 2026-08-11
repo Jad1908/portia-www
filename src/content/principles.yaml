@@ -1,0 +1,38 @@
+# The three columns under the manifesto band.
+#
+# The arc is: **measure · build on what was measured · get better at it.** Each
+# is one short title and two short sentences, and each has a linework icon that
+# draws itself in as the column arrives (`PrincipleIcon.astro`).
+#
+# `icon` names the drawing, not a decoration budget — one per column, same
+# stroke, same size, same colour. The `index` is a position, never a rank: it is
+# rendered in `ash` at 12px, it does not grow, and nothing here is sorted or
+# coloured by weight. LANDING.md, "colour and prominence communicate kind,
+# never rank".
+
+- id: principle-01
+  index: "01"
+  group: principles
+  icon: tables
+  title: "It measures, then it speaks."
+  body: >-
+    Every fact it works from is one it went and got. Nothing is inferred from a
+    sample.
+
+- id: principle-02
+  index: "02"
+  group: principles
+  icon: pipeline
+  title: "It builds on facts."
+  body: >-
+    Each step of the pipeline stands on something measured. Nothing is invented
+    along the way.
+
+- id: principle-03
+  index: "03"
+  group: principles
+  icon: graph
+  title: "It gets sharper as you work."
+  body: >-
+    Everything it learns joins what it already knows. The tenth question is
+    easier than the first.

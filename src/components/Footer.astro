@@ -1,0 +1,59 @@
+---
+import Brandmark from "./Brandmark.astro";
+
+const year = new Date().getFullYear();
+---
+
+{/* `footer-section` — canvas, one hairline top rule, 48px, caption in mute. */}
+<footer class="footer">
+  <div class="wrap wrap--wide footer__inner">
+    <div class="footer__lockup">
+      <Brandmark size={24} />
+      <span>portia</span>
+    </div>
+
+    <p class="t-caption footer__line">
+      A copilot for data scientists — for the part of the week you spend finding
+      out what your data actually is.
+    </p>
+
+    <p class="t-caption footer__meta">
+      <span>© {year}</span>
+      <span class="footer__dot" aria-hidden="true">·</span>
+      <span>Pre-launch</span>
+    </p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background-color: var(--portia-canvas);
+    border-top: 1px solid var(--portia-hairline);
+    padding-block: var(--spacing-xxxl);
+  }
+  .footer__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  .footer__lockup {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--portia-ink);
+    font-size: var(--text-heading-sm);
+    font-weight: 500;
+  }
+  .footer__line {
+    max-width: 60ch;
+  }
+  .footer__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    color: var(--portia-ash);
+  }
+  .footer__dot {
+    color: var(--portia-stone);
+  }
+</style>

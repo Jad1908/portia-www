@@ -1,0 +1,122 @@
+---
+import "~/styles/global.css";
+import SmoothScroll from "~/components/SmoothScroll.astro";
+
+interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {/* The app's own logo, not a redraw of it — see `scripts/mark.mjs`. The
+        linework SVG that used to be the favicon now exists only as the scroll
+        spider, where `currentColor` and animated legs are load-bearing. */}
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="180x180" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {/* PNG, not the SVG it is generated from: the social platforms do not
+        render SVG cards. `pnpm og` regenerates it. */}
+    <meta property="og:image" content={new URL("/og.png", Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    {/* Both modes are first-class, as in the app. Light is not the real one
+        with a dark variant bolted on, so `theme-color` states both. */}
+    <meta
+      name="theme-color"
+      content="#F4F6F9"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#08090C"
+      media="(prefers-color-scheme: dark)"
+    />
+
+    {/* **There is no manual override.** The mode follows the system, full stop.
+        A toggle is a preference the visitor already expressed to their OS, and
+        asking again in the chrome of a one-page site buys a control nobody
+        needs and a pre-paint blocking script to make it not flash. Both modes
+        stay first-class — this removes the switch, not dark mode. */}
+  </head>
+
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <slot />
+    <SmoothScroll />
+
+    {/* The reveal observer. Twenty lines, no island, and the page is fully
+        legible without it — `.reveal` is the only thing it touches and its
+        resting state under reduced motion is already the arrived one.
+
+        **It is two-way.** The first version added `.is-in` and then
+        `unobserve`d, so every gesture on the page fired exactly once per load:
+        scroll back up and everything was already arrived, scroll down again and
+        nothing happened. That is the right default for a page whose motion is
+        an *entrance*, and the wrong one here, where the three pillar icons draw
+        themselves — a drawing that only ever happens once is a drawing most
+        visitors scroll past before it starts.
+
+        So the class comes off on the way out and goes back on the way in.
+        `rootMargin` is asymmetric on purpose: an element arrives 12% before the
+        bottom edge and only resets once it is fully clear of the viewport, so
+        the reset never fires while any part of the block is still readable. */}
+    <script>
+      const els = document.querySelectorAll<HTMLElement>(
+        ".reveal, .rise, .rise-lines",
+      );
+      const reduced = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+
+      if (reduced || !("IntersectionObserver" in window)) {
+        els.forEach((el) => el.classList.add("is-in"));
+      } else {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              e.target.classList.toggle("is-in", e.isIntersecting);
+            }
+          },
+          { rootMargin: "0px 0px -12% 0px", threshold: 0.05 },
+        );
+        els.forEach((el) => io.observe(el));
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  .skip-link {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    z-index: 100;
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    background-color: var(--portia-surface-elevated);
+    border: 1px solid var(--portia-hairline-strong);
+    color: var(--portia-ink);
+    font-size: var(--text-caption);
+    text-decoration: none;
+    transform: translateY(-200%);
+  }
+  .skip-link:focus {
+    transform: none;
+  }
+</style>

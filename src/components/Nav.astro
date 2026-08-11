@@ -1,0 +1,202 @@
+---
+import Brandmark from "./Brandmark.astro";
+
+interface Props {
+  links: { href: string; label: string }[];
+}
+const { links } = Astro.props;
+---
+
+{/* `primary-nav` — canvas fill, 56px, one hairline bottom rule, square corners.
+    Mark + wordmark left, ghost links centre-right, one primary at the far
+    right. The wordmark is lowercase, matching every document in the repo.
+    No shadow: persistent chrome does not lift.
+
+    Under 768px the links collapse to a drawer and the primary CTA stays
+    visible, which is the one thing that must survive the collapse. */}
+<header class="nav">
+  <div class="wrap wrap--frame nav__inner">
+    <a class="nav__lockup" href="#top">
+      <Brandmark size={44} class="nav__mark" />
+      <span class="nav__wordmark">portia</span>
+    </a>
+
+    <nav class="nav__links" aria-label="Sections">
+      {
+        links.map((l) => (
+          <a class="btn btn--ghost nav__link" href={l.href}>
+            {l.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="nav__actions">
+      <a class="btn btn--primary nav__cta" href="#early-access"
+        >Request early access</a
+      >
+
+      <button
+        class="nav__icon-btn nav__drawer-btn"
+        type="button"
+        data-drawer-toggle
+        aria-expanded="false"
+        aria-controls="nav-drawer"
+        aria-label="Sections"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.4"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M2 4.5h12M2 8h12M2 11.5h12"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="nav__drawer" id="nav-drawer" hidden>
+    <div class="wrap wrap--frame">
+      {
+        links.map((l) => (
+          <a class="nav__drawer-link" href={l.href} data-drawer-link>
+            {l.label}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</header>
+
+<script>
+  const drawerBtn = document.querySelector<HTMLButtonElement>(
+    "[data-drawer-toggle]",
+  );
+  const drawer = document.getElementById("nav-drawer");
+
+  const setDrawer = (open: boolean) => {
+    if (!drawer || !drawerBtn) return;
+    drawer.hidden = !open;
+    drawerBtn.setAttribute("aria-expanded", String(open));
+  };
+
+  drawerBtn?.addEventListener("click", () =>
+    setDrawer(drawer?.hidden ?? false),
+  );
+  document
+    .querySelectorAll("[data-drawer-link]")
+    .forEach((a) => a.addEventListener("click", () => setDrawer(false)));
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") setDrawer(false);
+  });
+</script>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background-color: var(--portia-canvas);
+    border-bottom: 1px solid var(--portia-hairline);
+  }
+  .nav__inner {
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+  }
+  .nav__lockup {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--portia-ink);
+    text-decoration: none;
+    margin-right: auto;
+  }
+  /* The mark runs **larger than the bar is tall is comfortable with** — 44px in
+   * a 56px row — because the creature is the brand and at 30px it read as a
+   * favicon that had wandered onto the page. It does not thicken the bar: the
+   * asset is trimmed hard to the ink by `pnpm mark`, so what grew is the
+   * spider and not the box around it. `overflow: hidden` on the bar is not
+   * needed at this size, but the negative margin keeps the lockup's optical
+   * left edge on the same line as the content column below it. */
+  .nav__mark {
+    margin-left: -3px;
+  }
+  .nav__wordmark {
+    font-size: var(--text-heading-sm);
+    font-weight: 500;
+    letter-spacing: 0.1px;
+  }
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+  .nav__link {
+    height: 32px;
+  }
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+  }
+  .nav__icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    background: transparent;
+    border-radius: var(--radius-md);
+    color: var(--portia-mute);
+    cursor: pointer;
+  }
+  .nav__icon-btn:hover {
+    color: var(--portia-ink);
+  }
+  .nav__drawer-btn {
+    display: none;
+  }
+
+  .nav__drawer {
+    border-top: 1px solid var(--portia-hairline);
+    padding-block: var(--spacing-sm);
+  }
+  .nav__drawer-link {
+    display: block;
+    padding: 12px 0;
+    color: var(--portia-body);
+    font-size: var(--text-body-md);
+    text-decoration: none;
+    border-bottom: 1px solid var(--portia-hairline-soft);
+  }
+  .nav__drawer-link:last-child {
+    border-bottom: 0;
+  }
+
+  @media (max-width: 768px) {
+    .nav__links {
+      display: none;
+    }
+    .nav__drawer-btn {
+      display: inline-flex;
+    }
+  }
+  @media (min-width: 769px) {
+    .nav__drawer {
+      display: none;
+    }
+  }
+  @media (max-width: 420px) {
+    .nav__cta {
+      padding-inline: 14px;
+    }
+  }
+</style>

@@ -1,0 +1,51 @@
+# Short lines of consequence, grouped by the section they sit in.
+#
+# `lead` is set in `ink` and `rest` in `body` — one sentence, split so the claim
+# reads before the qualification does. Two or three per section is the budget.
+#
+# **Keep `rest` to one short sentence.** Two sentences per claim is how this
+# file drifts back into prose, and the tone that comes with it is a page
+# defending itself. Say the thing and stop.
+#
+# No claim here names a file format, a schema or a library.
+
+# --- The artifact -----------------------------------------------------------
+
+- id: claim-1
+  group: artifact
+  lead: "You can see it."
+  rest: "Your pipeline as a graph, and your data as the map it built."
+
+- id: claim-2
+  group: artifact
+  lead: "You can hand it over."
+  rest: "It reads and re-runs without you in the room."
+
+- id: claim-3
+  group: artifact
+  lead: "It is production code."
+  rest: "Versioned, reproducible, and it tells you when a source moves."
+
+# --- Warehouses -------------------------------------------------------------
+
+- id: claim-4
+  group: warehouse
+  lead: "Nothing gets copied."
+  rest: "The work happens where the data is."
+
+- id: claim-5
+  group: warehouse
+  lead: "Size is not your problem."
+  rest: "A table too big to open is one portia still knows."
+
+# --- Models -----------------------------------------------------------------
+
+- id: claim-6
+  group: models
+  lead: "Every provider works."
+  rest: "Bring the one you already pay for, or none at all."
+
+- id: claim-7
+  group: models
+  lead: "Small models are enough."
+  rest: "The context does the work, so your bill stays small too."

@@ -1,0 +1,48 @@
+---
+/**
+ * Lenis, mounted for its own sake and nothing else's.
+ *
+ * It is **not** loaded at all under `prefers-reduced-motion` — the import is
+ * inside the guard, so a visitor who asked for less motion does not download a
+ * scroll-hijacking library in order to have it disabled. Native scrolling is
+ * the designed resting state here, not a fallback.
+ *
+ * The spider reads `window.scrollY` through Motion's `useScroll`, which Lenis
+ * keeps in step because it drives the real scroll position rather than
+ * transforming a wrapper.
+ */
+---
+
+<script>
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (!reduced) {
+    const { default: Lenis } = await import("lenis");
+    const lenis = new Lenis({
+      duration: 0.9,
+      // Anchors are handled by the browser's own smooth behaviour below, so
+      // Lenis only ever owns wheel and touch.
+      smoothWheel: true,
+    });
+
+    const raf = (time: number) => {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    };
+    requestAnimationFrame(raf);
+
+    // In-page anchors go through Lenis so they land where the sticky nav
+    // leaves room, rather than jumping under it.
+    document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
+      a.addEventListener("click", (e) => {
+        const id = a.getAttribute("href")!.slice(1);
+        if (!id) return;
+        const target = document.getElementById(id);
+        if (!target) return;
+        e.preventDefault();
+        lenis.scrollTo(target, { offset: -88 });
+        history.replaceState(null, "", `#${id}`);
+      });
+    });
+  }
+</script>

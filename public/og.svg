@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <!-- The social card. Flat on canvas: no gradient, no glow, no atmospheric
+       background. The hairline is the only divider here as it is on the page.
+       Drawn in the light mode's values, because a card has no media query.
+
+       The mark is NOT drawn here. `scripts/og.mjs` composites the app's real
+       logo (`public/portia-mark.png`) into the box below, so the card cannot
+       show a different animal from the one in the nav. Everything the card
+       says about type it says at sizes librsvg can resolve from system fonts —
+       see the script's header for why the headline is not in Inter. -->
+  <rect width="1200" height="630" fill="#F4F6F9"/>
+
+  <!-- The mark's dragline. It stops where the logo starts; the logo lands at
+       (88, 96) at 128×128, which is what og.mjs composites into. -->
+  <path d="M152 0 L152 96" stroke="rgba(0,0,0,0.14)" stroke-width="2" fill="none"/>
+
+  <text x="88" y="356" font-family="Inter, system-ui, sans-serif" font-size="80" font-weight="600" fill="#0E1116" letter-spacing="-1.5">One table you trust.</text>
+  <text x="88" y="446" font-family="Inter, system-ui, sans-serif" font-size="80" font-weight="600" fill="#6B7079" letter-spacing="-1.5">And every reason why.</text>
+
+  <line x1="88" y1="504" x2="1112" y2="504" stroke="#E3E6EC" stroke-width="2"/>
+
+  <text x="88" y="554" font-family="Inter, system-ui, sans-serif" font-size="26" font-weight="500" fill="#3A3F47">portia</text>
+  <text x="88" y="592" font-family="JetBrains Mono, ui-monospace, monospace" font-size="22" fill="#6B7079">the agent may author a transform; it may never author a number</text>
+</svg>

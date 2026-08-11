@@ -1,0 +1,405 @@
+---
+import { getCollection, render } from "astro:content";
+
+import Base from "~/layouts/Base.astro";
+import Nav from "~/components/Nav.astro";
+import Footer from "~/components/Footer.astro";
+import SectionHead from "~/components/SectionHead.astro";
+import PrincipleIcon from "~/components/PrincipleIcon.astro";
+import Marquee from "~/components/Marquee.astro";
+import Spider from "~/components/islands/Spider";
+import EarlyAccessForm from "~/components/islands/EarlyAccessForm";
+import Faq from "~/components/islands/Faq";
+import { WAREHOUSES, LOCAL_SOURCES, MODELS, LOCAL_MODELS } from "~/lib/logos";
+
+/**
+ * The whole page.
+ *
+ * **Rewritten from the first version, which was too long and too flat.** Three
+ * structural changes, each one a deliberate departure from what LANDING.md
+ * originally specified — all four are recorded in that file's overrides table:
+ *
+ *  1. **No screenshots and no artifact excerpts.** The three-pane mockup and
+ *     the spec-beside-its-SQL pairing are gone. They were the two most detailed
+ *     things on the page and they were what made it read as documentation. The
+ *     panes are not mentioned either: how the window is divided is not a reason
+ *     to try the product.
+ *  2. **The one dark surface is spent on the argument, not on a picture.** The
+ *     manifesto band inherits the slot the mockup used to hold, which is a
+ *     better use of the page's single inversion — it lands where the page stops
+ *     describing and starts asserting.
+ *  3. **The type ramp is fluid and much wider**, 44→88px at the hero against a
+ *     12px mono label. Contrast is what the first version had none of.
+ *
+ * The reading order still argues before it demonstrates, and that is still a
+ * layout constraint rather than a copy suggestion. What changed is the length
+ * of each step, not the sequence of them.
+ *
+ * ---
+ *
+ * **The copy pass after that one moved what the page is about.** The structure
+ * survived unchanged; every word in it was rewritten. Four things to know
+ * before editing any of it:
+ *
+ *  - **The pitch is context, not the artifact.** The old page argued that
+ *    portia's value was a git-diffable spec you keep. That is legacy. The
+ *    product's actual claim is that it builds real context on data it cannot
+ *    fit in a window — by measuring rather than sampling — and then *keeps*
+ *    that knowledge. The artifact section still exists and now comes fourth,
+ *    as a consequence rather than as the thesis.
+ *  - **The audience is data scientists, and the hero says so once.** Nowhere
+ *    else, because saying it twice is a pitch deck. The rest is carried by
+ *    vocabulary: this page talks about sources, joins and modelling, and
+ *    pointedly never about orchestration, scheduling or SLAs.
+ *  - **No file formats, no subsystem names, no numbers.** YAML, SQL, DuckDB and
+ *    the three engine timings are all gone from the rendered copy. They were
+ *    precise about things a visitor has not yet decided they care about.
+ *  - **Sentences are short and nothing justifies itself.** The old copy
+ *    explained why each decision was defensible, which reads as insecurity. A
+ *    claim is stated and then left alone.
+ */
+
+const sections = (await getCollection("sections")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const byAnchor = Object.fromEntries(sections.map((s) => [s.data.anchor, s]));
+
+const hero = byAnchor["top"]!;
+const line = byAnchor["the-line"]!;
+const principlesSection = byAnchor["principles"]!;
+const artifact = byAnchor["the-artifact"]!;
+const warehouses = byAnchor["warehouses"]!;
+const models = byAnchor["models"]!;
+const early = byAnchor["early-access"]!;
+const faqSection = byAnchor["faq"]!;
+
+const { Content: EarlyBody } = await render(early);
+
+const navLinks = sections
+  .filter((s) => s.data.nav)
+  .map((s) => ({ href: `#${s.data.anchor}`, label: s.data.nav! }));
+
+const principles = (await getCollection("principles")).sort((a, b) =>
+  a.data.index.localeCompare(b.data.index),
+);
+
+const allClaims = await getCollection("claims");
+const claimsIn = (g: string) => allClaims.filter((c) => c.data.group === g);
+
+const faqEntries = (await getCollection("faq")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const faqItems = faqEntries.map((e) => ({
+  question: e.data.question,
+  html: e.rendered?.html ?? "",
+}));
+---
+
+<Base
+  title="portia — it learns your data, and it doesn't forget"
+  description="A copilot for data scientists. portia understands what your data sources are, keeps what it learns, and builds the pipeline with you."
+>
+  <Nav links={navLinks} />
+  <Spider client:idle />
+
+  <main id="main">
+    {/* ---- 1. Hero. Two lines, one sentence, two actions. ---- */}
+    <section class="section hero" id="top">
+      <div class="wrap wrap--wide hero__inner">
+        <p class="reveal">
+          <span class="badge">{hero.data.label}</span>
+        </p>
+
+        {/* Each line rises out of its own clipped box, so the headline reads as
+            being set rather than as fading in. The second line is `mute`
+            against the first line's `ink` — tone, never colour: the teal is
+            reserved for the primary action and is not spent on emphasis. */}
+        <h1 class="t-display-2xl rise-lines hero__title">
+          <span class="rise-line"><span>{hero.data.title}</span></span>
+          <span class="rise-line"
+            ><span class="t-dim">{hero.data.titleSecond}</span></span
+          >
+        </h1>
+
+        <p class="t-lede hero__lede rise" style="--reveal-delay:320ms">
+          {hero.data.lede}
+        </p>
+
+        <div class="hero__actions rise" style="--reveal-delay:420ms">
+          <a class="btn btn--primary" href="#early-access">
+            Request early access
+          </a>
+          <a class="btn btn--secondary" href="#principles">How it works</a>
+        </div>
+      </div>
+    </section>
+
+    {/* ---- 2. The line. The page's one full-bleed dark surface.
+
+         It carries the manifesto rather than a screenshot, and it carries no
+         body copy at all: the argument for it is the three principles directly
+         underneath, which is why the two are read as one movement. ---- */}
+    <section class="band mode-dark" id="the-line">
+      <div class="wrap wrap--wide band__inner">
+        {/* The band renders no label. Its one sentence is the section. */}
+        <p class="t-statement rise-lines band__statement">
+          <span class="rise-line"><span>{line.data.title}</span></span>
+          <span class="rise-line"
+            ><span class="t-dim">{line.data.titleSecond}</span></span
+          >
+        </p>
+      </div>
+    </section>
+
+    {/* ---- 3. The three principles. ---- */}
+    <section class="section" id="principles">
+      <div class="wrap wrap--wide">
+        <SectionHead
+          label={principlesSection.data.label}
+          title={principlesSection.data.title}
+          titleSecond={principlesSection.data.titleSecond}
+          lede={principlesSection.data.lede}
+        />
+
+        <div class="section__body pillars">
+          {
+            principles.map((p, i) => (
+              <div class="pillar reveal" style={`--reveal-delay:${i * 90}ms`}>
+                <span class="pillar__index">{p.data.index}</span>
+                <h3 class="pillar__title">{p.data.title}</h3>
+                <p class="pillar__body">{p.data.body}</p>
+                {/* The icon reads *after* the sentence it illustrates, and
+                    `margin-top: auto` in the CSS aligns all three across
+                    columns of unequal text length. */}
+                <PrincipleIcon name={p.data.icon} />
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    {/* ---- 4. The artifact. ---- */}
+    <section class="section" id="the-artifact">
+      <div class="wrap wrap--wide">
+        <SectionHead
+          label={artifact.data.label}
+          title={artifact.data.title}
+          titleSecond={artifact.data.titleSecond}
+          lede={artifact.data.lede}
+        />
+        <div class="section__body claims">
+          {
+            claimsIn("artifact").map((c, i) => (
+              <p class="claim reveal" style={`--reveal-delay:${i * 70}ms`}>
+                <span>
+                  <strong>{c.data.lead}</strong> {c.data.rest}
+                </span>
+              </p>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    {/* ---- 5. Wherever your data is.
+
+         Two rails, running opposite ways. They split by KIND and not by rank —
+         a warehouse somebody administers, versus what is already sitting on
+         your own machine — and the counter-motion is what says so without a
+         second heading. Both rails get identical treatment in every other
+         respect, which is the ranking rule applied to other people's brands.
+
+         There are no measured numbers here any more. See the note at the head
+         of `content.config.ts`: three cited engine timings used to sit under
+         this claim, and three mono figures beneath a marketing sentence read as
+         a benchmark whatever the caption says. ---- */}
+    <section class="section section--marquee" id="warehouses">
+      <div class="wrap wrap--wide">
+        <SectionHead
+          label={warehouses.data.label}
+          title={warehouses.data.title}
+          lede={warehouses.data.lede}
+        />
+      </div>
+
+      <div class="section__body reveal">
+        <Marquee items={WAREHOUSES} label="Supported warehouses and platforms" />
+      </div>
+
+      <div class="marquee-stack reveal">
+        <p class="wrap wrap--wide marquee-stack__label">
+          <span class="section-label">Or whatever is already on your machine</span>
+        </p>
+        <Marquee
+          items={LOCAL_SOURCES}
+          label="Supported databases and file sources"
+          duration={38}
+          reverse
+        />
+      </div>
+
+      <div class="wrap wrap--wide section__body claims">
+        {
+          claimsIn("warehouse").map((c, i) => (
+            <p class="claim reveal" style={`--reveal-delay:${i * 70}ms`}>
+              <span>
+                <strong>{c.data.lead}</strong> {c.data.rest}
+              </span>
+            </p>
+          ))
+        }
+      </div>
+    </section>
+
+    {/* ---- 6. Whichever model you trust. Two bands, running opposite ways:
+         the second one is not a continuation of the first, it is a different
+         claim, and counter-motion is what says so without a second heading. ---- */}
+    <section class="section section--marquee" id="models">
+      <div class="wrap wrap--wide">
+        <SectionHead
+          label={models.data.label}
+          title={models.data.title}
+          titleSecond={models.data.titleSecond}
+          lede={models.data.lede}
+        />
+      </div>
+
+      <div class="section__body reveal">
+        <Marquee items={MODELS} label="Supported model providers" duration={54} />
+      </div>
+
+      <div class="marquee-stack reveal">
+        <p class="wrap wrap--wide marquee-stack__label">
+          <span class="section-label">Or entirely on your own hardware</span>
+        </p>
+        <Marquee
+          items={LOCAL_MODELS}
+          label="Supported local model runtimes"
+          duration={38}
+          reverse
+        />
+      </div>
+
+      <div class="wrap wrap--wide section__body claims">
+        {
+          claimsIn("models").map((c, i) => (
+            <p class="claim reveal" style={`--reveal-delay:${i * 70}ms`}>
+              <span>
+                <strong>{c.data.lead}</strong> {c.data.rest}
+              </span>
+            </p>
+          ))
+        }
+      </div>
+    </section>
+
+    {/* ---- 7. Early access. ---- */}
+    <section class="section" id="early-access">
+      <div class="wrap wrap--wide">
+        <SectionHead
+          label={early.data.label}
+          title={early.data.title}
+          titleSecond={early.data.titleSecond}
+          lede={early.data.lede}
+        />
+        <div class="section__body split split--form">
+          <div class="prose reveal">
+            <EarlyBody />
+          </div>
+          <div class="reveal" style="--reveal-delay:60ms">
+            <EarlyAccessForm client:visible />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* ---- FAQ. A closing appendix rather than a step in the argument. ---- */}
+    <section class="section" id="faq">
+      <div class="wrap wrap--prose">
+        <SectionHead
+          label={faqSection.data.label}
+          title={faqSection.data.title}
+        />
+        <div class="section__body reveal">
+          <Faq items={faqItems} client:visible />
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Base>
+
+<style>
+  /* ---- Hero.
+   *
+   * Left-flush, not centred. The first version centred the hero on LANDING.md's
+   * instruction, and at 88px a centred headline over a left-flush page reads as
+   * a different page's header. Left-flush also gives the two lines a shared
+   * edge, which is what makes the ink/mute split legible as one sentence. ---- */
+  .hero {
+    padding-top: clamp(64px, 11vw, 168px);
+  }
+  .hero__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xl);
+  }
+  .hero__title {
+    /* Long enough for the two lines to breathe, short enough that neither wraps
+     * to a third at any width the clamp produces. */
+    max-width: 16ch;
+  }
+  .hero__lede {
+    max-width: 46ch;
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-sm);
+  }
+
+  /* ---- The manifesto band. The one inversion on the page. ---- */
+  .band {
+    padding-block: clamp(72px, 10vw, 160px);
+  }
+  .band__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxl);
+  }
+  .band__statement {
+    max-width: 20ch;
+  }
+
+  /* A marquee bleeds the full width, so its section cannot pad the band itself
+   * — only the copy around it. */
+  .section--marquee > .section__body {
+    margin-top: var(--spacing-xxxl);
+  }
+  .marquee-stack {
+    margin-top: var(--spacing-xxl);
+  }
+  .marquee-stack__label {
+    margin-bottom: var(--spacing-lg);
+  }
+  .marquee-stack__label .section-label {
+    margin: 0;
+  }
+
+  .split {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-xxl);
+    align-items: start;
+  }
+
+  @media (max-width: 850px) {
+    .split {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

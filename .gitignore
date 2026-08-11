@@ -6,9 +6,12 @@ dist/
 node_modules/
 .pnpm-store/
 
-# environment — the early-access form's Resend key and Cal.com link live here
+# environment — where the early-access form's destination is configured.
+# `.dev.vars` is the one wrangler reads locally, so it is the one that will
+# actually hold a key; see .env.example for what goes in it.
 .env
 .env.production
+.dev.vars
 !.env.example
 
 # deploy

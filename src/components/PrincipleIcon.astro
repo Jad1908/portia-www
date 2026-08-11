@@ -1,0 +1,101 @@
+---
+/**
+ * The three linework icons in the "How it works" columns.
+ *
+ * **They draw themselves in.** Every shape carries `pathLength="1"`, which
+ * normalises its geometry to a unit length whatever it actually measures — so
+ * one `stroke-dasharray: 1; stroke-dashoffset: 1 → 0` rule animates a rect, a
+ * circle and a bezier identically, with no per-path length measured in JS. The
+ * transition fires off the `.is-in` class the page's observer already puts on
+ * the column, so this adds **zero** script. That observer is two-way, so the
+ * drawing unwinds on the way up and redraws on the way back down.
+ *
+ * Three rules the geometry has to obey, each of which the first draft broke:
+ *
+ *  - **Nothing overlaps.** Two strokes crossing in a 56px box merge into a
+ *    smudge — the first tables icon put one card on top of another and the
+ *    shared corner read as a printing error. Shapes are separated, never
+ *    stacked, because a fill that occludes what is behind it would have to
+ *    appear before it was drawn.
+ *  - **Every line ends somewhere.** The graph had a satellite-to-satellite edge
+ *    that crossed the whole box and looked like a scratch. Every stroke here
+ *    starts at one object and stops at another.
+ *  - **Connectors are orthogonal, with one arrowhead.** The first pipeline used
+ *    rounded corner curves and a floating chevron; right angles and a single
+ *    head at the point of entry read as a diagram instead of as debris.
+ *
+ * Held to the page's ranking rule: one ink colour, one stroke weight, one size,
+ * for all three. These sit in columns LANDING.md forbids from ranking, and an
+ * icon that ranked would rank them.
+ *
+ * The declaration order is the draw order — containers first, then what joins
+ * them — because a pipeline whose arrows arrive before its boxes reads as noise.
+ */
+interface Props {
+  /** `icon` from `principles.yaml`. */
+  name: "tables" | "pipeline" | "graph";
+}
+const { name } = Astro.props;
+---
+
+<svg
+  class="p-icon"
+  viewBox="0 0 48 48"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.6"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+>
+  {
+    /* 01 — tables. Two of them, diagonally apart and never touching, because a
+       data scientist's problem is never one table. The lower one carries a
+       header rule and a column divider: what gets measured is the contents. */
+    name === "tables" && (
+      <>
+        <rect x="26" y="4" width="19" height="15" rx="2" pathLength="1" />
+        <path d="M26 10h19" pathLength="1" />
+        <rect x="3" y="26" width="24" height="18" rx="2" pathLength="1" />
+        <path d="M3 32.5h24" pathLength="1" />
+        <path d="M13 32.5V44" pathLength="1" />
+      </>
+    )
+  }
+
+  {
+    /* 02 — the pipeline. Two sources converging into one table: a *merge*,
+       because the merge is the job. Orthogonal connectors meeting a single
+       arrowhead at the point of entry. */
+    name === "pipeline" && (
+      <>
+        <rect x="3" y="5" width="15" height="11" rx="2" pathLength="1" />
+        <rect x="3" y="32" width="15" height="11" rx="2" pathLength="1" />
+        <rect x="32" y="18.5" width="13" height="11" rx="2" pathLength="1" />
+        <path d="M18 10.5h7V24" pathLength="1" />
+        <path d="M18 37.5h7V24" pathLength="1" />
+        <path d="M25 24h5.5" pathLength="1" />
+        <path d="m28 21.5 2.5 2.5-2.5 2.5" pathLength="1" />
+      </>
+    )
+  }
+
+  {
+    /* 03 — the knowledge graph. One node at the centre, four around it, and
+       exactly four edges — every one of them running between two nodes and
+       stopping at both. Nothing crosses the box. */
+    name === "graph" && (
+      <>
+        <circle cx="24" cy="24" r="5" pathLength="1" />
+        <path d="M20.2 20.7 10.6 12.3" pathLength="1" />
+        <path d="M28.1 21.2 37.1 15" pathLength="1" />
+        <path d="M20.6 27.7 12.4 36.4" pathLength="1" />
+        <path d="M27.7 27.4 36.4 35.6" pathLength="1" />
+        <circle cx="8" cy="10" r="3.5" pathLength="1" />
+        <circle cx="40" cy="13" r="3.5" pathLength="1" />
+        <circle cx="10" cy="39" r="3.5" pathLength="1" />
+        <circle cx="39" cy="38" r="3.5" pathLength="1" />
+      </>
+    )
+  }
+</svg>
