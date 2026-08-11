@@ -1,0 +1,23 @@
+---
+interface Props {
+  label: string;
+  title: string;
+  lede?: string;
+  /** Reveal stagger, in steps of `{motion.stagger}` (60ms). */
+  delay?: number;
+}
+const { label, title, lede, delay = 0 } = Astro.props;
+---
+
+<div class="reveal" style={`--reveal-delay:${delay * 60}ms`}>
+  <p class="section-label">{label}</p>
+  <h2 class="t-display-lg">{title}</h2>
+  {lede && <p class="t-body-lg section-head__lede">{lede}</p>}
+</div>
+
+<style>
+  .section-head__lede {
+    margin-top: var(--spacing-lg);
+    max-width: 68ch;
+  }
+</style>

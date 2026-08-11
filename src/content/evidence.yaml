@@ -1,0 +1,94 @@
+# Every number on this page.
+#
+# The rule, from CLAUDE.md: **every number on the page must be one portia
+# actually produced**, rendered in mono, with what produced it named beside it.
+# No invented figures, no decorative charts, no "N% faster".
+#
+# `verified` is the part that matters when this file is next touched. It names
+# where the figure was checked, so the next person re-checks it rather than
+# trusting this file — which is the same posture portia takes toward its own
+# catalog. Anything that cannot be re-checked does not belong here.
+#
+# Two things are deliberately absent:
+#
+#   - **No copilot quality number, of any kind.** `../portia/docs/EVALUATION.md`
+#     is explicit that its runs are pipeline shakedown rather than scores: they
+#     held every prompt at its first draft, so they found defects in portia's
+#     code and nothing about the copilot's judgment. There is no measurement of
+#     the copilot to cite, and inventing one would be the exact failure this
+#     product is built to prevent.
+#   - **No revenue-inflation figure for the refused join.** The engine measures
+#     the duplication and not yet its effect on a measure column; that number is
+#     `PLAN.md` → "the consequence of a zero", which is work not yet done. The
+#     row count is what was measured, so the row count is what is quoted.
+
+# --- The fixture, run end to end on 2026-08-11 against portia @ 1fa5a81 ------
+# Reproduce: portia/sandbox/www-demo, `python -m portia.cli.run
+# specs/hotel_daily_demand.yaml --write out`, then `python -m portia.cli.build`.
+
+- id: fixture-rows
+  group: artifact
+  fact: Bookings in the harmonized table, against a claimed grain of one row per booking
+  value: "14 rows · grain [booking_id] unique"
+  source: checks/outcome.py
+  verified: portia @ 1fa5a81, spec hotel_daily_demand run 2026-08-11
+
+- id: fixture-revenue
+  group: artifact
+  fact: Revenue carried through both joins without inflation
+  value: "136,240"
+  source: run_spec → out/hotel_daily_demand.csv
+  verified: matches tests/fixtures/hotels.answers.yaml — the fixture's answer key
+
+- id: fixture-compiled
+  group: artifact
+  fact: The committed .sql, executed on its own, reproduces the run exactly
+  value: "14 rows · 136,240 · 147 rooms_sold"
+  source: models/hotel_daily_demand.sql
+  verified: compiled by cli.build, executed against models/_sources.sql
+
+- id: fixture-refusal
+  group: line
+  fact: The same pipeline without the aggregate, refused at record time
+  value: "grain_not_unique — B0009 ×2, 15 rows for 14 bookings"
+  source: checks/outcome.py → BLOCKING_FLAGS
+  verified: portia @ 1fa5a81, the naive two-join spec over the same three files
+
+- id: fixture-whitespace
+  group: line
+  fact: The key that had two spellings, found by profiling and not by reading
+  value: "' paris' ≠ 'Paris' — leading_trailing_whitespace, 5 distinct in 7 rows"
+  source: cli.profile data/mock/city_events.csv
+  verified: portia @ 1fa5a81
+
+# --- Scale, measured on a real extract -------------------------------------
+# Quoted from ../portia/docs/PLAN.md → "Scale is built" and
+# ../portia/docs/DUCKDB_MIGRATION.md §14. Engine measurements, not eval runs.
+
+- id: scale-index
+  group: cloud
+  fact: Indexing three tables of a real extract, end to end
+  value: "4.82 GB in 32 s"
+  source: PLAN.md → Scale is built
+  verified: ../portia/docs/PLAN.md, measured on real PHQ data
+
+- id: scale-join
+  group: cloud
+  fact: Diagnosing a join without building it
+  value: "50M × 3M in 3.8 s"
+  source: checks/join.py
+  verified: ../portia/docs/PLAN.md, measured on real PHQ data
+
+- id: scale-run
+  group: cloud
+  fact: A full spec run over the same data
+  value: "50M rows in 27 s"
+  source: spec.run_spec
+  verified: ../portia/docs/PLAN.md, measured on real PHQ data
+
+- id: scale-memory
+  group: cloud
+  fact: What peak memory tracks, which is the property that makes ~20 tables workable
+  value: "the largest table, not the total"
+  source: DUCKDB_MIGRATION.md
+  verified: ../portia/docs/PLAN.md — with §13's exception, that a profile still scales with cardinality

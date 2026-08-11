@@ -1,0 +1,657 @@
+---
+import Mark from "./Mark.astro";
+import type { CollectionEntry } from "astro:content";
+
+/**
+ * `hero-app-mockup` — the three-pane app, and the page's only dark surface.
+ *
+ * **The mechanism is the point.** This is rendered by putting `.mode-dark` on
+ * the subtree, which re-declares the app's own dark-mode custom properties from
+ * `tokens.css`. There is no parallel family of deep-surface tokens, so the
+ * mockup cannot drift from the app: it is not a picture of the dark mode, it is
+ * the dark mode running in a box.
+ *
+ * Three rules it is built to obey:
+ *  - **Not a terminal.** portia's job is to keep you out of one; a terminal in
+ *    the hero would misrepresent the product in order to sell a texture.
+ *  - **No fake-colorizing.** Status colour is state. Nothing in the state drawn
+ *    here is blocked, so the mockup is monochrome — which is the correct
+ *    outcome, not a missed opportunity.
+ *  - **The type split holds inside it**, because it holds inside the app: data
+ *    and identifiers are mono, the copilot's prose is not.
+ *
+ * In dark page mode `canvas-deep` equals the page's own canvas, so the figure/
+ * ground separation falls entirely to the 1px hairline. That was a known open
+ * question in LANDING.md; the hairline carries it, and it is `hairline-strong`
+ * rather than `hairline` for exactly that reason.
+ */
+interface Props {
+  data: CollectionEntry<"mockup">["data"];
+}
+const { data } = Astro.props;
+
+---
+
+<div class="mockup mode-dark reveal">
+  {/* `toolbar` — 32px, and thin because it holds almost nothing: a mark, the
+      project's name, and a gear. Everything that acts lives on the pane it
+      acts on. */}
+  <div class="mockup__toolbar">
+    <Mark size={16} title={null} />
+    <span class="mockup__project">www-demo</span>
+    <span class="mockup__gear" aria-hidden="true">⚙</span>
+  </div>
+
+  <div class="mockup__panes">
+    {/* ---- Left: a real directory tree, filtered to what portia reads. ---- */}
+    <div class="pane pane--tree" aria-label="Files and artifacts">
+      <ul class="tree">
+        {
+          data.tree.map((row) => (
+            <li
+              class:list={[
+                "tree__row",
+                row.kind === "pinned" && "tree__row--pinned",
+                row.selected && "tree__row--selected",
+              ]}
+              style={`--indent:${row.depth * 14}px`}
+            >
+              <span class="tree__caret" aria-hidden="true">
+                {row.kind === "folder" ? (row.open ? "▾" : "▸") : ""}
+              </span>
+              <span class="tree__name">{row.name}</span>
+              {row.meta && <span class="tree__meta">{row.meta}</span>}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    {/* ---- Middle: the canvas above, the run report below. ---- */}
+    <div class="pane pane--middle">
+      <div class="canvas">
+        <div class="canvas__head">
+          <span class="canvas__title">hotel_daily_demand</span>
+          <span class="canvas__actions" aria-hidden="true">Run · Build</span>
+        </div>
+
+        <div class="canvas__flow">
+          <div class="canvas__col">
+            {
+              data.graph.sources.map((s) => (
+                <div class="node node--source">{s}</div>
+              ))
+            }
+          </div>
+          <div class="canvas__edge" aria-hidden="true"></div>
+          <div class="canvas__col canvas__col--steps">
+            {
+              data.graph.steps.map((step) => (
+                <div class="node node--step">
+                  <div class="node__head">
+                    <span class="node__id">{step.id}</span>
+                    <span class="chip">{step.op}</span>
+                  </div>
+                  {step.flags.length > 0 && (
+                    <div class="node__flags">
+                      {step.flags.map((f) => (
+                        <span class="flag">{f}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="report">
+        <div class="report__head">
+          <span class="report__step">{data.report.step}</span>
+          <span class="chip">{data.report.op}</span>
+        </div>
+
+        {/* Provenance and outcome are separate blocks and stay separate: a
+            correct prediction about a broken join is still a broken join. */}
+        <div class="report__grid">
+          <div>
+            <p class="report__label">provenance</p>
+            {
+              data.report.provenance.map(([k, v]) => (
+                <p class="report__kv">
+                  <span class="report__k">{k}</span>
+                  <span class="report__v">{v}</span>
+                </p>
+              ))
+            }
+          </div>
+          <div>
+            <p class="report__label">outcome</p>
+            {
+              data.report.outcome.map(([k, v]) => (
+                <p class="report__kv">
+                  <span class="report__k">{k}</span>
+                  <span class="report__v">{v}</span>
+                </p>
+              ))
+            }
+            <p class="report__kv">
+              <span class="report__k">grain</span>
+              <span class="report__v">{data.report.grain}</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="report__flags">
+          {data.report.flags.map((f) => <span class="flag">{f}</span>)}
+        </div>
+      </div>
+    </div>
+
+    {/* ---- Right: the copilot. ---- */}
+    <div class="pane pane--right">
+      <div class="tabs">
+        <span class="tabs__tab tabs__tab--active">Copilot</span>
+        <span class="tabs__tab">Indexing</span>
+      </div>
+
+      <div class="transcript">
+        <div class="prompt-row">
+          <p class="prompt-row__text">{data.transcript.run.prompt}</p>
+          <p class="prompt-row__meta">
+            {data.transcript.run.model} · {data.transcript.run.effort}
+          </p>
+        </div>
+
+        {
+          data.transcript.rows.map((row) => {
+            if (row.kind === "text")
+              return <p class="t-row t-row--text">{row.text}</p>;
+
+            if (row.kind === "tool")
+              return (
+                <div class="tool-row">
+                  <p class="tool-row__head">
+                    <span class="tool-row__caret" aria-hidden="true">
+                      ▾
+                    </span>
+                    <span class="tool-row__name">{row.name}</span>
+                    <span class="tool-row__args">({row.args})</span>
+                  </p>
+                  <pre class="tool-row__result">{row.result.trimEnd()}</pre>
+                </div>
+              );
+
+            return (
+              <div class="question">
+                <p class="question__waiting">waiting on you</p>
+                <p class="question__text">{row.question}</p>
+                <div class="question__options">
+                  {row.options.map((o) => (
+                    <div
+                      class:list={[
+                        "question__option",
+                        o.label === row.answered && "question__option--picked",
+                      ]}
+                    >
+                      <span class="question__mark" aria-hidden="true" />
+                      <span class="question__labels">
+                        <span class="question__label">{o.label}</span>
+                        <span class="question__desc">{o.description}</span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* The frame. `canvas-deep` fill, one hairline, `lg` radius, no shadow —
+     nothing on this page lifts. */
+  .mockup {
+    background-color: var(--portia-canvas-deep);
+    border: 1px solid var(--portia-hairline-strong);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    color: var(--portia-body);
+  }
+
+  .mockup__toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    height: 32px;
+    padding-inline: var(--spacing-md);
+    background-color: var(--portia-canvas);
+    border-bottom: 1px solid var(--portia-hairline);
+    color: var(--portia-ink);
+  }
+  .mockup__project {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-caption);
+    color: var(--portia-body);
+    margin-right: auto;
+  }
+  .mockup__gear {
+    color: var(--portia-mute);
+    font-size: 12px;
+  }
+
+  .mockup__panes {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr) 300px;
+    min-height: 430px;
+  }
+  .pane {
+    background-color: var(--portia-surface);
+    padding: var(--spacing-lg);
+    min-width: 0;
+  }
+  .pane--tree {
+    background-color: var(--portia-canvas);
+    border-right: 1px solid var(--portia-hairline);
+    padding-inline: var(--spacing-sm);
+  }
+  .pane--middle {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    padding: 0;
+  }
+  .pane--right {
+    border-left: 1px solid var(--portia-hairline);
+    padding: 0;
+  }
+
+  /* ---- tree ---- */
+  .tree {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .tree__row {
+    display: grid;
+    grid-template-columns: 12px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px 4px calc(8px + var(--indent, 0px));
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-caption);
+    color: var(--portia-body);
+    white-space: nowrap;
+  }
+  .tree__row--pinned {
+    font-family: var(--font-sans);
+    color: var(--portia-mute);
+    font-size: var(--text-caption);
+  }
+  .tree__row--selected {
+    background-color: var(--portia-accent-soft);
+    color: var(--portia-accent-text);
+  }
+  .tree__caret {
+    color: var(--portia-ash);
+    font-size: 9px;
+  }
+  .tree__name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .tree__meta {
+    color: var(--portia-mute);
+    font-size: 10px;
+  }
+
+  /* ---- canvas ----
+     Dot grid on 20px pitch: it says "this space is navigable" before you
+     touch it. Nodes are never reordered by anything measured — the order is
+     the recorded sequence of decisions. */
+  .canvas {
+    padding: var(--spacing-lg);
+    display: grid;
+    grid-template-rows: auto 1fr;
+    background-color: var(--portia-surface);
+    background-image: radial-gradient(
+      var(--portia-hairline-strong) 1.2px,
+      transparent 1.2px
+    );
+    background-size: 20px 20px;
+    overflow: hidden;
+  }
+  .canvas__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-md);
+  }
+  .canvas__title {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-sm);
+    color: var(--portia-ink);
+  }
+  .canvas__actions {
+    font-size: var(--text-caption);
+    color: var(--portia-mute);
+  }
+  .canvas__flow {
+    display: grid;
+    grid-template-columns: auto 20px minmax(0, 1fr);
+    align-items: center;
+    align-content: center;
+    gap: var(--spacing-sm);
+  }
+  .canvas__col {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .canvas__edge {
+    height: 1px;
+    background-color: var(--portia-hairline-strong);
+  }
+
+  .node {
+    border-radius: var(--radius-md);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 6px 8px;
+  }
+  /* A source is deliberately quieter than a step: steps are the decisions. */
+  .node--source {
+    background-color: var(--portia-canvas);
+    border: 1px solid var(--portia-hairline-soft);
+    color: var(--portia-mute);
+  }
+  .node--step {
+    background-color: var(--portia-surface-elevated);
+    border: 1px solid var(--portia-hairline);
+    color: var(--portia-ink);
+  }
+  .node__head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: space-between;
+  }
+  .node__id {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .node__flags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 4px;
+  }
+
+  .chip {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--portia-mute);
+    border: 1px solid var(--portia-hairline);
+    border-radius: var(--radius-xs);
+    padding: 0 4px;
+    white-space: nowrap;
+  }
+
+  /* A reported flag is a fact, not a verdict. No fill, no status colour, and
+     it is not sorted by anything — nothing here is blocked. */
+  .flag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--portia-mute);
+  }
+  .flag::before {
+    content: "⚑ ";
+    color: var(--portia-ash);
+  }
+
+  /* ---- run report ---- */
+  .report {
+    border-top: 1px solid var(--portia-hairline);
+    padding: var(--spacing-md) var(--spacing-lg);
+    background-color: var(--portia-surface);
+  }
+  .report__head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: var(--spacing-sm);
+  }
+  .report__step {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-sm);
+    color: var(--portia-ink);
+  }
+  .report__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-lg);
+  }
+  .report__label {
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--portia-mute);
+    margin-bottom: 4px;
+  }
+  .report__kv {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.7;
+  }
+  .report__k {
+    color: var(--portia-mute);
+  }
+  .report__v {
+    color: var(--portia-body);
+    text-align: right;
+  }
+  .report__flags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: var(--spacing-sm);
+  }
+
+  /* ---- transcript ---- */
+  .tabs {
+    display: flex;
+    gap: var(--spacing-lg);
+    padding: 0 var(--spacing-lg);
+    border-bottom: 1px solid var(--portia-hairline);
+  }
+  .tabs__tab {
+    padding: 10px 0;
+    font-size: var(--text-caption);
+    color: var(--portia-mute);
+    border-bottom: 2px solid transparent;
+  }
+  .tabs__tab--active {
+    color: var(--portia-accent-text);
+    border-bottom-color: var(--portia-accent-primary);
+  }
+
+  .transcript {
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  /* `prompt-row` — a human message states *kind*, not importance. A surface
+     step and nothing else: no colour, no prominence over the reply. */
+  .prompt-row {
+    background-color: var(--portia-surface-elevated);
+    border: 1px solid var(--portia-hairline);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  .prompt-row__text {
+    font-size: var(--text-caption);
+    color: var(--portia-ink);
+  }
+  .prompt-row__meta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--portia-mute);
+    margin-top: 2px;
+  }
+
+  /* The copilot's prose is Inter — the split holds inside the mockup. */
+  .t-row--text {
+    font-size: var(--text-caption);
+    line-height: 1.6;
+    color: var(--portia-body);
+  }
+
+  /* A call and its result are one act, so they are one row. No tick on one
+     that came back: a tool returning is not a finding. */
+  .tool-row__head {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    min-width: 0;
+  }
+  .tool-row__caret {
+    color: var(--portia-ash);
+    font-size: 9px;
+  }
+  .tool-row__name {
+    color: var(--portia-ink);
+  }
+  .tool-row__args {
+    color: var(--portia-mute);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .tool-row__result {
+    margin: 4px 0 0;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: var(--portia-surface-card);
+    border: 1px solid var(--portia-hairline);
+    border-radius: var(--radius-md);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1.6;
+    color: var(--portia-body);
+    overflow-x: auto;
+  }
+
+  /* `question-form` — the only element on screen with a live accent border, so
+     the eye finds it without a colour-coded alarm. */
+  .question {
+    background-color: var(--portia-surface-card);
+    border: 1px solid color-mix(in srgb, var(--portia-accent-primary) 60%, transparent);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+  }
+  .question__waiting {
+    font-size: 10px;
+    color: var(--portia-accent-text);
+    margin-bottom: 4px;
+  }
+  .question__text {
+    font-size: var(--text-caption);
+    line-height: 1.5;
+    color: var(--portia-ink);
+    margin-bottom: var(--spacing-sm);
+  }
+  /* The options are one list, not a stack of cards: four bordered rectangles
+     read as four things to consider, one list reads as one question. */
+  .question__options {
+    background-color: var(--portia-surface-elevated);
+    border: 1px solid var(--portia-hairline);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  .question__option {
+    display: grid;
+    grid-template-columns: 12px minmax(0, 1fr);
+    gap: 8px;
+    align-items: start;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--portia-hairline-soft);
+  }
+  .question__option:last-child {
+    border-bottom: 0;
+  }
+  /* Every row carries an identical mark. It is a control, never a
+     recommendation — which option is best is the human's call. */
+  .question__mark {
+    width: 12px;
+    height: 12px;
+    margin-top: 2px;
+    border-radius: 999px;
+    border: 1px solid var(--portia-hairline-strong);
+  }
+  .question__option--picked {
+    background-color: var(--portia-accent-soft);
+  }
+  .question__option--picked .question__mark {
+    background-color: var(--portia-accent-primary);
+    border-color: var(--portia-accent-primary);
+  }
+  .question__labels {
+    min-width: 0;
+  }
+  .question__label {
+    display: block;
+    font-size: var(--text-caption);
+    font-weight: 500;
+    color: var(--portia-ink);
+  }
+  .question__desc {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--portia-mute);
+    margin-top: 1px;
+  }
+
+  /* ---- responsive ----
+     tablet: two panes, the tree drops. mobile: one pane, and the frame scrolls
+     horizontally rather than compressing three panes into a column that
+     represents nothing the app does. */
+  @media (max-width: 1024px) {
+    .mockup__panes {
+      grid-template-columns: 180px minmax(0, 1fr) 260px;
+    }
+  }
+  @media (max-width: 850px) {
+    .mockup__panes {
+      grid-template-columns: minmax(0, 1fr) 260px;
+    }
+    .pane--tree {
+      display: none;
+    }
+  }
+  @media (max-width: 640px) {
+    .mockup__panes {
+      display: block;
+      overflow-x: auto;
+    }
+    .pane--right {
+      border-left: 0;
+      border-top: 1px solid var(--portia-hairline);
+    }
+    .report__grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--spacing-sm);
+    }
+  }
+</style>

@@ -1,0 +1,15 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "src/**/*", "scripts/**/*", "*.mjs"],
+  // `functions/` is Cloudflare's runtime, not the browser's. It gets its own
+  // tsconfig so the worker types and the DOM types never share a scope.
+  "exclude": ["dist", "functions"],
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["src/*"]
+    }
+  }
+}

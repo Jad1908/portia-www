@@ -1,0 +1,26 @@
+---
+order: 4
+anchor: the-graph
+nav: "The graph"
+label: "The graph"
+title: "What your tables are to each other, measured."
+lede: "A catalog is one file per source, and a file has no shape for what a source relates to. portia keeps that shape separately — sources, models, columns and groups, as a graph — so the question your fifth table raises is answerable by the time you reach your fiftieth."
+---
+
+**Two halves, and each is only worth having with the other.**
+
+Column-level lineage is *structural*: a spec already records that a column was
+renamed, coerced, or computed from three others, so nothing has to be inferred —
+it is read straight out of the artifacts. Ask where a column came from and the
+answer is a traversal, not a guess.
+
+Measured overlap is the other half, and it costs a query. **Which pairs get
+measured is the copilot's call while it is indexing** — not a code prefilter,
+and not a sweep of every pair the schema permits. That is the same line as
+everywhere else: the copilot picks from meaning, the engine measures, and
+neither does the other's job.
+
+**The graph surfaces edges and never ranks them.** And a measured zero means *no
+shared values* — never *unrelated*. `France` against `FRA` measures zero, and
+that pair is precisely the kind portia exists to resolve, so the edge carries
+the copilot's reason for asking rather than reading as a dead end.

@@ -1,0 +1,93 @@
+---
+import {
+  ABDOMEN,
+  CATCHLIGHTS,
+  CEPHALOTHORAX,
+  EYES,
+  LEGS,
+  STROKE_WIDTH,
+  VIEW_BOX,
+  legPath,
+} from "~/lib/mark";
+
+/**
+ * The portia mark — a geometric linework jumping spider.
+ *
+ * First asset in the build order, because everything derives from it: the nav
+ * lockup, the favicon, the OG image and the scroll spider (LANDING.md → "The
+ * one carve-out: the spider"). The geometry lives in `~/lib/mark` so the React
+ * island can share it; only the *rendering* is here.
+ *
+ * Drawn from `../portia/portia/ui/assets/cute-portia.png` by **keeping** the
+ * large forward-facing anterior median eyes — the jumping-spider tell, and the
+ * whole reason the mark reads as charming rather than unsettling — the compact
+ * silhouette and the teal; and **dropping** the fur, the gradients, the
+ * bubbles, the drop shadow and the grey backdrop.
+ *
+ * Two decisions worth recording, because both were arrived at by drawing:
+ *
+ *  - **Stroke is 2.2, not 2.5.** The system asks for "~2.5px at a 32px mark".
+ *    2.5 was drawn and rejected: at eight legs plus two body shapes the ink
+ *    merges, and the abdomen and cephalothorax read as one blob. 2.2 is the
+ *    heaviest weight that still separates them at a 22px favicon, which is the
+ *    constraint that governs, and it holds the "bold linework, not hairline"
+ *    intent the number was standing in for.
+ *  - **The abdomen sits above the cephalothorax**, because a hanging spider
+ *    trails its dragline from the spinnerets at the rear of the abdomen. The
+ *    silk attaches at the top of the mark and the creature hangs the right way
+ *    up for free.
+ *
+ * Stroke is `currentColor`, so the mark inverts with the page mode without a
+ * second copy of it existing anywhere.
+ */
+interface Props {
+  size?: number;
+  class?: string;
+  /** Accessible name. `null` marks it decorative — use that wherever the mark
+   *  sits beside the wordmark, so a screen reader is not told "portia" twice. */
+  title?: string | null;
+  /** Low-amplitude idle leg motion. `global.css` suppresses it entirely under
+   *  prefers-reduced-motion. */
+  idle?: boolean;
+}
+
+const {
+  size = 32,
+  class: className = "",
+  title = "portia",
+  idle = false,
+} = Astro.props;
+---
+
+<svg
+  width={size}
+  height={size}
+  viewBox={VIEW_BOX}
+  fill="none"
+  class:list={["portia-mark", idle && "portia-mark--idle", className]}
+  role={title ? "img" : "presentation"}
+  aria-label={title ?? undefined}
+  aria-hidden={title ? undefined : "true"}
+  xmlns="http://www.w3.org/2000/svg"
+>
+  {title && <title>{title}</title>}
+  <g
+    stroke="currentColor"
+    stroke-width={STROKE_WIDTH}
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <g class="portia-mark__legs portia-mark__legs--right">
+      {LEGS.map((leg) => <path d={legPath(leg)} />)}
+    </g>
+    <g class="portia-mark__legs portia-mark__legs--left">
+      {LEGS.map((leg) => <path d={legPath(leg, true)} />)}
+    </g>
+
+    <ellipse {...ABDOMEN} fill="var(--portia-accent-text)" />
+    <circle {...CEPHALOTHORAX} />
+  </g>
+
+  {EYES.map((e) => <circle {...e} fill="currentColor" />)}
+  {CATCHLIGHTS.map((c) => <circle {...c} fill="var(--portia-canvas)" />)}
+</svg>

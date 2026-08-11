@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <!-- The social card, derived from the mark like everything else.
+       Flat on canvas: no gradient, no glow, no atmospheric background. The
+       hairline is the only divider here as it is on the page. Drawn in the
+       light mode's values, because a card has no media query to resolve. -->
+  <rect width="1200" height="630" fill="#F4F6F9"/>
+
+  <!-- the mark, at 5x the 32-unit grid, hanging from its dragline -->
+  <path d="M104 0 L104 116" stroke="rgba(0,0,0,0.14)" stroke-width="2" fill="none"/>
+  <g transform="translate(24 116) scale(5)">
+    <g stroke="#0E1116" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20.4 14.8 Q25.5 11.2 29.6 12.4"/>
+      <path d="M22 17.2 Q27.2 16.4 30.2 19.4"/>
+      <path d="M21.6 21 Q26.4 22.4 28.6 26"/>
+      <path d="M19.4 23.6 Q22.4 26.4 23.2 30"/>
+      <path d="M11.6 14.8 Q6.5 11.2 2.4 12.4"/>
+      <path d="M10 17.2 Q4.8 16.4 1.8 19.4"/>
+      <path d="M10.4 21 Q5.6 22.4 3.4 26"/>
+      <path d="M12.6 23.6 Q9.6 26.4 8.8 30"/>
+      <ellipse cx="16" cy="8.5" rx="5" ry="4.3" fill="#0C6B61"/>
+      <circle cx="16" cy="18.6" r="6.2"/>
+    </g>
+    <circle cx="13.6" cy="18.2" r="2.15" fill="#0E1116"/>
+    <circle cx="18.4" cy="18.2" r="2.15" fill="#0E1116"/>
+    <circle cx="13" cy="17.55" r="0.78" fill="#F4F6F9"/>
+    <circle cx="17.8" cy="17.55" r="0.78" fill="#F4F6F9"/>
+  </g>
+
+  <text x="88" y="356" font-family="Inter, system-ui, sans-serif" font-size="76" font-weight="600" fill="#0E1116" letter-spacing="-0.5">Get to one table you trust —</text>
+  <text x="88" y="444" font-family="Inter, system-ui, sans-serif" font-size="76" font-weight="600" fill="#0E1116" letter-spacing="-0.5">and keep the reasons.</text>
+
+  <line x1="88" y1="502" x2="1112" y2="502" stroke="#E3E6EC" stroke-width="2"/>
+
+  <text x="88" y="552" font-family="Inter, system-ui, sans-serif" font-size="26" font-weight="500" fill="#3A3F47">portia</text>
+  <text x="88" y="590" font-family="JetBrains Mono, ui-monospace, monospace" font-size="22" fill="#6B7079">the agent may author a transform; it may never author a number</text>
+</svg>

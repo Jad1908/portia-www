@@ -1,0 +1,343 @@
+---
+import { getCollection, getEntry, render } from "astro:content";
+
+import Base from "~/layouts/Base.astro";
+import Nav from "~/components/Nav.astro";
+import Footer from "~/components/Footer.astro";
+import SectionHead from "~/components/SectionHead.astro";
+import EvidenceRow from "~/components/EvidenceRow.astro";
+import CodeBlock from "~/components/CodeBlock.astro";
+import HeroMockup from "~/components/HeroMockup.astro";
+import Spider from "~/components/islands/Spider";
+import EarlyAccessForm from "~/components/islands/EarlyAccessForm";
+import Faq from "~/components/islands/Faq";
+import {
+  modelExcerpt,
+  modelFile,
+  specExcerpt,
+  specFile,
+} from "~/data/artifact";
+
+/**
+ * The whole page.
+ *
+ * The order below is LANDING.md's reading order, and it is a **layout
+ * constraint rather than a copy suggestion**: the page argues before it
+ * demonstrates. The line comes above the feature tour because it is the reason
+ * to keep reading, and because everything under it is evidence for it.
+ *
+ * FAQ sits after the early-access form so that 1–7 land exactly as specified;
+ * it is a closing appendix, not a step in the argument.
+ */
+
+const sections = (await getCollection("sections")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const byAnchor = Object.fromEntries(sections.map((s) => [s.data.anchor, s]));
+
+const hero = byAnchor["top"]!;
+const line = byAnchor["the-line"]!;
+const app = byAnchor["the-app"]!;
+const artifact = byAnchor["the-artifact"]!;
+const graph = byAnchor["the-graph"]!;
+const cloud = byAnchor["cloud"]!;
+const early = byAnchor["early-access"]!;
+const faqSection = byAnchor["faq"]!;
+
+const { Content: LineBody } = await render(line);
+const { Content: AppBody } = await render(app);
+const { Content: ArtifactBody } = await render(artifact);
+const { Content: GraphBody } = await render(graph);
+const { Content: CloudBody } = await render(cloud);
+const { Content: EarlyBody } = await render(early);
+
+const navLinks = sections
+  .filter((s) => s.data.nav)
+  .map((s) => ({ href: `#${s.data.anchor}`, label: s.data.nav! }));
+
+const evidence = await getCollection("evidence");
+const inGroup = (g: string) => evidence.filter((e) => e.data.group === g);
+
+const mockup = await getEntry("mockup", "hero");
+
+const faqEntries = (await getCollection("faq")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const faqItems = faqEntries.map((e) => ({
+  question: e.data.question,
+  html: e.rendered?.html ?? "",
+}));
+---
+
+<Base
+  title="portia — get to one table you trust, and keep the reasons"
+  description="A copilot for data harmonization. Deterministic code measures and refuses; the copilot asks. Every decision lands in a spec you can diff, re-run and hand over as SQL."
+>
+  <Nav links={navLinks} />
+  <Spider client:idle />
+
+  <main id="main">
+    {/* ---- 1. Hero. One sentence, then the argument for reading on. ---- */}
+    <section class="section hero" id="top">
+      <div class="wrap wrap--prose hero__inner">
+        <p class="reveal">
+          <span class="badge">{hero.data.label}</span>
+        </p>
+        <h1 class="t-display-xl reveal" style="--reveal-delay:60ms">
+          {hero.data.title}
+        </h1>
+        <p class="t-body-lg hero__lede reveal" style="--reveal-delay:120ms">
+          {hero.data.lede}
+        </p>
+        <div class="hero__actions reveal" style="--reveal-delay:180ms">
+          <a class="btn btn--primary" href="#early-access">
+            Request early access
+          </a>
+          <a class="btn btn--secondary" href="#the-app">See the app</a>
+        </div>
+      </div>
+    </section>
+
+    {/* ---- 2. The line. ---- */}
+    <section class="section" id="the-line">
+      <div class="wrap wrap--prose">
+        <SectionHead
+          label={line.data.label}
+          title={line.data.title}
+          lede={line.data.lede}
+        />
+        <div class="section__body prose reveal" style="--reveal-delay:60ms">
+          <LineBody />
+        </div>
+        <div class="evidence reveal" style="--reveal-delay:120ms">
+          {
+            inGroup("line").map((e) => (
+              <EvidenceRow
+                fact={e.data.fact}
+                value={e.data.value}
+                source={e.data.source}
+              />
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    {/* ---- 3. The app. The one dark surface on the page. ---- */}
+    <section class="section" id="the-app">
+      <div class="wrap wrap--prose">
+        <SectionHead
+          label={app.data.label}
+          title={app.data.title}
+          lede={app.data.lede}
+        />
+      </div>
+
+      <div class="wrap wrap--frame section__body">
+        <HeroMockup data={mockup!.data} />
+        <p class="mockup-note reveal">
+          <span class="mockup-note__lead">Real content, and a composite.</span>
+          The tree, the canvas and the run report are one project run on
+          <span class="mono">2026-08-11</span>; the transcript is a different
+          run of the same three-file fixture, read out of
+          <span class="mono">{mockup!.data.transcript.run.source}</span> —
+          <span class="mono">{mockup!.data.transcript.run.model}</span> at
+          <span class="mono">{mockup!.data.transcript.run.effort}</span> effort,
+          portia <span class="mono">@{mockup!.data.transcript.run.sha}</span>.
+          The question and both of its options are the log's words, not this
+          page's. Nothing in this state is blocked, which is why nothing in it
+          is red.
+        </p>
+      </div>
+
+      <div class="wrap wrap--prose section__body prose reveal">
+        <AppBody />
+      </div>
+    </section>
+
+    {/* ---- 4. The artifact. ---- */}
+    <section class="section" id="the-artifact">
+      <div class="wrap wrap--wide">
+        <SectionHead
+          label={artifact.data.label}
+          title={artifact.data.title}
+          lede={artifact.data.lede}
+        />
+
+        <div class="section__body split reveal" style="--reveal-delay:60ms">
+          <CodeBlock file={specFile} lang="the decision">
+            {specExcerpt}
+          </CodeBlock>
+          <CodeBlock file={modelFile} lang="the deliverable">
+            {modelExcerpt}
+          </CodeBlock>
+        </div>
+        <p class="t-caption split__note reveal">
+          Both excerpted from files portia wrote — six steps and six CTEs in
+          full. <span class="mono">…</span> marks what was taken out. The spec
+          is otherwise verbatim; the model's final <span class="mono">SELECT</span>
+          is emitted on one long line and is broken here to fit the column.
+        </p>
+
+        <div class="prose split__prose reveal">
+          <ArtifactBody />
+        </div>
+
+        <div class="evidence reveal">
+          {
+            inGroup("artifact").map((e) => (
+              <EvidenceRow
+                fact={e.data.fact}
+                value={e.data.value}
+                source={e.data.source}
+              />
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    {/* ---- 5. The graph. ---- */}
+    <section class="section" id="the-graph">
+      <div class="wrap wrap--prose">
+        <SectionHead
+          label={graph.data.label}
+          title={graph.data.title}
+          lede={graph.data.lede}
+        />
+        <div class="section__body prose reveal" style="--reveal-delay:60ms">
+          <GraphBody />
+        </div>
+      </div>
+    </section>
+
+    {/* ---- 6. Where this is going. ---- */}
+    <section class="section" id="cloud">
+      <div class="wrap wrap--prose">
+        <SectionHead
+          label={cloud.data.label}
+          title={cloud.data.title}
+          lede={cloud.data.lede}
+        />
+        <div class="section__body prose reveal" style="--reveal-delay:60ms">
+          <CloudBody />
+        </div>
+        <div class="evidence reveal" style="--reveal-delay:120ms">
+          {
+            inGroup("cloud").map((e) => (
+              <EvidenceRow
+                fact={e.data.fact}
+                value={e.data.value}
+                source={e.data.source}
+              />
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    {/* ---- 7. Early access. ---- */}
+    <section class="section" id="early-access">
+      <div class="wrap wrap--wide">
+        <SectionHead
+          label={early.data.label}
+          title={early.data.title}
+          lede={early.data.lede}
+        />
+        <div class="section__body split split--form">
+          <div class="prose reveal">
+            <EarlyBody />
+          </div>
+          <div class="reveal" style="--reveal-delay:60ms">
+            <EarlyAccessForm client:visible />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* ---- FAQ. A closing appendix rather than a step in the argument. ---- */}
+    <section class="section" id="faq">
+      <div class="wrap wrap--prose">
+        <SectionHead label={faqSection.data.label} title={faqSection.data.title} />
+        <div class="section__body reveal">
+          <Faq items={faqItems} client:visible />
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Base>
+
+<style>
+  /* The hero headline and subhead are the only centred text on the page. */
+  .hero {
+    padding-top: 88px;
+  }
+  @media (max-width: 640px) {
+    .hero {
+      padding-top: 40px;
+    }
+  }
+  .hero__inner {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xl);
+  }
+  .hero__lede {
+    max-width: 62ch;
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    justify-content: center;
+    margin-top: var(--spacing-sm);
+  }
+
+  .evidence {
+    margin-top: var(--spacing-xxxl);
+  }
+
+  .split {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-xl);
+    align-items: start;
+  }
+  .split--form {
+    gap: var(--spacing-xxl);
+  }
+  .split__note {
+    margin-top: var(--spacing-md);
+  }
+  .split__prose {
+    margin-top: var(--spacing-xxxl);
+    max-width: 68ch;
+  }
+
+  .mockup-note {
+    margin-top: var(--spacing-lg);
+    font-size: var(--text-caption);
+    line-height: 1.6;
+    color: var(--portia-mute);
+    max-width: 78ch;
+  }
+  .mockup-note__lead {
+    color: var(--portia-body);
+    margin-right: 4px;
+  }
+  .mono {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    color: var(--portia-body);
+  }
+
+  @media (max-width: 850px) {
+    .split {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

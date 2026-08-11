@@ -1,0 +1,550 @@
+/* ---------------------------------------------------------------------------
+ * portia-www — global stylesheet
+ *
+ * Everything here is spent tokens. `tokens.css` is the only place a colour is
+ * declared and it is GENERATED from `../portia/DESIGN.md` — never hand-edit a
+ * hex below, and never introduce one. If a value is missing, it is missing
+ * upstream.
+ *
+ * Governed by ./LANDING.md. Two rules this file exists to enforce mechanically:
+ *   - The mono/prose split is semantic. Inter for English; mono for anything a
+ *     human typed as data or an identifier.
+ *   - Every animation has a static resting state that is the *designed* state,
+ *     not a degraded one. See the reduced-motion block at the foot.
+ * ------------------------------------------------------------------------- */
+
+/* Self-hosted, both of them. Inter's variable weight axis only — no optical
+ * size axis, and no italic file at all, because the system forbids italics. */
+@import "@fontsource-variable/inter/wght.css";
+@import "@fontsource/jetbrains-mono/latin-400.css";
+@import "./tokens.css";
+
+/* =========================================================================
+ * Base
+ * ====================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* Lenis drives this when it is running; the declaration is what a
+   * reduced-motion visitor, and a visitor with JS off, gets instead. */
+  scroll-behavior: smooth;
+  /* The nav is sticky and 56px; an anchor must not land under it. */
+  scroll-padding-top: 88px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--portia-canvas);
+  color: var(--portia-body);
+  font-family: var(--font-sans);
+  font-size: var(--text-body-md);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Lenis wants this while it is mounted; the class is added by the island. */
+html.lenis body {
+  scroll-behavior: auto;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--portia-ink);
+  font-weight: 600;
+  margin: 0;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+/* Weights top out at 600 and there are no italics — DESIGN.md's ceiling, and a
+ * 700 headline above a screenshot rendered at 500 reads as two products. */
+b,
+strong {
+  font-weight: 600;
+  color: var(--portia-ink);
+}
+
+i,
+em {
+  font-style: normal;
+  color: var(--portia-ink);
+}
+
+code,
+kbd,
+samp,
+pre {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+}
+
+::selection {
+  background-color: var(--portia-accent-soft);
+  color: var(--portia-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--portia-accent-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+/* =========================================================================
+ * Layout — the three column widths and the 96px rhythm
+ * ====================================================================== */
+
+.wrap {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+.wrap--prose {
+  max-width: calc(720px + 48px);
+}
+.wrap--wide {
+  max-width: calc(960px + 48px);
+}
+.wrap--frame {
+  max-width: calc(1160px + 48px);
+}
+
+/* Above the tablet band the frame gives up width rather than let the spider's
+ * lane sit on top of it. The creature is `{colors.ink}` and the mockup is
+ * `{colors.canvas-deep}`, so in light mode an overlap is ink on near-black —
+ * and reserving the margin is what "it sits in the right margin" meant. */
+@media (min-width: 851px) {
+  .wrap--frame {
+    max-width: min(calc(1160px + 48px), calc(100vw - 200px));
+  }
+}
+
+.section {
+  padding-block: var(--spacing-section);
+}
+@media (max-width: 850px) {
+  .section {
+    padding-block: 64px;
+  }
+}
+@media (max-width: 640px) {
+  .section {
+    padding-block: 48px;
+  }
+}
+
+/* Within a section: heading block → content. */
+.section__body {
+  margin-top: var(--spacing-xxxl);
+}
+
+.rule {
+  border: 0;
+  border-top: 1px solid var(--portia-hairline);
+  margin: 0;
+}
+
+/* =========================================================================
+ * Type — the hierarchy, as classes, so a component never states a size
+ * ====================================================================== */
+
+.t-display-xl {
+  font-size: var(--text-display-xl);
+  line-height: 1.15;
+  letter-spacing: -0.2px;
+  font-weight: 600;
+  color: var(--portia-ink);
+}
+@media (max-width: 640px) {
+  .t-display-xl {
+    font-size: 1.875rem; /* 30px — the mobile band in LANDING.md */
+  }
+}
+
+.t-display-lg {
+  font-size: var(--text-display-lg);
+  line-height: 1.2;
+  font-weight: 600;
+  color: var(--portia-ink);
+}
+@media (max-width: 640px) {
+  .t-display-lg {
+    font-size: 1.625rem;
+  }
+}
+
+.t-heading-md {
+  font-size: var(--text-heading-md);
+  line-height: 1.3;
+  letter-spacing: 0.2px;
+  font-weight: 500;
+  color: var(--portia-ink);
+}
+
+.t-heading-sm {
+  font-size: var(--text-heading-sm);
+  line-height: 1.4;
+  letter-spacing: 0.2px;
+  font-weight: 500;
+  color: var(--portia-ink);
+}
+
+.t-body-lg {
+  font-size: var(--text-body-lg);
+  line-height: 1.6;
+  color: var(--portia-body);
+}
+
+.t-body {
+  font-size: var(--text-body-md);
+  line-height: 1.6;
+  color: var(--portia-body);
+}
+
+.t-caption {
+  font-size: var(--text-caption);
+  line-height: 1.5;
+  letter-spacing: 0.2px;
+  color: var(--portia-mute);
+}
+
+.t-mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  line-height: 1.6;
+}
+
+.t-mono-sm {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono-sm);
+  line-height: 1.55;
+}
+
+.t-mono-caption {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono-caption);
+  line-height: 1.5;
+}
+
+/* `section-label` — the mono caption above a section headline. */
+.section-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono-caption);
+  line-height: 1.5;
+  color: var(--portia-mute);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 var(--spacing-lg);
+}
+
+/* =========================================================================
+ * Components
+ * ====================================================================== */
+
+/* ---- Buttons. One teal action per section, and nowhere else. ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  height: 40px;
+  padding-inline: 20px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-button);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.2px;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  background: transparent;
+  white-space: nowrap;
+  transition: background-color 120ms linear, border-color 120ms linear;
+}
+.btn:disabled {
+  cursor: not-allowed;
+  color: var(--portia-ash);
+}
+
+.btn--primary {
+  background-color: var(--portia-accent-primary);
+  color: var(--portia-on-accent);
+}
+.btn--primary:hover:not(:disabled),
+.btn--primary:active:not(:disabled) {
+  background-color: var(--portia-accent-primary-pressed);
+}
+.btn--primary:disabled {
+  background-color: var(--portia-stone);
+  color: var(--portia-canvas);
+}
+
+.btn--secondary {
+  border-color: var(--portia-hairline-strong);
+  color: var(--portia-ink);
+}
+.btn--secondary:hover:not(:disabled) {
+  background-color: var(--portia-hairline-soft);
+}
+
+.btn--ghost {
+  color: var(--portia-mute);
+  padding-inline: 12px;
+}
+.btn--ghost:hover {
+  color: var(--portia-ink);
+}
+
+/* ---- Inputs. Focus is the app's focus, carried over rather than reinvented:
+ * the border takes the accent and the fill takes the soft tint. ---- */
+.field {
+  width: 100%;
+  height: 40px;
+  padding-inline: 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--portia-hairline);
+  background-color: var(--portia-surface-elevated);
+  color: var(--portia-ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-body-md);
+  transition: border-color 120ms linear, background-color 120ms linear;
+}
+.field::placeholder {
+  color: var(--portia-ash);
+}
+.field:focus {
+  outline: none;
+  border-color: var(--portia-accent-primary);
+  background-color: var(--portia-accent-soft);
+}
+.field--area {
+  height: auto;
+  min-height: 88px;
+  padding-block: 10px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+/* ---- code-block. Flat: DESIGN.md — "Code and data surfaces are flat." ---- */
+.code-block {
+  background-color: var(--portia-surface-card);
+  border: 1px solid var(--portia-hairline);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  overflow-x: auto;
+  color: var(--portia-body);
+}
+.code-block pre {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-mono-sm);
+  line-height: 1.55;
+  white-space: pre;
+}
+
+/* ---- evidence-row. The replacement for a decorative chart tile: a measured
+ * fact in mono, with what produced it named beside it. Every number on this
+ * page is one of these or it is not on the page. ---- */
+.evidence-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: var(--spacing-lg);
+  padding-block: var(--spacing-sm);
+  border-top: 1px solid var(--portia-hairline);
+}
+.evidence-row:last-child {
+  border-bottom: 1px solid var(--portia-hairline);
+}
+.evidence-row__fact {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  line-height: 1.6;
+  color: var(--portia-body);
+}
+.evidence-row__value {
+  color: var(--portia-ink);
+}
+.evidence-row__source {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono-caption);
+  color: var(--portia-mute);
+  text-align: right;
+}
+@media (max-width: 640px) {
+  .evidence-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--spacing-xs);
+  }
+  .evidence-row__source {
+    text-align: left;
+  }
+}
+
+/* ---- list-row. The marker rule, decided in LANDING.md: a list of *facts or
+ * artifacts* leads with a mono `[+]`; a list of *prose claims* gets no marker
+ * at all, because bracketing an English sentence is the collapse the whole
+ * type split refuses. ---- */
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.list-row {
+  padding-block: var(--spacing-sm);
+  color: var(--portia-body);
+}
+.list--marked .list-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--spacing-md);
+}
+.list--marked .list-row::before {
+  content: "[+]";
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  color: var(--portia-mute);
+}
+
+/* ---- badge. Status of the *product*, never a metric, and it never scales
+ * with a number. ---- */
+.badge {
+  display: inline-block;
+  background-color: var(--portia-accent-soft);
+  color: var(--portia-accent-text);
+  font-family: var(--font-mono);
+  font-size: var(--text-mono-caption);
+  line-height: 1.5;
+  border-radius: var(--radius-xs);
+  padding: 2px 8px;
+}
+.badge--quiet {
+  background-color: transparent;
+  border: 1px solid var(--portia-hairline);
+  color: var(--portia-mute);
+  padding: 1px 7px;
+}
+
+/* ---- link-inline ---- */
+.link {
+  color: var(--portia-accent-text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+
+/* =========================================================================
+ * Prose — what MDX renders into
+ * ====================================================================== */
+
+.prose > * + * {
+  margin-top: var(--spacing-lg);
+}
+.prose p {
+  font-size: var(--text-body-md);
+  line-height: 1.6;
+  color: var(--portia-body);
+}
+.prose a {
+  color: var(--portia-accent-text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  color: var(--portia-ink);
+}
+.prose ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.prose li {
+  padding-block: var(--spacing-sm);
+}
+.prose--lede p {
+  font-size: var(--text-body-lg);
+}
+
+/* =========================================================================
+ * Motion
+ *
+ * The reveal. 420ms on the system's easing, 12px of travel, 60ms of stagger.
+ * `.reveal` is the resting state and `.is-in` is the arrived one; the observer
+ * that adds the class is 20 lines in the layout and is the only script on the
+ * page outside the three islands.
+ * ====================================================================== */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 420ms var(--ease-reveal), transform 420ms var(--ease-reveal);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* The mark's idle leg keyframes — low amplitude, and independent of scroll. */
+.portia-mark--idle .portia-mark__legs--left {
+  animation: portia-leg-idle 4.2s ease-in-out infinite;
+  transform-origin: 16px 18.6px;
+}
+.portia-mark--idle .portia-mark__legs--right {
+  animation: portia-leg-idle 4.2s ease-in-out infinite reverse;
+  transform-origin: 16px 18.6px;
+}
+@keyframes portia-leg-idle {
+  0%,
+  100% {
+    transform: rotate(-0.9deg);
+  }
+  50% {
+    transform: rotate(0.9deg);
+  }
+}
+
+/* =========================================================================
+ * Reduced motion
+ *
+ * Not an afterthought and not a slower version of the same thing: every
+ * animation resolves to its *designed* resting state. A reveal rests arrived,
+ * the spider rests parked at the top of its dragline, the legs rest still.
+ * ====================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .portia-mark--idle .portia-mark__legs--left,
+  .portia-mark--idle .portia-mark__legs--right {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

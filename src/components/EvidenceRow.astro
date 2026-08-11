@@ -1,0 +1,37 @@
+---
+/**
+ * `evidence-row` — the replacement for a decorative chart tile.
+ *
+ * A measured fact in mono, with what produced it named beside it. The split
+ * holds inside the row: `fact` is English and is set in Inter, `value` is a
+ * measurement and is mono, `source` is a file path or a tool name and is mono
+ * too. **If we cannot cite it, it does not go on the page.**
+ *
+ * Nothing here scales with its number, nothing is sorted by size, and nothing
+ * takes a status colour. A measurement is a fact, not a verdict.
+ */
+interface Props {
+  fact: string;
+  value: string;
+  source: string;
+}
+const { fact, value, source } = Astro.props;
+---
+
+<div class="evidence-row">
+  <p class="evidence-row__fact">
+    <span class="evidence-row__label">{fact}</span>
+    <span class="evidence-row__value">{value}</span>
+  </p>
+  <p class="evidence-row__source">{source}</p>
+</div>
+
+<style>
+  .evidence-row__label {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: var(--text-body-md);
+    color: var(--portia-body);
+    margin-bottom: 2px;
+  }
+</style>

@@ -1,0 +1,117 @@
+# The hero mockup's contents.
+#
+# Two rules govern this file, both from LANDING.md, and both are easier to break
+# here than anywhere else on the page:
+#
+#   1. **Real content.** Real column names, real null rates, a real copilot
+#      question. Everything below came off a run; nothing is illustrative.
+#
+#   2. **It may not fake-colorize.** If red appears in the mockup it is a real
+#      blocking flag on real evidence from a real run. Nothing in the state
+#      drawn here is blocked — `fan_out`, `left_rows_dropped` and `null_keys`
+#      are *reported* flags, not blocking ones — so the mockup is monochrome,
+#      and that is the correct outcome rather than a missed opportunity.
+#
+# Provenance, stated on the page beneath the frame because a composite that does
+# not say it is one is a small lie:
+#
+#   - The tree, the canvas and the run report are `portia/sandbox/www-demo`,
+#     run 2026-08-11 against portia @ 1fa5a81. Three files from
+#     `portia/data/mock/`; the spec is `specs/hotel_daily_demand.yaml`.
+#   - The transcript is a different run of the same fixture, read verbatim out
+#     of `portia/sandbox/runlog-real/.portia/runs/2026-07-29T17-10-04.jsonl`.
+#     The question, its two options, their descriptions and the answer are the
+#     log's, not this page's.
+
+- id: hero
+
+  # --- Left pane: a real directory tree, filtered to what portia reads -------
+  # `.portia/` is not walked, so the brief, Chats and Indexing are pinned
+  # outside the tree rather than drawn in it.
+  tree:
+    - { depth: 0, name: "Project brief", kind: pinned }
+    - { depth: 0, name: "data", kind: folder, open: true }
+    - { depth: 1, name: "city_events.csv", kind: source, meta: "4 col" }
+    - { depth: 1, name: "hotels.csv", kind: source, meta: "5 col" }
+    - { depth: 1, name: "otb.csv", kind: source, meta: "5 col" }
+    - { depth: 0, name: "models", kind: folder, open: true }
+    - { depth: 1, name: "_sources.sql", kind: model }
+    - { depth: 1, name: "hotel_daily_demand.sql", kind: model }
+    - { depth: 0, name: "out", kind: folder, open: true }
+    - { depth: 1, name: "hotel_daily_demand.csv", kind: output }
+    - { depth: 0, name: "specs", kind: folder, open: true }
+    - { depth: 1, name: "hotel_daily_demand.yaml", kind: spec, meta: "5 step", selected: true }
+    - { depth: 0, name: "Chats", kind: pinned }
+    - { depth: 0, name: "Indexing", kind: pinned }
+
+  # --- Middle pane, top: the canvas, opened onto one model's steps ----------
+  # A source is a file that arrived; a step is a decision. Drawn differently
+  # because the graph could not otherwise say which of its inputs it built.
+  # Order is the recorded sequence of decisions and is never re-sorted.
+  graph:
+    sources: [otb, hotels, city_events]
+    steps:
+      - { id: strip_event_city, op: normalize, flags: [] }
+      - { id: clean_events, op: normalize, flags: [] }
+      - { id: events_daily, op: sql, flags: [] }
+      - { id: bookings_with_hotel, op: join, flags: [fan_out, left_rows_dropped, right_rows_dropped] }
+      - { id: hotel_daily_demand, op: join, flags: [fan_out, null_keys, left_rows_dropped, right_rows_dropped] }
+
+  # --- Middle pane, bottom: the run report ---------------------------------
+  # Provenance and outcome are separate blocks and stay separate. They answer
+  # different questions — a correct prediction about a broken join is still a
+  # broken join — and collapsing them into one status is the mistake this
+  # project spent three runs unlearning.
+  report:
+    step: hotel_daily_demand
+    op: join
+    provenance:
+      - ["rows", "14 ⋈ 5 = 14"]
+      - ["relationship", "many:1"]
+      - ["left dropped", "0"]
+      - ["right dropped", "1"]
+    outcome:
+      - ["produced", "14 rows × 13 cols"]
+      - ["drift", "none — matches spec"]
+    grain: "[booking_id] is unique (14 rows)"
+    flags: [fan_out, null_keys, left_rows_dropped, right_rows_dropped]
+
+  # --- Right pane: the copilot ---------------------------------------------
+  transcript:
+    run:
+      prompt: "Build me the one table I can train on."
+      model: claude-haiku-4-5
+      effort: low
+      sha: "3a11fc7"
+      at: "2026-07-29"
+      source: ".portia/runs/2026-07-29T17-10-04.jsonl"
+    rows:
+      - kind: text
+        text: "Two sources are indexed. Let me read what they are before I touch anything."
+      - kind: tool
+        name: describe_source
+        args: "source='otb'"
+        result: |
+          {
+            "source": "otb.csv",
+            "summary": "on-the-books bookings, one row per booking",
+            "n_rows": 14
+          }
+      - kind: tool
+        name: join_findings
+        args: "left='otb', right='hotels', keys=['hotel_id']"
+        result: |
+          {
+            "left_key_unique": false,
+            "fan_out": true,
+            "max_multiplicity": 4
+          }
+      - kind: question
+        header: Grain
+        question: "Joining bookings to city events multiplies rows 4x. Aggregate the events to one row per city-date first?"
+        options:
+          - label: "Aggregate first"
+            description: "one row per city-date; revenue stays 136,240"
+          - label: "Join raw"
+            description: "14 bookings become 56; revenue inflates 3.85%"
+        answered: "Aggregate first"
