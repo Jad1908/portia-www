@@ -1,0 +1,252 @@
+/* ---------------------------------------------------------------------------
+ * portia-www — design tokens
+ *
+ * GENERATED FROM:  ../portia/DESIGN.md
+ * AT COMMIT:       fa34c888e76eea9264b08fab457ce18e9f55ce93  (2026-08-09)
+ * GOVERNED BY:     ./LANDING.md
+ *
+ * Do not hand-edit a hex in a component. Colors are declared here and nowhere
+ * else. To change one: edit DESIGN.md upstream, regenerate this file, bump the
+ * commit above and `inherits-sha` in LANDING.md's front matter.
+ *
+ * Two blocks, and the separation is load-bearing:
+ *   [A] INHERITED  — the app's palette, verbatim. If these disagree with
+ *                    DESIGN.md, DESIGN.md is right and this file has a bug.
+ *   [B] LANDING    — what a marketing page needs and an app does not. Every
+ *                    entry here is justified in LANDING.md's overrides table.
+ * ------------------------------------------------------------------------- */
+
+@import "tailwindcss";
+
+/* =========================================================================
+ * [A] INHERITED FROM DESIGN.md — LIGHT
+ * ====================================================================== */
+
+:root {
+  /* Brand & accent */
+  --portia-accent-primary:         #0C6B61;
+  --portia-accent-primary-pressed: #0A564E;
+  --portia-on-accent:              #FFFFFF;
+  --portia-accent-text:            #0C6B61;
+  --portia-accent-soft:            rgba(12, 107, 97, 0.10);
+
+  /* Surface — light compresses toward white; borders carry elevation */
+  --portia-canvas:            #F4F6F9;
+  --portia-surface:           #FCFDFE;
+  --portia-surface-elevated:  #FFFFFF;
+  --portia-surface-card:      #FFFFFF;
+
+  /* Borders */
+  --portia-hairline:        #E3E6EC;
+  --portia-hairline-strong: rgba(0, 0, 0, 0.14);
+  --portia-hairline-soft:   rgba(0, 0, 0, 0.06);
+
+  /* Text */
+  --portia-ink:   #0E1116;
+  --portia-body:  #3A3F47;
+  --portia-mute:  #6B7079;
+  --portia-ash:   #9AA0A8;
+  --portia-stone: #C2C7CE;
+
+  /* Status — state only, never chrome, never rank.
+   * error = a blocking zero · warning = drift · success = a measurement that held.
+   * See LANDING.md → "The rule that is specific to this product". */
+  --portia-error:        #D93A45;
+  --portia-error-soft:   rgba(217, 58, 69, 0.10);
+  --portia-warning:      #B7791F;
+  --portia-warning-soft: rgba(183, 121, 31, 0.10);
+  --portia-success:      #1F9A63;
+  --portia-success-soft: rgba(31, 154, 99, 0.10);
+}
+
+/* =========================================================================
+ * [A] INHERITED FROM DESIGN.md — DARK
+ *
+ * Declared once as a custom property set, then applied by three selectors:
+ * system preference, explicit override, and the .mode-dark scope used by the
+ * hero mockup. One list, three entry points — so the mockup cannot drift.
+ * ====================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) {
+    --portia-accent-primary:         #0D9488;
+    --portia-accent-primary-pressed: #0B7D72;
+    --portia-on-accent:              #FFFFFF;
+    --portia-accent-text:            #2DD4BF;
+    --portia-accent-soft:            rgba(13, 148, 136, 0.18);
+
+    --portia-canvas:           #08090C;
+    --portia-surface:          #0D0F14;
+    --portia-surface-elevated: #12141B;
+    --portia-surface-card:     #171922;
+
+    --portia-hairline:        #25282F;
+    --portia-hairline-strong: rgba(255, 255, 255, 0.16);
+    --portia-hairline-soft:   rgba(255, 255, 255, 0.08);
+
+    --portia-ink:   #F3F4F7;
+    --portia-body:  #C9CCD3;
+    --portia-mute:  #969AA4;
+    --portia-ash:   #696D77;
+    --portia-stone: #43464E;
+
+    --portia-error:        #FF6B6B;
+    --portia-error-soft:   rgba(255, 107, 107, 0.16);
+    --portia-warning:      #FFC94D;
+    --portia-warning-soft: rgba(255, 201, 77, 0.16);
+    --portia-success:      #5FD49B;
+    --portia-success-soft: rgba(95, 212, 155, 0.16);
+  }
+}
+
+:root[data-mode="dark"],
+.mode-dark {
+  --portia-accent-primary:         #0D9488;
+  --portia-accent-primary-pressed: #0B7D72;
+  --portia-on-accent:              #FFFFFF;
+  --portia-accent-text:            #2DD4BF;
+  --portia-accent-soft:            rgba(13, 148, 136, 0.18);
+
+  --portia-canvas:           #08090C;
+  --portia-surface:          #0D0F14;
+  --portia-surface-elevated: #12141B;
+  --portia-surface-card:     #171922;
+
+  --portia-hairline:        #25282F;
+  --portia-hairline-strong: rgba(255, 255, 255, 0.16);
+  --portia-hairline-soft:   rgba(255, 255, 255, 0.08);
+
+  --portia-ink:   #F3F4F7;
+  --portia-body:  #C9CCD3;
+  --portia-mute:  #969AA4;
+  --portia-ash:   #696D77;
+  --portia-stone: #43464E;
+
+  --portia-error:        #FF6B6B;
+  --portia-error-soft:   rgba(255, 107, 107, 0.16);
+  --portia-warning:      #FFC94D;
+  --portia-warning-soft: rgba(255, 201, 77, 0.16);
+  --portia-success:      #5FD49B;
+  --portia-success-soft: rgba(95, 212, 155, 0.16);
+}
+
+/* =========================================================================
+ * [B] LANDING-ONLY — not in DESIGN.md, justified in LANDING.md
+ * ====================================================================== */
+
+:root {
+  /* The single full-bleed dark surface: the hero app mockup. Does not resolve
+   * per mode — it is the app's dark-mode canvas, pinned. The mockup itself is
+   * rendered by putting .mode-dark on its subtree, which re-declares the whole
+   * palette above, so it IS the dark mode rather than a picture of it. */
+  --portia-canvas-deep: #08090C;
+}
+
+@theme inline {
+  /* ---- Color ---- */
+  --color-accent:          var(--portia-accent-primary);
+  --color-accent-pressed:  var(--portia-accent-primary-pressed);
+  --color-on-accent:       var(--portia-on-accent);
+  --color-accent-text:     var(--portia-accent-text);
+  --color-accent-soft:     var(--portia-accent-soft);
+
+  --color-canvas:          var(--portia-canvas);
+  --color-canvas-deep:     var(--portia-canvas-deep);
+  --color-surface:         var(--portia-surface);
+  --color-surface-elevated:var(--portia-surface-elevated);
+  --color-surface-card:    var(--portia-surface-card);
+
+  --color-hairline:        var(--portia-hairline);
+  --color-hairline-strong: var(--portia-hairline-strong);
+  --color-hairline-soft:   var(--portia-hairline-soft);
+
+  --color-ink:   var(--portia-ink);
+  --color-body:  var(--portia-body);
+  --color-mute:  var(--portia-mute);
+  --color-ash:   var(--portia-ash);
+  --color-stone: var(--portia-stone);
+
+  --color-error:        var(--portia-error);
+  --color-error-soft:   var(--portia-error-soft);
+  --color-warning:      var(--portia-warning);
+  --color-warning-soft: var(--portia-warning-soft);
+  --color-success:      var(--portia-success);
+  --color-success-soft: var(--portia-success-soft);
+
+  /* ---- Type ----
+   * Inter for English, mono for anything measured or typed as an identifier.
+   * The split is semantic — see LANDING.md → Typography. */
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --text-display-xl:   2.75rem;  /* 44px — hero headline, once per page */
+  --text-display-xl--line-height: 1.15;
+  --text-display-xl--letter-spacing: -0.2px;
+  --text-display-xl--font-weight: 600;
+
+  --text-display-lg:   2rem;     /* 32px — section headline */
+  --text-display-lg--line-height: 1.2;
+  --text-display-lg--font-weight: 600;
+
+  --text-heading-md:   1.25rem;  /* 20px */
+  --text-heading-md--line-height: 1.3;
+  --text-heading-md--letter-spacing: 0.2px;
+  --text-heading-md--font-weight: 500;
+
+  --text-heading-sm:   1rem;     /* 16px */
+  --text-heading-sm--line-height: 1.4;
+  --text-heading-sm--letter-spacing: 0.2px;
+  --text-heading-sm--font-weight: 500;
+
+  --text-body-lg:      1.0625rem;/* 17px — hero subhead, section ledes */
+  --text-body-lg--line-height: 1.6;
+
+  --text-body-md:      1rem;     /* 16px — default body (the app's is 13px) */
+  --text-body-md--line-height: 1.6;
+
+  --text-caption:      0.8125rem;/* 13px */
+  --text-caption--line-height: 1.5;
+  --text-caption--letter-spacing: 0.2px;
+
+  --text-button:       0.9375rem;/* 15px */
+  --text-button--line-height: 1.4;
+  --text-button--letter-spacing: 0.2px;
+  --text-button--font-weight: 500;
+
+  --text-mono:         0.875rem; /* 14px — sits with 16px Inter, not matched to it */
+  --text-mono--line-height: 1.6;
+
+  --text-mono-sm:      0.8125rem;/* 13px — code blocks, the mockup */
+  --text-mono-sm--line-height: 1.55;
+
+  --text-mono-caption: 0.75rem;  /* 12px — section labels, provenance */
+  --text-mono-caption--line-height: 1.5;
+
+  /* ---- Radius ---- md (8px) is the workhorse. NOT OpenCode's 4px: a button
+   * on the page and a button in a screenshot must be the same object. ---- */
+  --radius-xs:   4px;
+  --radius-sm:   6px;
+  --radius-md:   8px;
+  --radius-lg:   10px;
+
+  /* ---- Spacing ---- below 32px this is DESIGN.md's scale unchanged ---- */
+  --spacing-xxs:  2px;
+  --spacing-xs:   4px;
+  --spacing-sm:   8px;
+  --spacing-md:   12px;
+  --spacing-lg:   16px;
+  --spacing-xl:   24px;
+  --spacing-xxl:  32px;
+  --spacing-xxxl: 48px;   /* within a section: heading block → content */
+  --spacing-section: 96px;/* between sections; 64 tablet, 48 mobile */
+
+  /* ---- Motion ---- every value has a static resting state under
+   * prefers-reduced-motion; see LANDING.md → the spider ---- */
+  --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Root type feature settings. ss03's single-story `g` is part of the identity
+ * — DESIGN.md says do not omit it, and that applies here. */
+:root {
+  font-feature-settings: "calt", "kern", "liga", "ss03";
+}

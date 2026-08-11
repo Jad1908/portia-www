@@ -1,0 +1,27 @@
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+.pnpm-store/
+
+# environment — the early-access form's Resend key and Cal.com link live here
+.env
+.env.production
+!.env.example
+
+# deploy
+.wrangler/
+.vercel/
+
+# macOS
+.DS_Store
+
+# editors
+.idea/
+*.swp
+
+# scratch — throwaway mockups, palette experiments, spider iterations.
+# Same role as portia's sandbox/: spin up as many as you like, none reach the repo.
+sandbox/
