@@ -1,0 +1,66 @@
+# The three views of the app, in the order the page argues them: **measure ·
+# build on what was measured · keep it.** The same arc as `principles.yaml`,
+# shown instead of asserted — this section is the demonstration the three
+# columns above it earn.
+#
+# Every image these entries name is an unretouched capture of the running app.
+# Nothing here is a mockup and nothing is composited, which is the only reason
+# the section is allowed to exist at all (LANDING.md → "The fourth build").
+#
+# `tab` is a position in a row, never a rank: the three pills are one size, one
+# weight and one colour, and the selected one is marked as *selected* rather
+# than as *best*. `lede` is one or two short sentences — the same budget the
+# rest of the page keeps, and for the same reason.
+#
+# `alt` describes what is on the screen and nothing else. It does not sell, and
+# it does not name a number the screenshot does not itself show.
+
+- id: measures
+  order: 0
+  tab: "Measures your data"
+  lede: >-
+    It reads every source end to end and writes down what is actually in it.
+    Nothing is sampled, and nothing is guessed.
+  altFull: >-
+    The portia workspace. A source's catalog entry fills the middle: a written
+    summary of the table, then every column with its type, its role, how much of
+    it is null and how many distinct values it holds. The copilot's reading of
+    the same source sits in the right pane, waiting for approval.
+  cards:
+    - alt: >-
+        The indexing pane with five sources selected and a button reading
+        "Index 5 sources".
+    - alt: >-
+        The same pane one step later, the button now reading "Interpret 5
+        sources".
+
+- id: builds
+  order: 1
+  tab: "Builds the pipeline"
+  lede: >-
+    You say what you want out. It builds the pipeline a step at a time, and asks
+    you the questions no measurement can answer.
+  altFull: >-
+    The pipeline canvas. A dozen models wired from three sources through joins
+    and aggregates to a single output table, with the chat that built them in
+    the right pane and every step listed below.
+  cards:
+    - alt: >-
+        The copilot asking whether cancelled bookings belong in the room and
+        revenue totals, offering two answers and a box to write a third. The run
+        is marked as waiting on you.
+
+- id: remembers
+  order: 2
+  tab: "Keeps what it learned"
+  lede: >-
+    Everything it measures joins the map it already holds of your data. Come
+    back in a month and it still knows.
+  altFull: >-
+    The knowledge graph. Every column of every source drawn as a node, the edges
+    between them tracing where each one came from, with one group's written
+    context shown where the pointer rests.
+  cards:
+    - alt: >-
+        The project sidebar, listing the knowledge graph above five sources with
+        their column counts beside them.

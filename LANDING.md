@@ -8,16 +8,18 @@ description: |
   `DESIGN.md`, and adds only what a marketing page genuinely needs and an app does not: a fluid
   44→88px display ramp, a fluid 64→144px section rhythm, and one full-bleed dark surface carrying
   the manifesto. It keeps OpenCode's austerity — flat on canvas, no gradients, no glows, no
-  atmospheric backgrounds, hairlines as the only divider — with two named exceptions: the portia
-  spider hanging from a dragline that tracks the scroll, and two counter-drifting logo marquees.
-  There are no screenshots of the app anywhere on the page, and the brand image is the
-  application's own logo rather than a redraw of it. Light and dark are equal first-class modes,
+  atmospheric backgrounds, hairlines as the only divider — with three named exceptions: the portia
+  spider hanging from a dragline that tracks the scroll, two counter-drifting logo marquees, and
+  one block of unretouched captures of the running app. The brand image is the application's own
+  logo rather than a redraw of it. Light and dark are equal first-class modes,
   as in the app. The product rule carries over unchanged and binds hardest here, where marketing
   instinct pushes against it: **color and prominence communicate kind, never rank.**
 
-  READ "The second build" BEFORE TRUSTING ANY OTHER SECTION. The page was built once to this spec
-  and then substantially rebuilt; that section records the four places the original spec was wrong
-  and what replaced them.
+  READ "The second build" AND "The fourth build" BEFORE TRUSTING ANY OTHER SECTION. The page was
+  built once to this spec and then rebuilt three times; those sections record the places the
+  original spec was wrong and what replaced them. In particular the flat **"no screenshots
+  anywhere"** rule stated repeatedly below is no longer true — "The fourth build" says how far it
+  was relaxed, and what still holds.
 
 inherits: ../portia/DESIGN.md
 inherits-sha: fa34c888e76eea9264b08fab457ce18e9f55ce93
@@ -170,6 +172,38 @@ components:
     typography: "{typography.heading-sm}"
     rounded: "{rounded.none}"
     glyphSize: 22px
+  # The three views of the app. Added in "The fourth build", which is where the
+  # "no screenshots anywhere" rule was relaxed and bounded.
+  showcase-tab:
+    backgroundColor: "transparent"
+    textColor: "{colors.mute}"
+    border: "1px solid {colors.hairline}"
+    typography: "{typography.button}"
+    rounded: "{rounded.md}"
+    padding: 0px 20px
+    height: 40px
+  showcase-tab-selected:
+    backgroundColor: "{colors.accent-soft}"
+    textColor: "{colors.accent-text}"
+    border: "1px solid transparent"
+    rounded: "{rounded.md}"
+  # The full capture. Masked away at its bottom edge so it resolves into the
+  # page rather than ending on a rule — a mask, never a wash.
+  showcase-frame:
+    backgroundColor: "{colors.surface}"
+    border: "1px solid {colors.hairline}"
+    rounded: "{rounded.md}"
+    aspectRatio: "2 / 1"
+    maskImage: "linear-gradient(to bottom, opaque 70%, transparent 100%)"
+  # A crop of the same capture, floating in front of it. The 4px matte is what
+  # makes one asset legible in both modes; the shadow is the app's own
+  # transient-overlay carve-out and is the only one on the page.
+  showcase-card:
+    backgroundColor: "{colors.surface-elevated}"
+    border: "1px solid {colors.hairline-strong}"
+    rounded: "{rounded.md}"
+    padding: 4px
+    shadow: "0 20px 44px -16px {colors.canvas-deep} at 30%"
   # Retired 2026-08-11 along with every number on the page. Kept in the spec,
   # unreferenced, because it is the only sanctioned way a figure comes back.
   # See "The third build", item 3.
@@ -268,11 +302,12 @@ product that looks like two products.
   with size only: weights still cap at 600, there is no third face, and a headline is never coloured.
 - `{spacing.section}`, fluid 64→144px, between every block.
 - Exactly one full-bleed `{colors.canvas-deep}` surface per page: `{components.band}`, carrying the
-  manifesto. **No screenshots of the app anywhere**, and no artifact excerpts.
+  manifesto. **One block of screenshots, in one section, after the argument** — see "The fourth
+  build". Still no artifact excerpts, and still nothing in the hero but type on canvas.
 - Radius vocabulary of two working values — `{rounded.md}` (8px) on interactive, `{rounded.none}` on
   full-bleed bands — matching the app, not OpenCode's 4px.
-- **Two pieces of ornament exist on the whole page and both are named**: the spider, and the two
-  counter-drifting logo marquees.
+- **Three pieces of ornament exist on the whole page and all three are named**: the spider, the two
+  counter-drifting logo marquees, and the showcase's floating crops.
 
 ### The rule that is specific to this product
 
@@ -335,7 +370,10 @@ at `clamp(2.75rem, 7.2vw, 5.5rem)`, section headlines at `clamp(2rem, 4.2vw, 3.2
 Weights still top out at 600 and there is still no third face; the contrast is bought with size,
 never with weight or colour.
 
-**2. There are no screenshots, and no artifact excerpts.** The three-pane `hero-app-mockup` and the
+**2. There are no screenshots, and no artifact excerpts.** *(Half-reversed — see "The fourth
+build". The page now shows the app in one section, after the argument, in unretouched captures.
+Everything below still holds for the hero and for artifact excerpts, and the reasoning below is
+what "The fourth build" had to answer.)* The three-pane `hero-app-mockup` and the
 spec-beside-its-compiled-SQL pairing are both gone, along with `mockup.yaml` and the `CodeBlock`
 component. They were the two most detailed things on the page and they were what made it read as
 documentation rather than as an argument. Consequences worth naming:
@@ -461,6 +499,82 @@ feel like a defence rather than an offer. A claim is now stated and then left al
 capped at **three questions, two sentences each**, and the two that were cut (benchmarks, lock-in)
 were cut because they invited a doubt the page had not raised.
 
+
+---
+
+## The fourth build — the page shows the app
+
+**2026-08-13.** One section was added, and it breaks the most-repeated rule in this file. Every
+sentence above that says *no screenshots of the app anywhere* is now wrong; the reachable ones have
+been amended in place, and this section is the authority on what replaced them.
+
+**1. What was added.** `#the-app`, between the three principles and the artifact section.
+`AppShowcase.astro` — three views behind a row of pills, one at a time: *measures your data*,
+*builds the pipeline*, *keeps what it learned*. Each view is a **full capture of the running
+application** with one or two **crops of that same capture** floating in front of it, plus a
+one-sentence lede that swaps with the view. Copy in `showcase.yaml`, captures in `lib/appShots.ts`,
+zero JS.
+
+**2. Why the rule was relaxed, and what the rule was actually protecting.** It came from "The
+second build", where it retired a **drawn three-pane mockup in the hero**. Read the reasoning there
+and it is not about photography at all — it is about (a) a picture of a product that did not exist
+yet, (b) sitting *above* the argument and doing the arguing, (c) at a level of detail that made the
+page read as documentation. Those three are the rule. This section negates each of them: software
+that runs, captured unedited; positioned *after* the columns it demonstrates, so the reading order
+is untouched; and shown at a size that says *this is a real tool* without inviting anyone to read a
+column header.
+
+There is a fourth reason, and it is the honest one. The page's whole pitch is that portia measures
+rather than asserts. A page that will not show the product, while claiming the product refuses to
+guess, asks the reader to take on faith exactly the kind of claim the product exists to retire.
+
+**3. What did not move, and this is the part to hold.**
+
+- **The captures are unretouched.** Nothing composited, nothing recoloured, no pane redrawn, no
+  state faked. A screenshot the page has edited is a mockup, and this repo exists to stop the page
+  and the app disagreeing about anything. `lib/appShots.ts` states this at its head and it is the
+  condition the whole section runs under.
+- **Every number visible inside a capture is one portia produced** — the row counts, the null
+  rates, the cardinalities, the cost and token line. That is the old rule satisfied in its
+  strongest form: they are not the page's numbers, they are the app's, and the page did not pick
+  them. **No number was added in copy** and the no-stat-block rule is untouched.
+- **Nothing in the section ranks.** Three pills, one size, one weight, one type. The selected one
+  takes `{colors.accent-soft}` and means *selected* — never *best*, never *recommended*. There is
+  no ordering signal beyond left-to-right, which a row has to have.
+- **The hero is still type on canvas**, the band still carries the manifesto, and there are still
+  no artifact excerpts anywhere — no spec, no SQL, no compiled anything.
+
+**4. Three things borrowed from Clay's product section, and three changed on the way in.** The
+arrangement — pills, a wide frame, small crops floating in front — is openly Clay's. What changed:
+
+- **No colour blob behind the frame.** Clay backs each screenshot with a large blurred wash tinted
+  to match the selected pill. That is a gradient, a glow and an atmospheric background at once, and
+  it is colour carrying nothing but which tab you are on. The frame sits flat on canvas.
+- **The pills do not each get a hue.** Three colours across three tabs is the ranking this system
+  forbids, performed on the row that names the product's three abilities.
+- **The fade is a mask, not a wash.** `{components.showcase-frame}` is masked away at its bottom
+  edge so the capture resolves into the page instead of ending on a line. Nothing is tinted and no
+  fill is introduced — the same argument `Marquee.astro` already makes for its feathered edges, and
+  the reason this is not the gradient the austerity rule forbids.
+
+**5. The one shadow on the page.** `{components.showcase-card}` carries a soft shadow, on a page
+whose elevation table says nothing lifts and nothing floats. It is the app's own carve-out — *a
+transient overlay may carry one soft shadow* — and these crops are literally that: an approval
+prompt, a question waiting on an answer. It is derived from `{colors.canvas-deep}`, the same value
+in both modes, so it never inverts into a white glow. **This does not open the door**: no other
+element gets one, and persistent chrome still may not.
+
+**6. It is not a fourth island.** CLAUDE.md caps the page at three React islands. A tab strip is
+genuinely interactive, but three radios in one group and `:checked ~` at the panels do the whole
+job: keyboard arrows work because a radio group already works that way, and the section is complete
+with JS off. The component's `:nth-of-type` pairing assumes **exactly three views** and throws at
+build time if given a fourth, so the failure is loud and sits next to the assumption it breaks.
+
+**7. Known gap: the captures are light-mode.** In dark page mode the section is a bright block, and
+it is deliberately **not** dimmed — a filtered screenshot lies about what the app looks like, and
+the app's light mode is a real thing the app looks like. The bottom mask does most of the work of
+settling it into the dark canvas. If dark-mode captures are ever taken they belong beside these
+behind a `prefers-color-scheme` `<source>`, not as a replacement for them.
 
 ---
 
@@ -639,21 +753,25 @@ sequence below survived the rebuild; what changed is the **length of each step**
 3. **How it works** — three columns: measure · build on what was measured · get sharper. Each
    carries a `{components.pillar-icon}` that draws itself in. This is the argument the band just
    asserted, and the two are read as one movement.
-4. **What you keep** — not a chat log, a pipeline you can hand over. Three `{components.claim}`
+4. **Inside the app** — the same three abilities, shown. Three views behind a row of pills, each a
+   full capture of the running app with one or two crops of it floating in front. It sits **here**
+   and nowhere earlier: the page still argues before it demonstrates, and this is the
+   demonstration. See "The fourth build".
+5. **What you keep** — not a chat log, a pipeline you can hand over. Three `{components.claim}`
    lines, and the only place the app's two pictures are alluded to: the pipeline canvas and the
    knowledge graph. **No file format is named anywhere in it.**
-5. **Your data** — **two** counter-drifting rails, split by kind: the warehouse somebody
+6. **Your data** — **two** counter-drifting rails, split by kind: the warehouse somebody
    administers, and what is already on your own machine. Two claims. **No numbers.**
-6. **Your model** — the provider marquee, then a counter-drifting second band for the local
+7. **Your model** — the provider marquee, then a counter-drifting second band for the local
    runtimes, because the claim about those is different.
-7. **Early access.**
-8. **FAQ** — a closing appendix rather than a step in the argument. Five questions, and an answer
+8. **Early access.**
+9. **FAQ** — a closing appendix rather than a step in the argument. Five questions, and an answer
    that runs past four sentences is a signal the page failed to make its case earlier.
 
-**Two sections were cut and are not coming back.** *The app* (the three panes) described an
-implementation detail wearing a section heading. *The graph* was true, well-written, and the third
-consecutive block of dense prose — it is the kind of thing that belongs in docs, and the page is not
-docs.
+**One section came back and one is still not coming back.** *The app* returned as step 4 — but as
+capture rather than as a drawn mockup, and after the argument rather than above it; what was wrong
+with it was never that it showed the product. *The graph* stays cut: it was true, well-written, and
+the third consecutive block of dense prose, which is the kind of thing that belongs in docs.
 
 ---
 
@@ -857,6 +975,8 @@ uses.
 - **Use the app's real logo** for anything that reads as the brand.
 - Keep the spider suppressible: reduced-motion static, plus a persistent dismiss.
 - Give every marquee a designed static state, not a frozen frame.
+- **Ship captures of the app unedited, or not at all.** No compositing, no recolouring, no faked
+  state, no filter — in either mode.
 - Check every `stone` / `ash` reference against `DESIGN.md`, not against the OpenCode source.
 
 ### Don't
@@ -878,7 +998,9 @@ uses.
   `CLAUDE.md` names the stat block as one of the genre conventions that performs the ranking the
   engine refuses to do.
 - **Don't sort or color by severity**, and don't let a badge grow with its figure.
-- **Don't put a screenshot of the app on the page**, and don't put a spec or a SQL excerpt on it.
+- **Don't put a screenshot anywhere except the showcase**, don't retouch the ones that are there,
+  and still don't put a spec or a SQL excerpt on the page at all. The hero stays type on canvas.
+  "The fourth build" is the whole of the permission and it is not a precedent for a second block.
 - **Don't redraw the logo.** One brand image, generated by `pnpm mark` from the app's asset.
 - **Don't add a mode toggle back.** The system preference is the whole mechanism.
 - **Don't let an icon rank its column.** One colour, one weight, one size, or it does not ship.
@@ -902,6 +1024,7 @@ the changes that genuinely need a media query.
 |---|---|---|
 | desktop-large | 1280px+ | Default. 720/960px columns, full-bleed marquees, rhythm at its 144px ceiling |
 | desktop | 1024px | Nav stays horizontal; type and rhythm shed size continuously |
+| showcase-crops | 700px | The showcase's floating crops are dropped — at 15–21% of a frame this narrow they are texture, not screens. The capture behind them says the same thing more slowly |
 | tablet | 850px | Pillars go from three columns to one; the early-access split stacks |
 | tablet-narrow | 768px | Nav collapses to a drawer; the primary CTA stays visible |
 | mobile | 640px | The clamps have reached their floors: hero at 44px, rhythm at 64px |

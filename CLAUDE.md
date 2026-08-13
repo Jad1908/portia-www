@@ -127,8 +127,11 @@ product whose entire pitch is that two surfaces must never disagree about a numb
   identity without noticing.
 - **No hard-coded copy in components.** Section content lives in content collections or MDX, so
   prose is reviewable as prose in a diff. This mirrors the product's own rule about prompt text.
-- **The spider is the only ornament on the page.** No gradients, no glows, no atmospheric
-  backgrounds, no shadows on persistent chrome. Motion carries the modernity.
+- **The spider is the only decorative ornament on the page.** No gradients, no glows, no
+  atmospheric backgrounds, no shadows on persistent chrome. Motion carries the modernity. The
+  showcase's floating crops are the one exception and they are not decoration — they are captures
+  of the product, and they carry the page's single sanctioned shadow. `LANDING.md` → "The fourth
+  build" is the whole of that permission.
 - **Reduced-motion is not an afterthought.** Every animation has a static resting state that is the
   designed state, not a degraded one.
 - **Build order**: the SVG mark first (the nav lockup, favicon, OG image and scroll spider all

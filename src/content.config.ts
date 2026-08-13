@@ -7,15 +7,20 @@ import { glob, file } from "astro/loaders";
  * That mirrors the product's own rule about prompt text, and for the same
  * reason — the copy is the least stable, most consequential part of the page.
  *
- * Four collections:
+ * Five collections:
  *   sections   — one MDX file per section of the page, in reading order
  *   principles — the three columns under the manifesto band
+ *   showcase   — the three views of the app, under those columns
  *   claims     — short lines of consequence, grouped by section
  *   faq        — one MD file per question
  *
- * The `mockup` collection is gone with the three-pane screenshot it fed. The
- * page shows no pictures of the app: what a screenshot bought was texture, and
- * what it cost was a section that read as a manual.
+ * The `mockup` collection is gone and is **not** what `showcase` is. That one
+ * fed a drawn three-pane mockup in the hero, and it went because a picture the
+ * page had composed of a product it had not shipped is the thing this repo
+ * exists to refuse. `showcase` names unretouched captures of the running app,
+ * it sits after the argument rather than above it, and the images themselves
+ * live in `lib/appShots.ts` because an asset is not copy. See LANDING.md →
+ * "The fourth build" for the rest of that reversal.
  *
  * **The `evidence` collection is gone too, and its rule is not.** It held three
  * engine timings under the warehouse section, each properly cited. They were
@@ -88,6 +93,33 @@ const principles = defineCollection({
 });
 
 /**
+ * The three views of the app in the showcase section.
+ *
+ * Prose only. The captures themselves are in `lib/appShots.ts`, joined to these
+ * by `id`, because an image is an asset and not copy — and because the
+ * placement of a crop over a frame is a design value an editor rewriting a
+ * sentence should not be able to move.
+ *
+ * `alt` is required on every image and is not optional prose: it is the whole
+ * section for a visitor who cannot see it. It describes what is on the screen
+ * and stops — no selling, and no number the capture does not itself show.
+ */
+const showcase = defineCollection({
+  loader: file("./src/content/showcase.yaml"),
+  schema: z.object({
+    /** Reading order across the tab row. A position, never a rank. */
+    order: z.number(),
+    /** The pill label. Two or three words; the row has to stay one line. */
+    tab: z.string(),
+    /** One or two short sentences, swapped in with the view it describes. */
+    lede: z.string(),
+    altFull: z.string(),
+    /** In the order they are drawn, which is back to front. */
+    cards: z.array(z.object({ alt: z.string() })),
+  }),
+});
+
+/**
  * `claim` — one short line of consequence, set at heading size.
  *
  * Split into `lead` (ink) and `rest` (body) so the claim lands before its
@@ -103,4 +135,4 @@ const claims = defineCollection({
   }),
 });
 
-export const collections = { sections, principles, claims, faq };
+export const collections = { sections, principles, showcase, claims, faq };
