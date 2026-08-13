@@ -5,51 +5,56 @@ import type { CollectionEntry } from "astro:content";
 import { APP_SHOTS } from "~/lib/appShots";
 
 /**
- * The one place on this page that shows the product.
+ * The one place on this page that shows the product. LANDING.md → "The showcase"
+ * is the spec; this file implements it.
  *
- * LANDING.md said, twice and in bold, that there are no screenshots of the app
- * anywhere on the page. That is reversed for this section only, and the
- * reversal is recorded in LANDING.md → "The fourth build" rather than patched
- * in quietly. The short version: the rule was written against a *drawn* mockup
- * in the hero — a picture of a product that did not exist yet, sitting above
- * the argument and doing the arguing. This is the opposite of that on every
- * axis. It is unretouched capture, it is of software that runs, and it sits
- * **after** the three columns it demonstrates. The reading order is untouched:
- * the page still argues before it demonstrates.
+ * Two rules from there are worth having in front of you before editing
+ * anything here, because both are easy to break by accident:
+ *
+ *  - **Unretouched, or not at all.** Nothing composited, nothing recoloured,
+ *    no state faked, no filter in either mode.
+ *  - **It sits after the argument.** The page argues, then demonstrates. This
+ *    is the demonstration; it never moves above the three columns and it never
+ *    goes in the hero.
  *
  * ## What it is
  *
- * Three views, one at a time, behind a row of pills. Each view is a full
- * capture of the app with one or two crops of it floating in front — the
- * arrangement is borrowed openly from Clay's product section, and three things
- * about it were changed on the way in:
+ * Three views, one at a time, behind a centred row of pills. Each view is a
+ * full capture of the app with a crop or two of it floating in front, over one
+ * flat accent card. The arrangement is borrowed openly from Clay's product
+ * section, and two things about it were changed on the way in:
  *
- *  - **No colour blob behind the frame.** Clay backs each screenshot with a
- *    large blurred wash tinted to match the selected pill. That is a gradient,
- *    a glow and an atmospheric background at once, and it is also colour
- *    carrying nothing but which tab you are on. The frame sits flat on canvas.
- *  - **The pills do not each get a colour.** Three hues across three tabs is
- *    the ranking this system forbids, performed on the row that names the
- *    product's three abilities. One accent, on the selected one, meaning
- *    *selected*.
- *  - **The fade is a mask, not a wash.** The capture is masked away at its
- *    bottom edge so it resolves into the page instead of ending on a hard
- *    line. Nothing is tinted and no fill is introduced — the same argument
- *    `Marquee.astro` already makes for its feathered edges.
+ *  - **The card behind the frame is one flat colour, not a tinted blur.** Clay
+ *    backs each screenshot with a large blurred wash that changes hue with the
+ *    selected pill. Here it is a single `accent-soft` rectangle, the same one
+ *    on all three views — a gradient is still forbidden, and so is colour that
+ *    varies with which tab you are on, because that is hue carrying rank.
+ *  - **The pills do not each get a colour**, for the same reason. One accent,
+ *    on the selected one, meaning *selected*.
+ *
+ * Both fades — the card's and the capture's — are **masks, not washes**. The
+ * bottom edge is masked away so each resolves into the page instead of ending
+ * on a hard line; nothing is tinted and no fill is introduced. Same argument
+ * `Marquee.astro` already makes for its feathered edges.
  *
  * ## No island, and it did not need one
  *
  * CLAUDE.md caps this page at three React islands and says anything else
  * wanting to be one should first be asked whether it needs to be interactive.
- * A tab strip does — but it does not need script. Three radios in one group,
- * `:checked ~` at the panels, and the whole thing works with the page's zero
- * bytes of JS: keyboard arrows move between tabs for free because that is what
- * a radio group already does, and a visitor with JS off gets the full section.
+ * A tab strip does — but it does not need script, and neither does rotating it.
+ *
+ * **No radio is checked at build.** With nothing selected, a CSS animation
+ * cycles the panels and the pill highlight together; the moment a visitor picks
+ * a tab, `:has(:checked)` kills the animation and the `:checked ~` rules take
+ * over for good. That is the whole mechanism: an auto-rotating carousel that
+ * yields permanently to a human, in CSS, with the page's zero bytes of JS.
+ * Keyboard arrows move between tabs for free because that is what a radio group
+ * already does, and hovering anywhere in the section pauses the rotation.
  *
  * The `:nth-of-type` pairing below is what keeps that from being three
  * hand-written rules per state. **It assumes exactly three views**, which is
  * asserted at the foot of this frontmatter rather than left to be discovered
- * when a fourth is added and silently never selectable.
+ * when a fourth is added and silently never reached.
  */
 
 interface Props {
@@ -57,13 +62,15 @@ interface Props {
 }
 const { views } = Astro.props;
 
-/** The tab CSS below pairs radio *n* with pill *n* and panel *n* by hand, for
- *  three. A fourth view would render and never be reachable, so it fails here
- *  instead — loudly, at build time, next to the assumption it breaks. */
+/** The CSS below pairs radio *n* with pill *n* and panel *n* by hand, and the
+ *  rotation keyframes divide the cycle into thirds. Both are written for three.
+ *  A fourth view would render and never be reached, so it fails here instead —
+ *  loudly, at build time, next to the assumption it breaks. */
 if (views.length !== 3) {
   throw new Error(
     `AppShowcase is written for exactly three views; got ${views.length}. ` +
-      `Add the matching :nth-of-type pair in its <style> before adding one.`,
+      `Add the matching :nth-of-type pair and re-cut the cycle keyframes in ` +
+      `its <style> before adding one.`,
   );
 }
 
@@ -76,19 +83,27 @@ const FRAME_RATIO = "2 / 1";
  *  browser is told that rather than left to assume 100vw and fetch the 2320px
  *  candidate on every phone. */
 const FRAME_SIZES = "(max-width: 1256px) calc(100vw - 48px), 1160px";
+
+/** One full turn of the idle rotation. Six seconds a view: long enough to read
+ *  the lede and look at the capture, short enough that a visitor who scrolled
+ *  here sees there are three of them without deciding to wait. */
+const CYCLE = 18;
 ---
 
 <div class="showcase" role="group" aria-label="Views of the portia app">
   {/* The radios come first and stay first: every rule below reaches forward
-      from `:checked` with `~`, which can only see later siblings. */}
+      from `:checked` with `~`, which can only see later siblings.
+
+      **None is checked.** That is what starts the rotation — the CSS runs it
+      only while `:has(:checked)` is false, so the first pick a visitor makes
+      stops it permanently. */}
   {
-    views.map((view, i) => (
+    views.map((view) => (
       <input
         class="showcase__radio"
         type="radio"
         name="showcase"
         id={`showcase-${view.id}`}
-        checked={i === 0}
       />
     ))
   }
@@ -116,6 +131,12 @@ const FRAME_SIZES = "(max-width: 1256px) calc(100vw - 48px), 1160px";
             </figcaption>
 
             <div class="showcase__stage">
+              {/* One flat accent rectangle, offset behind the frame and masked
+                  away at the bottom. It is the same colour on all three views
+                  — it gives the composition a floor to sit on, it does not
+                  say which view you are looking at. */}
+              <div class="showcase__mat" aria-hidden="true"></div>
+
               <div class="showcase__frame">
                 <Image
                   class="showcase__shot"
@@ -159,7 +180,7 @@ const FRAME_SIZES = "(max-width: 1256px) calc(100vw - 48px), 1160px";
   </div>
 </div>
 
-<style define:vars={{ frameRatio: FRAME_RATIO }}>
+<style define:vars={{ frameRatio: FRAME_RATIO, cycle: `${CYCLE}s` }}>
   /* ---- The radios. Off-screen but never `display:none`, because the whole
    * keyboard story is that they are still a focusable radio group. ---- */
   .showcase__radio {
@@ -175,7 +196,13 @@ const FRAME_SIZES = "(max-width: 1256px) calc(100vw - 48px), 1160px";
    * Pills at the page's interactive radius and the page's button type, so a
    * control here and a control anywhere else on the page are the same object.
    * Scrolls sideways below the tablet band rather than wrapping to two lines:
-   * three pills stacked read as a menu, and the row is a row. ---- */
+   * three pills stacked read as a menu, and the row is a row.
+   *
+   * **Centred**, which is the one thing on this page that is. The rule is that
+   * nothing is centred because a centred block over a left-flush page reads as
+   * another page's header — and that is about *blocks of type*. This is a
+   * control strip over a full-bleed frame, and centred it belongs to the frame
+   * rather than to the headline it would otherwise be hanging off. ---- */
   .showcase__tabs {
     display: flex;
     gap: var(--spacing-sm);
@@ -185,6 +212,15 @@ const FRAME_SIZES = "(max-width: 1256px) calc(100vw - 48px), 1160px";
      * pill, so the box is given the ring's width back. */
     padding: 3px;
     margin: -3px;
+  }
+  /* Auto margins rather than `justify-content: center`: centred content in a
+   * scroll container is unreachable at its start edge, and on a narrow phone
+   * the first pill is exactly what gets stranded there. */
+  .showcase__tab:first-child {
+    margin-inline-start: auto;
+  }
+  .showcase__tab:last-child {
+    margin-inline-end: auto;
   }
   .showcase__tabs::-webkit-scrollbar {
     display: none;
@@ -225,6 +261,15 @@ const FRAME_SIZES = "(max-width: 1256px) calc(100vw - 48px), 1160px";
     color: var(--portia-accent-text);
   }
 
+  /* The idle resting state, before anyone has chosen: the first pill is the
+   * selected one. This is also exactly what a reduced-motion visitor sees,
+   * because the rotation below is simply not applied for them. */
+  .showcase:not(:has(.showcase__radio:checked)) .showcase__tab:first-child {
+    background-color: var(--portia-accent-soft);
+    border-color: transparent;
+    color: var(--portia-accent-text);
+  }
+
   /* The input is off-screen, so its focus ring has to be drawn on the pill that
    * stands in for it — otherwise tabbing into the row lands on nothing visible. */
   .showcase__radio:nth-of-type(1):focus-visible ~ .showcase__tabs .showcase__tab:nth-child(1),
@@ -252,12 +297,120 @@ const FRAME_SIZES = "(max-width: 1256px) calc(100vw - 48px), 1160px";
     visibility: hidden;
     transition: opacity 420ms var(--ease-reveal), visibility 0s linear 420ms;
   }
+  /* The floor under everything below: with nothing selected and no animation
+   * running — a reduced-motion visitor, or a browser without `:has()` — the
+   * first view is what shows. */
+  .showcase__panel:first-child {
+    opacity: 1;
+    visibility: visible;
+  }
+  /* Once anything is selected, every panel goes down and the pair below brings
+   * exactly one back. Without this the rule above would leave the first view
+   * showing underneath the third. */
+  .showcase:has(.showcase__radio:checked) .showcase__panel {
+    opacity: 0;
+    visibility: hidden;
+    animation: none;
+  }
   .showcase__radio:nth-of-type(1):checked ~ .showcase__panels .showcase__panel:nth-child(1),
   .showcase__radio:nth-of-type(2):checked ~ .showcase__panels .showcase__panel:nth-child(2),
   .showcase__radio:nth-of-type(3):checked ~ .showcase__panels .showcase__panel:nth-child(3) {
     opacity: 1;
     visibility: visible;
     transition: opacity 420ms var(--ease-reveal), visibility 0s;
+  }
+
+  /* ---- The rotation.
+   *
+   * Three views on an 18-second loop, six seconds each, cross-fading over the
+   * last 0.6s of each turn. It runs **only while nothing is selected** — the
+   * whole mechanism is that `:has(:checked)` is false until a visitor picks a
+   * tab, after which the rules above take the panels and the animation is
+   * switched off for the rest of the session. A carousel that keeps moving
+   * after someone has told it what they want to look at is the reason the
+   * pattern has the reputation it has.
+   *
+   * The delays are negative so the loop is already in phase on the first frame,
+   * rather than opening with a six-second wait on view one and catching up
+   * afterwards. **They run backwards, and that is not a typo.** A negative delay
+   * winds the clock *forward*, so the view that should come up second is the one
+   * that needs to be furthest from the start of its own turn: two thirds back,
+   * not one. Wired the intuitive way round the section plays 1 · 3 · 2. ---- */
+  .showcase:not(:has(.showcase__radio:checked)) .showcase__panel {
+    animation: showcase-cycle var(--cycle) linear infinite;
+  }
+  .showcase:not(:has(.showcase__radio:checked)) .showcase__panel:nth-child(2) {
+    animation-delay: calc(var(--cycle) * -2 / 3);
+  }
+  .showcase:not(:has(.showcase__radio:checked)) .showcase__panel:nth-child(3) {
+    animation-delay: calc(var(--cycle) * -1 / 3);
+  }
+  .showcase:not(:has(.showcase__radio:checked)) .showcase__tab {
+    animation: showcase-tab-cycle var(--cycle) linear infinite;
+  }
+  .showcase:not(:has(.showcase__radio:checked)) .showcase__tab:nth-child(2) {
+    animation-delay: calc(var(--cycle) * -2 / 3);
+  }
+  .showcase:not(:has(.showcase__radio:checked)) .showcase__tab:nth-child(3) {
+    animation-delay: calc(var(--cycle) * -1 / 3);
+  }
+
+  /* Anywhere in the section, not just on the pills: someone whose pointer is
+   * resting on a capture is reading it. Focus counts as attention too, which
+   * is what keeps the rotation from moving under a keyboard visitor who has
+   * tabbed in but not yet chosen. */
+  .showcase:hover .showcase__panel,
+  .showcase:hover .showcase__tab,
+  .showcase:focus-within .showcase__panel,
+  .showcase:focus-within .showcase__tab {
+    animation-play-state: paused;
+  }
+
+  @keyframes showcase-cycle {
+    0%,
+    30% {
+      opacity: 1;
+      visibility: visible;
+    }
+    33.33% {
+      opacity: 0;
+      visibility: visible;
+    }
+    33.34%,
+    96.66% {
+      opacity: 0;
+      visibility: hidden;
+    }
+    96.67% {
+      opacity: 0;
+      visibility: visible;
+    }
+    100% {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  /* The pill switches rather than fades — a highlight that cross-dissolves
+   * across two pills reads as both being half-selected. */
+  @keyframes showcase-tab-cycle {
+    0%,
+    32.9% {
+      background-color: var(--portia-accent-soft);
+      border-color: transparent;
+      color: var(--portia-accent-text);
+    }
+    33.4%,
+    99.5% {
+      background-color: transparent;
+      border-color: var(--portia-hairline);
+      color: var(--portia-mute);
+    }
+    100% {
+      background-color: var(--portia-accent-soft);
+      border-color: transparent;
+      color: var(--portia-accent-text);
+    }
   }
 
   .showcase__lede {
@@ -275,7 +428,32 @@ const FRAME_SIZES = "(max-width: 1256px) calc(100vw - 48px), 1160px";
     aspect-ratio: var(--frameRatio);
   }
 
+  /* ---- The accent mat.
+   *
+   * One flat `accent-soft` rectangle, offset behind the frame so it shows as a
+   * band down each side and under the foot, and masked away at the bottom like
+   * the capture above it. Three things keep it inside the system:
+   *
+   *  - **One colour, not a tint per view.** Clay's equivalent changes hue with
+   *    the selected tab, which is colour carrying which-one-you-are-on. This is
+   *    the same rectangle on all three, so it says *floor*, not *rank*.
+   *  - **Flat, not blurred.** A blur is a glow; a rectangle is a rectangle.
+   *  - **`accent-soft` is the token DESIGN.md already permits as a wash**, and
+   *    it is spent here in place of — not in addition to — anything else. The
+   *    section still has one accent. ---- */
+  .showcase__mat {
+    position: absolute;
+    inset: 9% -1.5% -7% -1.5%;
+    z-index: 0;
+    border-radius: var(--radius-lg);
+    background-color: var(--portia-accent-soft);
+    -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 45%, transparent 100%);
+  }
+
   .showcase__frame {
+    position: relative;
+    z-index: 1;
     height: 100%;
     overflow: hidden;
     border: 1px solid var(--portia-hairline);
@@ -307,9 +485,10 @@ const FRAME_SIZES = "(max-width: 1256px) calc(100vw - 48px), 1160px";
    * This is a shadow on a page whose system says nothing lifts and nothing
    * floats. It is the app's own carve-out — *a transient overlay may carry one
    * soft shadow* — and these crops are literally that: an approval prompt, a
-   * question waiting on an answer. Recorded in LANDING.md → "The fourth build". */
+   * question waiting on an answer. Recorded in LANDING.md → "The showcase". */
   .showcase__card {
     position: absolute;
+    z-index: 2;
     padding: 4px;
     border: 1px solid var(--portia-hairline-strong);
     border-radius: var(--radius-md);
@@ -329,11 +508,18 @@ const FRAME_SIZES = "(max-width: 1256px) calc(100vw - 48px), 1160px";
     }
   }
 
-  /* The designed resting state is the selected panel, arrived. The global
-   * reduced-motion block already collapses the cross-fade; this is here so the
-   * fade is never mid-flight when a visitor who asked for no motion arrives. */
+  /* ---- Reduced motion.
+   *
+   * The designed resting state, not a degraded one: the first view, held, with
+   * its pill selected and the other two one click away. The rotation is not
+   * slowed down — a carousel that moves on its own is the whole category of
+   * thing this preference exists to turn off, so it does not run at all. The
+   * two rules above that paint the idle state are what is left, and they were
+   * written to be exactly this. ---- */
   @media (prefers-reduced-motion: reduce) {
-    .showcase__panel {
+    .showcase__panel,
+    .showcase__tab {
+      animation: none;
       transition: none;
     }
   }

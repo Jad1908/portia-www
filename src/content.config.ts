@@ -19,8 +19,8 @@ import { glob, file } from "astro/loaders";
  * page had composed of a product it had not shipped is the thing this repo
  * exists to refuse. `showcase` names unretouched captures of the running app,
  * it sits after the argument rather than above it, and the images themselves
- * live in `lib/appShots.ts` because an asset is not copy. See LANDING.md →
- * "The fourth build" for the rest of that reversal.
+ * live in `lib/appShots.ts` because an asset is not copy. LANDING.md → "The
+ * showcase" is the spec.
  *
  * **The `evidence` collection is gone too, and its rule is not.** It held three
  * engine timings under the warehouse section, each properly cited. They were

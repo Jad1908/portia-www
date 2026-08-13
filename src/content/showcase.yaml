@@ -4,8 +4,8 @@
 # columns above it earn.
 #
 # Every image these entries name is an unretouched capture of the running app.
-# Nothing here is a mockup and nothing is composited, which is the only reason
-# the section is allowed to exist at all (LANDING.md → "The fourth build").
+# Nothing here is a mockup and nothing is composited — LANDING.md → "The
+# showcase", rule 1, which is the rule the whole section rests on.
 #
 # `tab` is a position in a row, never a rank: the three pills are one size, one
 # weight and one colour, and the selected one is marked as *selected* rather
@@ -19,8 +19,8 @@
   order: 0
   tab: "Measures your data"
   lede: >-
-    It reads every source end to end and writes down what is actually in it.
-    Nothing is sampled, and nothing is guessed.
+    It reads, measures and understands every source you give it.
+    Everything is grounded, nothing is hallucinated.
   altFull: >-
     The portia workspace. A source's catalog entry fills the middle: a written
     summary of the table, then every column with its type, its role, how much of
@@ -38,8 +38,8 @@
   order: 1
   tab: "Builds the pipeline"
   lede: >-
-    You say what you want out. It builds the pipeline a step at a time, and asks
-    you the questions no measurement can answer.
+    Describe a table, and it builds a context-aware pipeline for you. Every step
+    is grounded in your specific data challenges.
   altFull: >-
     The pipeline canvas. A dozen models wired from three sources through joins
     and aggregates to a single output table, with the chat that built them in
@@ -54,13 +54,13 @@
   order: 2
   tab: "Keeps what it learned"
   lede: >-
-    Everything it measures joins the map it already holds of your data. Come
-    back in a month and it still knows.
+    Everything it measures joins one live brain of your data. It grows as your
+    data does, and every part of it is yours to open.
   altFull: >-
     The knowledge graph. Every column of every source drawn as a node, the edges
     between them tracing where each one came from, with one group's written
     context shown where the pointer rests.
-  cards:
-    - alt: >-
-        The project sidebar, listing the knowledge graph above five sources with
-        their column counts beside them.
+  # No crop. The graph fills its own frame edge to edge and a card in front of it
+  # covers the thing the view exists to show — the one place where the layering
+  # cost more than it bought.
+  cards: []

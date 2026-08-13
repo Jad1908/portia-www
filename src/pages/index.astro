@@ -20,17 +20,16 @@ import { WAREHOUSES, LOCAL_SOURCES, MODELS, LOCAL_MODELS } from "~/lib/logos";
  * structural changes, each one a deliberate departure from what LANDING.md
  * originally specified — all four are recorded in that file's overrides table:
  *
- *  1. **No screenshots and no artifact excerpts.** The three-pane mockup and
- *     the spec-beside-its-SQL pairing are gone. They were the two most detailed
- *     things on the page and they were what made it read as documentation. The
- *     panes are not mentioned either: how the window is divided is not a reason
- *     to try the product.
+ *  1. **No hero mockup and no artifact excerpts.** The drawn three-pane mockup
+ *     and the spec-beside-its-SQL pairing are gone. They were the two most
+ *     detailed things on the page and they were what made it read as
+ *     documentation. The panes are not named either: how the window is divided
+ *     is not a reason to try the product.
  *
- *     **Half of this is now reversed — see section 4, `AppShowcase`.** The page
- *     shows the app, in one block, after the argument rather than above it, in
- *     unretouched captures of software that runs. What stays true is the rest
- *     of the sentence: no artifact excerpts, no spec beside its compiled SQL,
- *     and the hero is still type on canvas. LANDING.md → "The fourth build".
+ *     The page **does** show the app — section 4, `AppShowcase`, in unretouched
+ *     captures, after the argument rather than above it. What stays true here
+ *     is the rest of the sentence: no artifact excerpts, no spec beside its
+ *     compiled SQL, and a hero that is type on canvas.
  *  2. **The one dark surface is spent on the argument, not on a picture.** The
  *     manifesto band inherits the slot the mockup used to hold, which is a
  *     better use of the page's single inversion — it lands where the page stops
@@ -193,14 +192,11 @@ const faqItems = faqEntries.map((e) => ({
 
     {/* ---- 4. Inside the app. The one section that shows the product.
 
-         It comes **after** the three columns and not before them, which is the
-         whole reason it is allowed to exist: the reading order is still "argue,
-         then demonstrate", and this is the demonstration rather than a picture
-         doing the arguing. LANDING.md's "no screenshots anywhere" rule is
-         reversed for this block only and the reversal is written up in that
-         file under "The fourth build" — the short version is that the rule was
-         aimed at a drawn mockup of unshipped software sitting in the hero, and
-         every clause of that description is false here.
+         It comes **after** the three columns and not before them: the reading
+         order is still "argue, then demonstrate", and this is the demonstration
+         rather than a picture doing the arguing. That placement is the one
+         thing about this section that is not free to move. LANDING.md → "The
+         showcase" is the spec for the rest of it.
 
          The frame runs at `wrap--frame`, wider than the 960px column, because a
          three-pane application shrunk into a prose measure reads as a thumbnail

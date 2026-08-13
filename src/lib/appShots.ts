@@ -6,7 +6,6 @@ import measureInterpret from "~/assets/app/measure-interpret.png";
 import buildCanvas from "~/assets/app/build-canvas.png";
 import buildQuestion from "~/assets/app/build-question.png";
 import memoryGraph from "~/assets/app/memory-graph.png";
-import memorySidebar from "~/assets/app/memory-sidebar.png";
 
 /**
  * The captures behind the showcase section, resolved at build time.
@@ -19,11 +18,10 @@ import memorySidebar from "~/assets/app/memory-sidebar.png";
  *
  * **These are unretouched captures of the running app.** Nothing is composited,
  * nothing is recoloured, and no pane is redrawn to look better than it does.
- * That is the whole basis on which LANDING.md's "no screenshots" rule was lifted
- * for this one section — a screenshot the page has edited is a mockup, and a
- * mockup of a product whose pitch is that two surfaces must never disagree
- * about a number is an argument against the product. See LANDING.md → "The
- * fourth build".
+ * This is rule 1 of LANDING.md → "The showcase" and it is the rule the section
+ * rests on: a screenshot the page has edited is a mockup, and a mockup of a
+ * product whose pitch is that two surfaces must never disagree about a number
+ * is an argument against the product.
  *
  * ## The placements
  *
@@ -36,10 +34,15 @@ import memorySidebar from "~/assets/app/memory-sidebar.png";
  * Two rules held them:
  *
  *  - **A crop never covers something the capture is being shown for.** The
- *    workspace's two crops sit low and left, over the preview table rather than
- *    over the column measurements. The graph's crop sits left, directly over
- *    the sidebar it is a magnification of — it was on the right first, where it
- *    covered the group context the graph is there to demonstrate.
+ *    workspace's crops sit low and left, over the preview table rather than over
+ *    the column measurements; the canvas's sits low and left too, clear of the
+ *    graph of models. **The knowledge graph has no crop at all** — it fills its
+ *    frame edge to edge, so anything in front of it covers the thing the view
+ *    exists to show. An empty `cards` array is a decision, not an omission.
+ *  - **They gather on the left.** Every crop hangs off the same corner, so the
+ *    three views read as one composition seen three ways rather than as three
+ *    layouts. The right side stays clear, which is also where the app puts its
+ *    copilot pane in two of the three.
  *  - **They may hang below the frame.** The full capture is masked away at its
  *    bottom edge and the crops are not, so a card that overhangs reads as being
  *    in front of the picture rather than pasted into it — which is the one
@@ -76,10 +79,10 @@ export const APP_SHOTS: Record<string, AppShot> = {
   },
   builds: {
     full: buildCanvas,
-    cards: [{ src: buildQuestion, place: { right: 3, bottom: -13, width: 17 } }],
+    cards: [{ src: buildQuestion, place: { left: 3, bottom: -13, width: 17 } }],
   },
   remembers: {
     full: memoryGraph,
-    cards: [{ src: memorySidebar, place: { left: 3, bottom: -9, width: 16 } }],
+    cards: [],
   },
 };
