@@ -1,0 +1,39 @@
+---
+import PrincipleIcon from "~/components/PrincipleIcon.astro";
+import "~/styles/global.css";
+---
+
+<html>
+  <head>
+    <style is:global>
+      body {
+        background: #f4f5f7;
+        margin: 0;
+        padding: 24px;
+      }
+      .p-icon > * {
+        stroke-dashoffset: 0 !important;
+      }
+      .row {
+        display: flex;
+        gap: 60px;
+        align-items: flex-start;
+      }
+      .row--zoom {
+        zoom: 3.5;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="row">
+      <PrincipleIcon name="tables" />
+      <PrincipleIcon name="pipeline" />
+      <PrincipleIcon name="graph" />
+    </div>
+    <div class="row row--zoom">
+      <PrincipleIcon name="tables" />
+      <PrincipleIcon name="pipeline" />
+      <PrincipleIcon name="graph" />
+    </div>
+  </body>
+</html>

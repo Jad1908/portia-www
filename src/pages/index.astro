@@ -7,6 +7,7 @@ import Footer from "~/components/Footer.astro";
 import SectionHead from "~/components/SectionHead.astro";
 import PrincipleIcon from "~/components/PrincipleIcon.astro";
 import Marquee from "~/components/Marquee.astro";
+import AppShowcase from "~/components/AppShowcase.astro";
 import Spider from "~/components/islands/Spider";
 import EarlyAccessForm from "~/components/islands/EarlyAccessForm";
 import Faq from "~/components/islands/Faq";
@@ -19,11 +20,16 @@ import { WAREHOUSES, LOCAL_SOURCES, MODELS, LOCAL_MODELS } from "~/lib/logos";
  * structural changes, each one a deliberate departure from what LANDING.md
  * originally specified — all four are recorded in that file's overrides table:
  *
- *  1. **No screenshots and no artifact excerpts.** The three-pane mockup and
- *     the spec-beside-its-SQL pairing are gone. They were the two most detailed
- *     things on the page and they were what made it read as documentation. The
- *     panes are not mentioned either: how the window is divided is not a reason
- *     to try the product.
+ *  1. **No hero mockup and no artifact excerpts.** The drawn three-pane mockup
+ *     and the spec-beside-its-SQL pairing are gone. They were the two most
+ *     detailed things on the page and they were what made it read as
+ *     documentation. The panes are not named either: how the window is divided
+ *     is not a reason to try the product.
+ *
+ *     The page **does** show the app — section 4, `AppShowcase`, in unretouched
+ *     captures, after the argument rather than above it. What stays true here
+ *     is the rest of the sentence: no artifact excerpts, no spec beside its
+ *     compiled SQL, and a hero that is type on canvas.
  *  2. **The one dark surface is spent on the argument, not on a picture.** The
  *     manifesto band inherits the slot the mockup used to hold, which is a
  *     better use of the page's single inversion — it lands where the page stops
@@ -67,6 +73,7 @@ const byAnchor = Object.fromEntries(sections.map((s) => [s.data.anchor, s]));
 const hero = byAnchor["top"]!;
 const line = byAnchor["the-line"]!;
 const principlesSection = byAnchor["principles"]!;
+const app = byAnchor["the-app"]!;
 const artifact = byAnchor["the-artifact"]!;
 const warehouses = byAnchor["warehouses"]!;
 const models = byAnchor["models"]!;
@@ -85,6 +92,10 @@ const principles = (await getCollection("principles")).sort((a, b) =>
 
 const allClaims = await getCollection("claims");
 const claimsIn = (g: string) => allClaims.filter((c) => c.data.group === g);
+
+const showcase = (await getCollection("showcase")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
 
 const faqEntries = (await getCollection("faq")).sort(
   (a, b) => a.data.order - b.data.order,
@@ -179,7 +190,32 @@ const faqItems = faqEntries.map((e) => ({
       </div>
     </section>
 
-    {/* ---- 4. The artifact. ---- */}
+    {/* ---- 4. Inside the app. The one section that shows the product.
+
+         It comes **after** the three columns and not before them: the reading
+         order is still "argue, then demonstrate", and this is the demonstration
+         rather than a picture doing the arguing. That placement is the one
+         thing about this section that is not free to move. LANDING.md → "The
+         showcase" is the spec for the rest of it.
+
+         The frame runs at `wrap--frame`, wider than the 960px column, because a
+         three-pane application shrunk into a prose measure reads as a thumbnail
+         of itself. That width already reserves the spider's lane. ---- */}
+    <section class="section" id="the-app">
+      <div class="wrap wrap--wide">
+        <SectionHead
+          label={app.data.label}
+          title={app.data.title}
+          titleSecond={app.data.titleSecond}
+        />
+      </div>
+
+      <div class="wrap wrap--frame section__body">
+        <AppShowcase views={showcase} />
+      </div>
+    </section>
+
+    {/* ---- 5. The artifact. ---- */}
     <section class="section" id="the-artifact">
       <div class="wrap wrap--wide">
         <SectionHead
@@ -202,7 +238,7 @@ const faqItems = faqEntries.map((e) => ({
       </div>
     </section>
 
-    {/* ---- 5. Wherever your data is.
+    {/* ---- 6. Wherever your data is.
 
          Two rails, running opposite ways. They split by KIND and not by rank —
          a warehouse somebody administers, versus what is already sitting on
@@ -252,7 +288,7 @@ const faqItems = faqEntries.map((e) => ({
       </div>
     </section>
 
-    {/* ---- 6. Whichever model you trust. Two bands, running opposite ways:
+    {/* ---- 7. Whichever model you trust. Two bands, running opposite ways:
          the second one is not a continuation of the first, it is a different
          claim, and counter-motion is what says so without a second heading. ---- */}
     <section class="section section--marquee" id="models">
@@ -294,7 +330,7 @@ const faqItems = faqEntries.map((e) => ({
       </div>
     </section>
 
-    {/* ---- 7. Early access. ---- */}
+    {/* ---- 8. Early access. ---- */}
     <section class="section" id="early-access">
       <div class="wrap wrap--wide">
         <SectionHead
