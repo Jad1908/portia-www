@@ -1,7 +1,7 @@
 # The three views of the app, in the order the page argues them: **measure ·
 # build on what was measured · keep it.** The same arc as `principles.yaml`,
-# shown instead of asserted — this section is the demonstration the three
-# columns above it earn.
+# shown before it is named — the three columns underneath this section are the
+# words for what these captures are doing.
 #
 # Every image these entries name is an unretouched capture of the running app.
 # Nothing here is a mockup and nothing is composited — LANDING.md → "The
@@ -38,8 +38,8 @@
   order: 1
   tab: "Builds the pipeline"
   lede: >-
-    Describe a table, and it builds a context-aware pipeline for you. Every step
-    is grounded in your specific data challenges.
+    Describe the table you want. It builds the pipeline, and every step stands
+    on something it measured in your sources.
   altFull: >-
     The pipeline canvas. A dozen models wired from three sources through joins
     and aggregates to a single output table, with the chat that built them in
@@ -54,8 +54,8 @@
   order: 2
   tab: "Keeps what it learned"
   lede: >-
-    Everything it measures joins one live brain of your data. It grows as your
-    data does, and every part of it is yours to open.
+    Nothing it learns is thrown away. Everything it has measured about your data
+    sits in one place, and all of it is yours to open.
   altFull: >-
     The knowledge graph. Every column of every source drawn as a node, the edges
     between them tracing where each one came from, with one group's written

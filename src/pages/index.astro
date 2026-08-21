@@ -26,10 +26,10 @@ import { WAREHOUSES, LOCAL_SOURCES, MODELS, LOCAL_MODELS } from "~/lib/logos";
  *     documentation. The panes are not named either: how the window is divided
  *     is not a reason to try the product.
  *
- *     The page **does** show the app — section 4, `AppShowcase`, in unretouched
- *     captures, after the argument rather than above it. What stays true here
- *     is the rest of the sentence: no artifact excerpts, no spec beside its
- *     compiled SQL, and a hero that is type on canvas.
+ *     The page **does** show the app — section 3, `AppShowcase`, in unretouched
+ *     captures, straight after the manifesto band. What stays true here is the
+ *     rest of the sentence: no artifact excerpts, no spec beside its compiled
+ *     SQL, and a hero that is type on canvas.
  *  2. **The one dark surface is spent on the argument, not on a picture.** The
  *     manifesto band inherits the slot the mockup used to hold, which is a
  *     better use of the page's single inversion — it lands where the page stops
@@ -37,9 +37,10 @@ import { WAREHOUSES, LOCAL_SOURCES, MODELS, LOCAL_MODELS } from "~/lib/logos";
  *  3. **The type ramp is fluid and much wider**, 44→88px at the hero against a
  *     12px mono label. Contrast is what the first version had none of.
  *
- * The reading order still argues before it demonstrates, and that is still a
- * layout constraint rather than a copy suggestion. What changed is the length
- * of each step, not the sequence of them.
+ * The reading order has since changed once more: the showcase moved ahead of
+ * the three columns, so the page now asserts, shows, and then names what it
+ * showed. The sequence is a layout constraint rather than a copy suggestion,
+ * and LANDING.md → "Reading order" is where it is recorded.
  *
  * ---
  *
@@ -107,7 +108,7 @@ const faqItems = faqEntries.map((e) => ({
 ---
 
 <Base
-  title="portia — it learns your data, and it doesn't forget"
+  title="portia. It learns your data, and it doesn't forget."
   description="A copilot for data scientists. portia understands what your data sources are, keeps what it learns, and builds the pipeline with you."
 >
   <Nav links={navLinks} />
@@ -140,7 +141,7 @@ const faqItems = faqEntries.map((e) => ({
           <a class="btn btn--primary" href="#early-access">
             Request early access
           </a>
-          <a class="btn btn--secondary" href="#principles">How it works</a>
+          <a class="btn btn--secondary" href="#the-app">See it running</a>
         </div>
       </div>
     </section>
@@ -148,8 +149,8 @@ const faqItems = faqEntries.map((e) => ({
     {/* ---- 2. The line. The page's one full-bleed dark surface.
 
          It carries the manifesto rather than a screenshot, and it carries no
-         body copy at all: the argument for it is the three principles directly
-         underneath, which is why the two are read as one movement. ---- */}
+         body copy at all. What follows it is the app itself, and the three
+         columns naming what the app was doing. ---- */}
     <section class="band mode-dark" id="the-line">
       <div class="wrap wrap--wide band__inner">
         {/* The band renders no label. Its one sentence is the section. */}
@@ -162,7 +163,34 @@ const faqItems = faqEntries.map((e) => ({
       </div>
     </section>
 
-    {/* ---- 3. The three principles. ---- */}
+    {/* ---- 3. Inside the app. The one section that shows the product.
+
+         It comes **before** the three columns, which reverses what this file
+         used to say. The band asserts, the app shows what the assertion looks
+         like running, and the three columns then name what you just watched
+         it do. Still one section, still unretouched captures, still never in
+         the hero: a picture may follow the claim, it may not replace it.
+         LANDING.md → "The showcase" is the spec for the rest of it.
+
+         The frame runs at `wrap--frame`, wider than the 960px column, because a
+         three-pane application shrunk into a prose measure reads as a thumbnail
+         of itself. That width already reserves the spider's lane. ---- */}
+    <section class="section" id="the-app">
+      <div class="wrap wrap--wide">
+        <SectionHead
+          label={app.data.label}
+          title={app.data.title}
+          titleSecond={app.data.titleSecond}
+        />
+      </div>
+
+      <div class="wrap wrap--frame section__body">
+        <AppShowcase views={showcase} />
+      </div>
+    </section>
+
+    {/* ---- 4. The three principles. They now read as the caption to the
+         showcase above rather than as its setup. ---- */}
     <section class="section" id="principles">
       <div class="wrap wrap--wide">
         <SectionHead
@@ -187,31 +215,6 @@ const faqItems = faqEntries.map((e) => ({
             ))
           }
         </div>
-      </div>
-    </section>
-
-    {/* ---- 4. Inside the app. The one section that shows the product.
-
-         It comes **after** the three columns and not before them: the reading
-         order is still "argue, then demonstrate", and this is the demonstration
-         rather than a picture doing the arguing. That placement is the one
-         thing about this section that is not free to move. LANDING.md → "The
-         showcase" is the spec for the rest of it.
-
-         The frame runs at `wrap--frame`, wider than the 960px column, because a
-         three-pane application shrunk into a prose measure reads as a thumbnail
-         of itself. That width already reserves the spider's lane. ---- */}
-    <section class="section" id="the-app">
-      <div class="wrap wrap--wide">
-        <SectionHead
-          label={app.data.label}
-          title={app.data.title}
-          titleSecond={app.data.titleSecond}
-        />
-      </div>
-
-      <div class="wrap wrap--frame section__body">
-        <AppShowcase views={showcase} />
       </div>
     </section>
 
