@@ -83,8 +83,7 @@ export default function EarlyAccessForm() {
       <div className="ea ea--sent">
         <p className="ea__sent-head">On the list.</p>
         <p className="ea__sent-body">
-          You will hear from a person, not a sequence, and not until there is
-          something to actually try.
+          Nothing will arrive in the meantime.
         </p>
       </div>
     );

@@ -24,14 +24,14 @@
 - id: claim-3
   group: artifact
   lead: "It is production code."
-  rest: "Versioned, reproducible, and it tells you when a source moves."
+  rest: "Versioned, reproducible, and it detects when a source moves."
 
 # --- Warehouses -------------------------------------------------------------
 
 - id: claim-4
   group: warehouse
   lead: "Nothing gets copied."
-  rest: "The work happens where the data is."
+  rest: "No extract, no staging table, no second version to keep in sync."
 
 - id: claim-5
   group: warehouse
@@ -42,8 +42,8 @@
 
 - id: claim-6
   group: models
-  lead: "Every provider works."
-  rest: "Bring the one you already pay for, or none at all."
+  lead: "Bring your own."
+  rest: "The provider you already pay for, or none at all."
 
 - id: claim-7
   group: models

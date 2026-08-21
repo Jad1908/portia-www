@@ -9,8 +9,8 @@ import { glob, file } from "astro/loaders";
  *
  * Five collections:
  *   sections   — one MDX file per section of the page, in reading order
- *   principles — the three columns under the manifesto band
- *   showcase   — the three views of the app, under those columns
+ *   showcase   — the three views of the app, under the manifesto band
+ *   principles — the three columns naming what the showcase just showed
  *   claims     — short lines of consequence, grouped by section
  *   faq        — one MD file per question
  *
@@ -18,9 +18,8 @@ import { glob, file } from "astro/loaders";
  * fed a drawn three-pane mockup in the hero, and it went because a picture the
  * page had composed of a product it had not shipped is the thing this repo
  * exists to refuse. `showcase` names unretouched captures of the running app,
- * it sits after the argument rather than above it, and the images themselves
- * live in `lib/appShots.ts` because an asset is not copy. LANDING.md → "The
- * showcase" is the spec.
+ * and the images themselves live in `lib/appShots.ts` because an asset is not
+ * copy. LANDING.md → "The showcase" is the spec.
  *
  * **The `evidence` collection is gone too, and its rule is not.** It held three
  * engine timings under the warehouse section, each properly cited. They were
@@ -74,7 +73,7 @@ const faq = defineCollection({
 });
 
 /**
- * The three columns under the manifesto band.
+ * The three columns under the showcase.
  *
  * `index` is a position and not a rank — see the file's own header. It is data
  * rather than MDX because the three are laid out as a grid, and a component

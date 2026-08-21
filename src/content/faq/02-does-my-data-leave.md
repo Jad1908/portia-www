@@ -3,6 +3,5 @@ order: 2
 question: "Does my data leave my machine?"
 ---
 
-No. The model never receives your rows — only what a measurement came back
-with — and you can point it at a local model if you would rather nothing left
-at all.
+No. The model receives what a measurement came back with, never your rows.
+Point it at a local model and nothing leaves at all.

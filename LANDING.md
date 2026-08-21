@@ -15,8 +15,8 @@ description: |
   as in the app. The product rule carries over unchanged and binds hardest here, where marketing
   instinct pushes against it: **color and prominence communicate kind, never rank.**
 
-  **The page shows the app**, in one section, in unretouched captures, after the argument rather
-  than above it. "The showcase" is the spec for it and the one rule under everything else there is
+  **The page shows the app**, in one section, in unretouched captures, directly after the
+  manifesto band. "The showcase" is the spec for it and the one rule under everything else there is
   *unedited or not at all*. Earlier drafts of this file banned screenshots outright; that was aimed
   at a drawn mockup of unshipped software sitting in the hero, and it did not survive contact with
   a product that runs. See "The second build" for the history.
@@ -314,8 +314,9 @@ product that looks like two products.
 - `{spacing.section}`, fluid 64→144px, between every block.
 - Exactly one full-bleed `{colors.canvas-deep}` surface per page: `{components.band}`, carrying the
   manifesto.
-- **The product is shown once, in the showcase**, in unretouched captures, after the argument. No
-  artifact excerpts anywhere, and nothing in the hero but type on canvas.
+- **The product is shown once, in the showcase**, in unretouched captures, after the band and
+  before the three columns. No artifact excerpts anywhere, and nothing in the hero but type on
+  canvas.
 - Radius vocabulary of two working values — `{rounded.md}` (8px) on interactive, `{rounded.none}` on
   full-bleed bands — matching the app, not OpenCode's 4px.
 - **Three pieces of ornament exist on the whole page and all three are named**: the spider, the two
@@ -474,11 +475,11 @@ durable, git-diffable spec you keep. That framing is **legacy** — it is what t
 lead with, and it is no longer what the product is for. The claim now is that portia builds real
 context on data that cannot fit in a model's window, by **measuring rather than sampling**, and then
 **keeps** what it learned. The band carries it (*no model can read a billion rows; so portia never
-asks one to*), the three columns argue it, and the artifact section — still on the page, still
-fourth — is now a **consequence** of it rather than the point.
+asks one to*), the three columns argue it, and the artifact section — still on the page, now
+fifth — is now a **consequence** of it rather than the point.
 
-The overrides table's line about the reading order is unchanged: the page still argues before it
-demonstrates. What changed is which argument.
+The reading order has since moved once more, and "Reading order" below is the current one: the
+showcase now sits between the band and the three columns.
 
 **2. The audience is named, once.** The page is for **data scientists** and says so in the hero
 lede and in the footer, and nowhere else — twice is a tagline, three times is a pitch deck.
@@ -516,8 +517,8 @@ were cut because they invited a doubt the page had not raised.
 
 ## The showcase — how the page shows the product
 
-The page shows the app in exactly one place: `#the-app`, between the three principles and the
-artifact section. Three views behind a centred row of pills, one at a time, each a **full capture
+The page shows the app in exactly one place: `#the-app`, between the manifesto band and the three
+principles. Three views behind a centred row of pills, one at a time, each a **full capture
 of the running application** with a crop or two of that same capture floating in front of it over
 one flat accent card. `AppShowcase.astro`; copy in `showcase.yaml`, captures in `lib/appShots.ts`.
 
@@ -525,9 +526,11 @@ one flat accent card. `AppShowcase.astro`; copy in `showcase.yaml`, captures in 
 will not show the product, while claiming the product refuses to guess, asks the reader to take on
 faith exactly the kind of claim the product exists to retire.
 
-**Why it sits where it sits.** The reading order is unchanged: the page argues, then demonstrates.
-This is the demonstration, and it goes after the three columns it demonstrates — never above them,
-and never in the hero. A picture that leads is a picture doing the arguing.
+**Why it sits where it sits.** The band asserts, the showcase shows, and the three columns name
+what was shown. This reverses the order this section first specified, which put the demonstration
+after the columns. What did not change is the floor under it: the showcase never opens the page and
+never enters the hero, because a picture that leads is a picture doing the arguing. Following a
+one-sentence manifesto is not leading.
 
 ### The rules
 
@@ -766,22 +769,23 @@ Everything below 32px is `DESIGN.md`'s scale unchanged. `{spacing.xxxl}` (48px) 
 
 ### Reading order
 
-The page argues before it demonstrates. This is a layout constraint, not a copy suggestion. The
-sequence below survived the rebuild; what changed is the **length of each step**, not their order.
+The band asserts, the showcase shows, and the three columns name what was shown. This is a layout
+constraint, not a copy suggestion. Steps 3 and 4 were the other way round until the showcase moved
+up; everything else has held since the rebuild.
 
 1. **Hero** — two lines and one sentence. The spider drops on its dragline as the page settles.
 2. **The band** — *data has no value without context; portia builds yours.* On
    `{components.band}`, the page's one dark surface, with **no body copy and no section label**:
    its one sentence is the section, and a heading above it was a heading for nothing. It is the
    only block on the page that drops its label.
-3. **How it works** — three columns: measure · build on what was measured · get sharper. Each
-   carries a `{components.pillar-icon}` that draws itself in. This is the argument the band just
-   asserted, and the two are read as one movement.
-4. **Inside the app** — the same three abilities, shown. Three views behind a row of pills, each a
-   full capture of the running app with one or two crops of it floating in front. It sits **here**
-   and nowhere earlier: the page still argues before it demonstrates, and this is the
-   demonstration. See "The showcase".
-5. **What you keep** — not a chat log, a pipeline you can hand over. Three `{components.claim}`
+3. **Inside the app** — the product, before it is described. Three views behind a row of pills,
+   each a full capture of the running app with one or two crops of it floating in front. It sits
+   **here** and nowhere earlier: the band still speaks first, and nothing moves it into the hero.
+   See "The showcase".
+4. **How it works** — three columns: measure · build on what was measured · get sharper. Each
+   carries a `{components.pillar-icon}` that draws itself in. These are the words for the three
+   things the showcase was just doing, in the same order it did them.
+5. **What you keep** — you keep the pipeline, and it runs without portia. Three `{components.claim}`
    lines, and the only place the app's two pictures are alluded to: the pipeline canvas and the
    knowledge graph. **No file format is named anywhere in it.**
 6. **Your data** — **two** counter-drifting rails, split by kind: the warehouse somebody
@@ -792,9 +796,9 @@ sequence below survived the rebuild; what changed is the **length of each step**
 9. **FAQ** — a closing appendix rather than a step in the argument. Five questions, and an answer
    that runs past four sentences is a signal the page failed to make its case earlier.
 
-**One section came back and one is still not coming back.** *The app* returned as step 4 — but as
-capture rather than as a drawn mockup, and after the argument rather than above it; what was wrong
-with it was never that it showed the product. *The graph* stays cut: it was true, well-written, and
+**One section came back and one is still not coming back.** *The app* returned — as capture rather
+than as a drawn mockup, and below the band rather than in the hero; what was wrong with it was
+never that it showed the product. *The graph* stays cut: it was true, well-written, and
 the third consecutive block of dense prose, which is the kind of thing that belongs in docs.
 
 ---
@@ -919,10 +923,12 @@ demoted: it is not the identity, because the split is.
 no accordion chrome.
 
 **`badge`** — `{colors.accent-soft}` fill, `{colors.accent-text}` label,
-`{typography.mono-caption}`, `{rounded.xs}`. For status-of-the-product tags ("in development",
-"early access"). **Never** for a metric, and it never scales with a number.
+`{typography.mono-caption}`, `{rounded.xs}`. For status-of-the-product tags. **One word carries
+that status across the whole page** — currently "Pre-launch", in the hero badge and in the footer —
+because three phrasings of the same fact read as three different facts. **Never** for a metric, and
+it never scales with a number.
 
-**`pillar`** — one of three equal columns under the manifesto. A mono index in `{colors.ash}`, a
+**`pillar`** — one of three equal columns under the showcase. A mono index in `{colors.ash}`, a
 `{typography.heading-md}` title, two sentences of `{typography.body-md}`. **The index is a position,
 never a rank**: it does not grow, it is not coloured, and the three are not sorted by weight.
 
@@ -949,7 +955,8 @@ never about the screenshot:
 - **The hairline carries the boundary in dark page mode**, where `canvas-deep` equals the page's own
   `canvas`. This resolves the open edge that used to be listed under Known gaps, and it resolves it
   in favour of the rule rather than in favour of a one-notch lift that would desync the two.
-- **No body copy inside it.** The band asserts; the section beneath it argues.
+- **No body copy inside it.** The band asserts; the showcase beneath it shows, and the three
+  columns after that argue.
 
 ### The logo bands
 
@@ -999,8 +1006,8 @@ uses.
 - **Use the app's real logo** for anything that reads as the brand.
 - Keep the spider suppressible: reduced-motion static, plus a persistent dismiss.
 - Give every marquee a designed static state, not a frozen frame.
-- **Show the product.** One block, unretouched, after the argument. A page that will not show the
-  app while claiming the app refuses to guess is asking to be taken on faith.
+- **Show the product.** One block, unretouched, after the band and never in the hero. A page that
+  will not show the app while claiming the app refuses to guess is asking to be taken on faith.
 - **Ship captures unedited, or not at all.** No compositing, no recolouring, no faked state, no
   filter — in either mode.
 - **Let the rotation yield.** Anything that moves on its own stops permanently the moment a visitor
@@ -1027,7 +1034,7 @@ uses.
   engine refuses to do.
 - **Don't sort or color by severity**, and don't let a badge grow with its figure.
 - **Don't retouch a capture, and don't show the app anywhere but the showcase.** One block, after
-  the argument; the hero stays type on canvas. A second block of screenshots is a different page.
+  the band; the hero stays type on canvas. A second block of screenshots is a different page.
 - **Don't put a spec or a SQL excerpt on the page**, in the showcase or anywhere else.
 - **Don't redraw the logo.** One brand image, generated by `pnpm mark` from the app's asset.
 - **Don't add a mode toggle back.** The system preference is the whole mechanism.
