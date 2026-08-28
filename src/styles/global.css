@@ -465,6 +465,10 @@ pre {
  * swarm adds one of its own: **the point count never changes between
  * formations.** See `islands/PrincipleSwarm.tsx`. ---- */
 .swarm {
+  /* One row's turn before the rotation moves on. Six seconds, the same as
+   * `AppShowcase`'s — the page has exactly two things that move on their own
+   * and they should not disagree about how long a beat is. */
+  --swarm-dwell: 6s;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
   gap: var(--spacing-xxxl);
@@ -486,17 +490,53 @@ pre {
   gap: clamp(48px, 9vh, 104px);
 }
 
-/* The left rule is a **cursor, not a divider and not a rank.** It is exactly
- * one row tall, it is never on two rows at once, and every other property of
- * the three rows is identical at every moment. It is `ink` rather than the
- * accent on purpose: the teal is spent on the one primary action per section
- * and a selection marker is not one. */
+/* The left rule is a **clock, and a cursor, and neither is a rank.** It is
+ * exactly one row tall, it is never on two rows at once, and every other
+ * property of the three rows is identical at every moment. It is `ink` rather
+ * than the accent on purpose: the teal is spent on the one primary action per
+ * section and a selection marker is not one.
+ *
+ * It fills over `--swarm-dwell` and the section moves on when it reaches the
+ * bottom. **That is the whole of the rotation** — `animationend` on this
+ * pseudo-element is what advances the row, so there is no timer in script, and
+ * every rule below that stops the animation stops the rotation with it. Which
+ * means the two states fall out for free rather than needing to be kept in
+ * sync with a `setTimeout`:
+ *
+ *  - **paused** — the pointer is in the section, or the section is off-screen.
+ *    The bar freezes exactly where it was. Someone whose pointer is resting on
+ *    a row is reading it.
+ *  - **stopped** — a visitor clicked a row. The bar goes full and the rotation
+ *    is over for the session. `LANDING.md`: anything that moves on its own
+ *    stops permanently the moment a visitor chooses.
+ *
+ * Reduced motion is the stopped state from the first frame, which is why the
+ * media query at the foot of this block is all it takes to suppress the whole
+ * mechanism. */
 .swarm__item {
   position: relative;
   display: grid;
   gap: var(--spacing-md);
   padding-left: var(--spacing-xl);
   border-left: 1px solid var(--portia-hairline);
+  /* The rows are clickable, and clicking one holds it. */
+  cursor: pointer;
+  transition: border-color 220ms var(--ease-reveal);
+}
+/* The affordance, and it is deliberately two very small things rather than one
+ * obvious one: the idle rule steps one rung up the elevation ladder, and the
+ * row's content nudges 3px off it. The nudge is on the children rather than the
+ * row so that the rule and the clock stay anchored while the text moves, and so
+ * that nothing reflows. **Not an underline** — on this page an underline means
+ * a link, and these are not links. */
+.swarm__item:hover {
+  border-left-color: var(--portia-hairline-strong);
+}
+.swarm__item > * {
+  transition: transform 220ms var(--ease-reveal);
+}
+.swarm__item:hover > * {
+  transform: translateX(3px);
 }
 .swarm__item::before {
   content: "";
@@ -508,10 +548,24 @@ pre {
   background-color: var(--portia-ink);
   transform: scaleY(0);
   transform-origin: top;
-  transition: transform 520ms var(--ease-reveal);
 }
 .swarm__item.is-active::before {
+  animation: swarm-fill var(--swarm-dwell) linear forwards;
+}
+.swarm.is-paused .swarm__item.is-active::before {
+  animation-play-state: paused;
+}
+.swarm.is-stopped .swarm__item.is-active::before {
+  animation: none;
   transform: scaleY(1);
+}
+@keyframes swarm-fill {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
 }
 
 .swarm__index {
@@ -524,12 +578,22 @@ pre {
 .swarm__item.is-active .swarm__index {
   color: var(--portia-ink);
 }
+/* The title lifts `body` → `ink` on the active row, and the index `ash` → `ink`
+ * with it. **This is the selection signal and the bar is not**, because the bar
+ * now spends most of its time part-full and a freshly-hovered row starts its
+ * clock at zero — something has to say *this is the one* at that moment. Both
+ * rows stay entirely legible either way: `body` is the colour the paragraph
+ * under it is already set in. State, moving, on one row at a time. */
 .swarm__title {
   font-size: var(--text-heading-md);
   line-height: 1.25;
   font-weight: 500;
-  color: var(--portia-ink);
+  color: var(--portia-body);
   text-wrap: balance;
+  transition: color 320ms var(--ease-reveal);
+}
+.swarm__item.is-active .swarm__title {
+  color: var(--portia-ink);
 }
 .swarm__body {
   font-size: var(--text-body-md);
@@ -558,10 +622,22 @@ pre {
   height: 100%;
 }
 
+/* Reduced motion is the stopped state, from the first frame: the bar is full on
+ * the active row, no clock runs, and the section never moves on its own. Hover
+ * and click still select. */
 @media (prefers-reduced-motion: reduce) {
-  .swarm__item::before,
-  .swarm__index {
+  .swarm__item,
+  .swarm__item > *,
+  .swarm__index,
+  .swarm__title {
     transition: none;
+  }
+  .swarm__item:hover > * {
+    transform: none;
+  }
+  .swarm__item.is-active::before {
+    animation: none;
+    transform: scaleY(1);
   }
 }
 

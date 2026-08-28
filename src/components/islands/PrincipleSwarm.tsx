@@ -60,6 +60,27 @@ import {
  * responds to a cursor at all, and it is deliberately soft — the drawing must
  * stay legible while you are disturbing it.
  *
+ * ---
+ *
+ * **The rotation has no timer in it.** The row's left rule fills over
+ * `--swarm-dwell` as a CSS animation and `animationend` is what advances the
+ * section — so the clock a visitor can see *is* the clock, rather than a
+ * picture of one running next to a `setTimeout` that will drift away from it.
+ * Everything that stops the bar stops the rotation for free:
+ *
+ *  - Pointer in the section, or the section off-screen → `is-paused`, and
+ *    `animation-play-state: paused` freezes the bar where it stands.
+ *  - A click on a row → `is-stopped`, the bar goes full, and the rotation is
+ *    over for the session. That is `LANDING.md`'s rule for anything on this
+ *    page that moves on its own, and it is why **click and hover are not the
+ *    same gesture**: hovering is looking, and it pauses; clicking is choosing,
+ *    and it stops.
+ *  - `prefers-reduced-motion` → the stopped state from the first frame, in CSS
+ *    alone. No animation, therefore no `animationend`, therefore no rotation.
+ *
+ * Scroll still selects, and it resets nothing — the row crossing the middle of
+ * the viewport wins, and its clock starts from zero because the class moved.
+ *
  * **Reduced motion renders it static**, at the exact sampled coordinates of the
  * active formation, with no loop, no wander and no pointer response. That state
  * is the designed one: it is the linework icon, in dots. Changing formation
@@ -139,7 +160,14 @@ function sample(name: FormationName): Float32Array {
 
 export default function PrincipleSwarm({ items }: { items: SwarmItem[] }) {
   const [active, setActive] = useState(0);
+  /** Pointer is in the section. Someone resting on a row is reading it. */
+  const [hovering, setHovering] = useState(false);
+  /** The section is on screen. A clock nobody can see should not be running. */
+  const [onScreen, setOnScreen] = useState(false);
+  /** A visitor clicked a row. Permanent, for the session. */
+  const [stopped, setStopped] = useState(false);
 
+  const rootRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLOListElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -174,6 +202,20 @@ export default function PrincipleSwarm({ items }: { items: SwarmItem[] }) {
     rows.forEach((r) => io.observe(r));
     return () => io.disconnect();
   }, [items.length]);
+
+  /* -- the clock only runs while the section is on screen ---------------- */
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || !("IntersectionObserver" in window)) {
+      setOnScreen(true);
+      return;
+    }
+    const io = new IntersectionObserver(([e]) => setOnScreen(e.isIntersecting), {
+      threshold: 0,
+    });
+    io.observe(root);
+    return () => io.disconnect();
+  }, []);
 
   /* -- tell the loop, and kick the cloud --------------------------------- */
   useEffect(() => {
@@ -392,17 +434,30 @@ export default function PrincipleSwarm({ items }: { items: SwarmItem[] }) {
   }, [items]);
 
   /* -- markup ------------------------------------------------------------ *
-   * The stage is `aria-hidden` and nothing here is focusable, which is
-   * deliberate: the swarm carries no information the three paragraphs beside it
-   * do not already carry, so three tab stops that only redraw a decoration
-   * would be noise in a keyboard path. Selection is pointer and scroll only.
+   * **Nothing here is focusable, and that is a decision rather than an
+   * oversight.** The rows are clickable, so the obvious move is to make them
+   * buttons. What a click does, though, is select a formation in an
+   * `aria-hidden` canvas and stop a decoration from rotating — and a visitor
+   * who cannot see the canvas already has the stronger version of that control
+   * in `prefers-reduced-motion`, which stops it before it starts. Turning three
+   * paragraphs of prose into three buttons, so that a screen reader announces
+   * the section as a set of controls over a drawing it will never describe,
+   * costs more than the gap it closes. Recorded in `LANDING.md` → "Known gaps".
    *
-   * The active row is marked with a rule that fills and an index that goes from
-   * `ash` to `ink`. That is selection *state* — a cursor — and not a rank: it
-   * moves, it is never on two rows at once, and the three rows are identical in
-   * size, colour and weight at every other moment. */
+   * Selection is marked twice, and the two are different things. The **title**
+   * lifts `body` → `ink` with the index: that is the cursor, and it is on
+   * exactly one row. The **rule** filling down the left edge is the clock. Both
+   * are state, neither is a rank — they move, they are never on two rows at
+   * once, and at every other property the three rows are identical. */
+  const paused = hovering || !onScreen;
+
   return (
-    <div className="swarm">
+    <div
+      className={`swarm${paused ? " is-paused" : ""}${stopped ? " is-stopped" : ""}`}
+      ref={rootRef}
+      onPointerEnter={() => setHovering(true)}
+      onPointerLeave={() => setHovering(false)}
+    >
       <ol className="swarm__list" ref={listRef}>
         {items.map((it, i) => (
           <li
@@ -410,6 +465,18 @@ export default function PrincipleSwarm({ items }: { items: SwarmItem[] }) {
             data-swarm-item={i}
             className={`swarm__item${i === active ? " is-active" : ""}`}
             onPointerEnter={() => setActive(i)}
+            onClick={() => {
+              setActive(i);
+              setStopped(true);
+            }}
+            onAnimationEnd={(e) => {
+              // The clock reaching the bottom of the rule is the advance. Guard
+              // on the name because a row carries other transitions, and on the
+              // index because a stale row's animation must not move a live one.
+              if (e.animationName === "swarm-fill" && i === active) {
+                setActive((a) => (a + 1) % items.length);
+              }
+            }}
           >
             <span className="swarm__index">{it.index}</span>
             <h3 className="swarm__title">{it.title}</h3>

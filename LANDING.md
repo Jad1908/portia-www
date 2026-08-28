@@ -164,7 +164,10 @@ components:
     textColor: "{colors.body}"
     typography: "{typography.body-md}"
     border-left: "1px solid {colors.hairline}"
-    activeRuleColor: "{colors.ink}"
+    hoverBorderColor: "{colors.hairline-strong}"
+    hoverNudge: 3px          # on the row's children, so the rule stays anchored
+    clockColor: "{colors.ink}"
+    dwell: 6s                # one row's turn. Matches the showcase's rotation.
     rounded: "{rounded.none}"
   claim:
     backgroundColor: "transparent"
@@ -901,6 +904,37 @@ read as bigger or better than another. *Density* does differ between the three, 
 different amounts of ink and points are spaced evenly along it; density follows the drawing, never
 the rank.
 
+**It rotates, and the clock is the thing you can see.** The active row's left rule fills from top
+to bottom over `dwell`, and when it reaches the bottom the section moves to the next row.
+`animationend` on that rule is what advances it — there is **no timer in script**, so the clock a
+visitor is watching cannot drift away from the clock that decides. Three states, and the second and
+third fall out of stopping the same animation:
+
+| State | Cause | The rule reads |
+|---|---|---|
+| running | nothing else | filling, top to bottom |
+| **paused** | pointer anywhere in the section, or the section off-screen | frozen exactly where it stood |
+| **stopped** | a visitor **clicked** a row | full, and the rotation is over for the session |
+
+**Hover and click are deliberately not the same gesture.** Hovering is looking, so it selects and
+*pauses*. Clicking is choosing, so it selects and *stops* — which is `LANDING.md`'s standing rule
+for anything on this page that moves on its own, and the same contract `{components.showcase}`
+makes with its tab strip. The dwell matches the showcase's six seconds too: the page has exactly
+two things that move by themselves and they should not disagree about how long a beat is.
+
+**Selection is marked by the title, not by the rule.** The active row's title lifts
+`{colors.body}` → `{colors.ink}` and its index `{colors.ash}` → `{colors.ink}`. This is necessary
+rather than decorative: the rule is a clock now, so it spends most of its time part-full and a
+freshly-hovered row starts from zero — something else has to say *this is the one* at that moment.
+Both states stay fully legible; `{colors.body}` is the colour the paragraph underneath is already
+set in. It is a cursor, on one row at a time, and not a rank.
+
+**The clickable affordance is two very small things rather than one obvious one**: the idle left
+rule steps one rung up the elevation ladder to `{colors.hairline-strong}`, and the row's content
+nudges 3px off it. The nudge is applied to the row's *children* so the rule and the clock stay
+anchored while the text moves, and so nothing reflows. **Not an underline** — on this page an
+underline means a link, and these are not links.
+
 **Rules.**
 - One `{colors.mute}` dot size and one colour for all three formations, read out of the stage's
   computed `color` so it inverts with the page mode with no hex in the island.
@@ -913,12 +947,12 @@ the rank.
   which is the difference between a settled swarm and a bitmap.
 - **The pointer pushes points out of its way.** It is the only cursor response on the page and it is
   deliberately soft — the drawing stays legible while it is being disturbed.
-- **Selection is pointer and scroll only, and nothing in the section is focusable.** The stage is
-  `aria-hidden` and carries no information the three paragraphs do not already carry, so three tab
-  stops that redraw a decoration would be noise in a keyboard path.
+- **Selection is pointer, click and scroll — and nothing in the section is focusable.** See "Known
+  gaps"; this is a decision with a cost, not an oversight.
 - **Reduced motion renders it static** at the exact sampled coordinates, with no loop, no wander and
-  no pointer response. That state is the designed one: it is the linework icon, in dots. It is also
-  the sharper of the two.
+  no pointer response, and it is the *stopped* state from the first frame — no animation, therefore
+  no `animationend`, therefore no rotation, in CSS alone. That state is the designed one: it is the
+  linework icon, in dots. It is also the sharper of the two.
 - The loop is parked whenever the stage is off-screen.
 - `/swarm` is the proof sheet, the sibling of `/icons`: the island alone, at the top of a blank
   page, hydrated immediately, with `?i=` to select a formation. Both are unlinked and `noindex`.
@@ -1061,8 +1095,10 @@ uses.
   will not show the app while claiming the app refuses to guess is asking to be taken on faith.
 - **Ship captures unedited, or not at all.** No compositing, no recolouring, no faked state, no
   filter — in either mode.
-- **Let the rotation yield.** Anything that moves on its own stops permanently the moment a visitor
-  chooses, pauses while they are looking, and does not run at all under reduced motion.
+- **Let a rotation yield.** Anything that moves on its own stops permanently the moment a visitor
+  chooses, pauses while they are looking, and does not run at all under reduced motion. Both things
+  on this page that move by themselves — the showcase and the swarm — hold to it, at the same
+  six-second beat.
 - Check every `stone` / `ash` reference against `DESIGN.md`, not against the OpenCode source.
 
 ### Don't
@@ -1161,6 +1197,12 @@ reading column is not charming.
 
 ## Known gaps
 
+- **The swarm's rows are clickable but not focusable.** The obvious fix is to make them buttons,
+  and it was rejected: a click selects a formation in an `aria-hidden` canvas and stops a
+  decoration rotating, and a visitor who cannot see the canvas already has the stronger version of
+  that control in `prefers-reduced-motion`, which stops it before it starts. Turning three
+  paragraphs of prose into three controls over a drawing a screen reader will never describe costs
+  more than the gap it closes. Revisit if the swarm ever carries information the rows do not.
 - **The brand image is a 128px raster.** It is the app's real logo, which is the point, but it does
   not scale to a 400px hero and it carries a contact shadow drawn for a light UI (the `Brandmark`
   component lifts brightness in dark mode rather than shipping a second asset that could drift). If
