@@ -84,8 +84,8 @@ const principles = defineCollection({
   schema: z.object({
     group: z.string(),
     index: z.string(),
-    /** Which linework drawing sits above the column. See `PrincipleIcon`. */
-    icon: z.enum(["tables", "pipeline", "graph"]),
+    /** Which shape the swarm settles into for this row. See `lib/formations`. */
+    formation: z.enum(["tables", "pipeline", "graph"]),
     title: z.string(),
     body: z.string(),
   }),

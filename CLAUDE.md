@@ -109,8 +109,9 @@ product whose entire pitch is that two surfaces must never disagree about a numb
 ## Stack
 
 - **Astro 5** — the page is overwhelmingly static and ships zero JS for prose.
-- **React islands, three of them only**: the spider, the early-access form, the FAQ. Anything else
-  wanting an island is a signal to check whether it needs to be interactive at all.
+- **React islands, four of them only**: the spider, the "How it works" swarm, the early-access
+  form, the FAQ. Anything else wanting an island is a signal to check whether it needs to be
+  interactive at all — the swarm is the one that had an answer, being a canvas simulation.
 - **Tailwind v4**, theming through `@theme` off `tokens.css`.
 - **Motion** (`motion`) for reveals and the spider. **Lenis** for smooth scroll, disabled under
   `prefers-reduced-motion`. Escalate to GSAP ScrollTrigger only if a pinned scroll scene is added.
@@ -134,7 +135,9 @@ product whose entire pitch is that two surfaces must never disagree about a numb
   atmospheric backgrounds, no shadows on persistent chrome. Motion carries the modernity. The
   showcase's floating crops are the one exception and they are not decoration — they are captures
   of the product, and they carry the page's single sanctioned shadow. `LANDING.md` → "The fourth
-  build" is the whole of that permission.
+  build" is the whole of that permission. The "How it works" swarm is not decoration either — it is
+  the diagram of the three principles, and `LANDING.md` → "The swarm" is its spec. Its geometry is
+  shared with the `/icons` proof sheet through `src/lib/formations.ts` and must not fork.
 - **Reduced-motion is not an afterthought.** Every animation has a static resting state that is the
   designed state, not a degraded one.
 - **Build order**: the SVG mark first (the nav lockup, favicon, OG image and scroll spider all

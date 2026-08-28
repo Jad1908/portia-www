@@ -1,0 +1,58 @@
+---
+/**
+ * The swarm proof sheet — `/swarm`, unlinked, the sibling of `/icons`.
+ *
+ * The section it belongs to sits 2,700px down a page with smooth scroll, a
+ * two-way reveal observer and a stage that only starts its loop once it is
+ * on screen. That is the right behaviour and the wrong thing to iterate
+ * against: every parameter change costs a scroll, and half of them cannot be
+ * seen at all without one. This renders the same island alone, at the top,
+ * hydrated immediately.
+ *
+ * `?i=1` selects a formation on load, which is the only way to photograph one
+ * without driving the browser. It clicks the row, because a click is now the
+ * only thing that selects — and clicking also stops the rotation, which is
+ * exactly what a still wants. `?reduced=1` is not needed — set the OS
+ * preference.
+ */
+import PrincipleSwarm from "~/components/islands/PrincipleSwarm";
+import { getCollection } from "astro:content";
+import "~/styles/global.css";
+
+const principles = (await getCollection("principles")).sort((a, b) =>
+  a.data.index.localeCompare(b.data.index),
+);
+const items = principles.map((p) => ({
+  index: p.data.index,
+  title: p.data.title,
+  body: p.data.body,
+  formation: p.data.formation,
+}));
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>swarm — proof sheet</title>
+  </head>
+  <body>
+    <main class="wrap wrap--wide" style="padding-block: 48px">
+      <PrincipleSwarm client:load items={items} />
+    </main>
+
+    <script>
+      // Pick a formation from the query string, so a still can be taken of one.
+      // A click, because that is the only thing that selects — and it holds the
+      // row, so the clock will not rotate out from under the screenshot.
+      const i = Number(new URLSearchParams(location.search).get("i") ?? 0);
+      const pick = () => {
+        const rows = document.querySelectorAll<HTMLElement>(".swarm__item");
+        if (!rows.length) return requestAnimationFrame(pick);
+        rows[Math.min(i, rows.length - 1)].click();
+      };
+      requestAnimationFrame(pick);
+    </script>
+  </body>
+</html>

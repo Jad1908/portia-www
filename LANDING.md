@@ -157,11 +157,17 @@ components:
     typography: "{typography.statement}"
     rounded: "{rounded.none}"
     padding: "clamp(72px, 10vw, 160px) 0px"
-  pillar:
+  # One of three rows beside the swarm. The left rule is a selection cursor and
+  # not a divider — see "The swarm" below.
+  swarm-row:
     backgroundColor: "transparent"
     textColor: "{colors.body}"
     typography: "{typography.body-md}"
-    border-top: "1px solid {colors.hairline}"
+    border-left: "1px solid {colors.hairline}"
+    hoverBorderColor: "{colors.hairline-strong}"
+    hoverNudge: 3px          # on the row's children, so the rule stays anchored
+    clockColor: "{colors.ink}"
+    dwell: 6s                # one row's turn. Matches the showcase's rotation.
     rounded: "{rounded.none}"
   claim:
     backgroundColor: "transparent"
@@ -268,12 +274,12 @@ components:
     source: public/portia-mark.png
     navSize: 44px   # in a 56px bar. See "The third build", item 6.
     footerSize: 24px
-  # The linework drawing above each of the three columns. One colour, one
-  # weight, one size for all three — see "The third build", item 7.
-  pillar-icon:
-    strokeColor: "{colors.mute}"
-    strokeWidth: "1.5px at 40px"
-    size: 40px
+  # The point cloud beside the three rows. One cloud, one dot size, one colour,
+  # and the SAME POINT COUNT in every formation — see "The swarm" below.
+  swarm:
+    dotColor: "{colors.mute}"
+    points: 720
+    stage: "1:1, max 420px, sticky"
     rounded: "{rounded.none}"
   # The linework creature. No longer the brand mark; the scroll spider only.
   spider:
@@ -319,8 +325,8 @@ product that looks like two products.
   canvas.
 - Radius vocabulary of two working values — `{rounded.md}` (8px) on interactive, `{rounded.none}` on
   full-bleed bands — matching the app, not OpenCode's 4px.
-- **Three pieces of ornament exist on the whole page and all three are named**: the spider, the two
-  counter-drifting logo marquees, and the showcase's floating crops.
+- **Four pieces of ornament exist on the whole page and all four are named**: the spider, the two
+  counter-drifting logo marquees, the showcase's floating crops, and the "How it works" swarm.
 
 ### The rule that is specific to this product
 
@@ -782,9 +788,10 @@ up; everything else has held since the rebuild.
    each a full capture of the running app with one or two crops of it floating in front. It sits
    **here** and nowhere earlier: the band still speaks first, and nothing moves it into the hero.
    See "The showcase".
-4. **How it works** — three columns: measure · build on what was measured · get sharper. Each
-   carries a `{components.pillar-icon}` that draws itself in. These are the words for the three
-   things the showcase was just doing, in the same order it did them.
+4. **How it works** — three rows: measure · build on what was measured · get sharper. These are
+   the words for the three things the showcase was just doing, in the same order it did them.
+   Beside them, sticky, `{components.swarm}`: one cloud of points that settles into a different
+   formation for whichever row is being read. See "The swarm".
 5. **What you keep** — you keep the pipeline, and it runs without portia. Three `{components.claim}`
    lines, and the only place the app's two pictures are alluded to: the pipeline canvas and the
    knowledge graph. **No file format is named anywhere in it.**
@@ -877,6 +884,99 @@ dragline is also not a liberty: jumping spiders trail one continuously as a safe
 
 ---
 
+## The swarm
+
+The "How it works" section. Three rows of prose on the left; on the right, sticky, a square stage
+holding **one cloud of 720 points that settles into a different formation for whichever row is
+being read** — the three source piles, the pipeline, the knowledge graph.
+
+**Why it is not three icons.** It was, for one build: each column carried its own linework drawing
+that drew itself in on arrival. Those drawings were fine and they still exist, on the unlinked
+`/icons` proof sheet. What they could not do is say the thing the section is for. Three separate
+drawings in three separate boxes say *here are three features*. The section exists to say the
+opposite: measuring, building on what was measured, and remembering it are one body of facts seen
+three ways. One cloud that rearranges says that; three icons contradict it.
+
+**The rule the swarm has to hold, and how.** The point count never changes — not between
+formations, not on resize. Nothing is added when the cloud becomes the pipeline and nothing is
+dropped when it becomes the graph. Equal count, equal dot size, equal colour, so no formation can
+read as bigger or better than another. *Density* does differ between the three, because they hold
+different amounts of ink and points are spaced evenly along it; density follows the drawing, never
+the rank.
+
+**It rotates, and the clock is the thing you can see.** The active row's left rule fills from top
+to bottom over `dwell`, and when it reaches the bottom the section moves to the next row.
+`animationend` on that rule is what advances it — there is **no timer in script**, so the clock a
+visitor is watching cannot drift away from the clock that decides. Three states, and the second and
+third fall out of stopping the same animation:
+
+| State | Cause | The rule reads |
+|---|---|---|
+| running | nothing else | filling, top to bottom |
+| **paused** | pointer on the row that is **on display**, or the section off-screen | frozen exactly where it stood |
+| **stopped** | a visitor **clicked** a row | full, and the rotation is over for the session |
+
+**Only the row on display holds the clock.** Resting on one of the other two is reading ahead, and
+what is being read is not what the clock is counting down — so the turn keeps running. It starts
+holding the moment the rotation arrives at that row, which is the case worth having: the section
+comes round to the thing you were reading and then waits there.
+
+**The stage is not in the pause's hit area either.** Pushing the points around is playing with what
+the clock produces rather than reading, and a rotation that stopped the moment you touched the
+drawing would hide two thirds of itself from exactly the visitor who was most interested in it.
+
+**Exactly two things change the formation: the clock, and a click.** Hovering a row is a statement
+about reading, so at most it *holds the clock* — it never selects. Clicking is choosing, so it
+selects **and** stops the rotation for the session, which is this file's standing rule for anything
+on the page that moves on its own and the same contract `{components.showcase}` makes with its tab
+strip. The dwell matches the showcase's six seconds too: the page has exactly two things that move
+by themselves and they should not disagree about how long a beat is.
+
+Hover-to-select and scroll-position-to-select both existed and both were cut, for one reason: the
+drawing moved without anyone asking it to. A visitor brushing past a row on the way down the page
+should not be able to reshape what they are looking at, and one who nudges the scrollbar should not
+see the rotation snap backwards. Cutting them also gave the hover affordance below something to do
+— it used to be swallowed by the row going active in the same frame.
+
+**Selection is marked by the title, not by the rule.** The active row's title lifts
+`{colors.body}` → `{colors.ink}` and its index `{colors.ash}` → `{colors.ink}`. This is necessary
+rather than decorative: the rule is a clock now, so it spends most of its time part-full — something
+else has to say *this is the one* while it sits near zero.
+Both states stay fully legible; `{colors.body}` is the colour the paragraph underneath is already
+set in. It is a cursor, on one row at a time, and not a rank.
+
+**The clickable affordance is two very small things rather than one obvious one**: the idle left
+rule steps one rung up the elevation ladder to `{colors.hairline-strong}`, and the row's content
+nudges 3px off it. The nudge is applied to the row's *children* so the rule and the clock stay
+anchored while the text moves, and so nothing reflows. **Not an underline** — on this page an
+underline means a link, and these are not links.
+
+**Rules.**
+- One `{colors.mute}` dot size and one colour for all three formations, read out of the stage's
+  computed `color` so it inverts with the page mode with no hex in the island.
+- **The geometry is shared with the icons** (`src/lib/formations.ts`) and may not be forked. A
+  formation is sampled by walking the concatenated ink of its shapes, so a point lands at the same
+  *fraction of ink* in every formation and the cloud reorganises in a readable sweep.
+- **Motion is three forces**: a spring to the target with per-point stiffness (one stiffness moves
+  the cloud in lockstep, which reads as an object being dragged); a scatter impulse on every change,
+  so the swarm re-gathers rather than sliding between two drawings; and a sub-pixel per-point wander,
+  which is the difference between a settled swarm and a bitmap.
+- **The pointer pushes points out of its way.** It is the only cursor response on the page and it is
+  deliberately soft — the drawing stays legible while it is being disturbed, and the rotation keeps
+  running underneath it.
+- **Selection is click only, and nothing in the section is focusable.** See "Known gaps"; the
+  second half is a decision with a cost, not an oversight.
+- **Reduced motion renders it static** at the exact sampled coordinates, with no loop, no wander and
+  no pointer response, and it is the *stopped* state from the first frame — no animation, therefore
+  no `animationend`, therefore no rotation, in CSS alone. That state is the designed one: it is the
+  linework icon, in dots. It is also the sharper of the two.
+- The loop is parked whenever the stage is off-screen.
+- `/swarm` is the proof sheet, the sibling of `/icons`: the island alone, at the top of a blank
+  page, hydrated immediately, with `?i=` to click a row and hold a formation still. Both are
+  unlinked and `noindex`.
+
+---
+
 ## Components
 
 ### Buttons
@@ -928,9 +1028,12 @@ that status across the whole page** — currently "Pre-launch", in the hero badg
 because three phrasings of the same fact read as three different facts. **Never** for a metric, and
 it never scales with a number.
 
-**`pillar`** — one of three equal columns under the showcase. A mono index in `{colors.ash}`, a
+**`swarm-row`** — one of three equal rows beside the swarm. A mono index in `{colors.ash}`, a
 `{typography.heading-md}` title, two sentences of `{typography.body-md}`. **The index is a position,
-never a rank**: it does not grow, it is not coloured, and the three are not sorted by weight.
+never a rank**: it does not grow, it is not coloured, and the three are not sorted by weight. The
+active row carries a 1px `{colors.ink}` rule down its left edge and lifts its index from
+`{colors.ash}` to `{colors.ink}`. That is a **cursor**: it is on exactly one row, it moves, and at
+every other property the three rows are identical.
 
 **`claim`** — one short line of consequence, set at `{typography.heading-md}` so it is read rather
 than skimmed, with a mono `[+]` marker and a hairline top rule. `lead` in `{colors.ink}`, the rest
@@ -1010,8 +1113,10 @@ uses.
   will not show the app while claiming the app refuses to guess is asking to be taken on faith.
 - **Ship captures unedited, or not at all.** No compositing, no recolouring, no faked state, no
   filter — in either mode.
-- **Let the rotation yield.** Anything that moves on its own stops permanently the moment a visitor
-  chooses, pauses while they are looking, and does not run at all under reduced motion.
+- **Let a rotation yield.** Anything that moves on its own stops permanently the moment a visitor
+  chooses, pauses while they are looking, and does not run at all under reduced motion. Both things
+  on this page that move by themselves — the showcase and the swarm — hold to it, at the same
+  six-second beat.
 - Check every `stone` / `ash` reference against `DESIGN.md`, not against the OpenCode source.
 
 ### Don't
@@ -1038,7 +1143,8 @@ uses.
 - **Don't put a spec or a SQL excerpt on the page**, in the showcase or anywhere else.
 - **Don't redraw the logo.** One brand image, generated by `pnpm mark` from the app's asset.
 - **Don't add a mode toggle back.** The system preference is the whole mechanism.
-- **Don't let an icon rank its column.** One colour, one weight, one size, or it does not ship.
+- **Don't let the swarm rank a row.** Same point count in every formation, one dot size, one
+  colour, or it does not ship. The same rule that governed the three icons it replaced.
 - Don't add a gradient, a glow, an atmospheric background, or a shadow on persistent chrome.
 - Don't introduce a third font, a 700 weight, or an italic style.
 - Don't use OpenCode's 4px interactive radius — it desynchronizes the page from the app.
@@ -1060,7 +1166,7 @@ the changes that genuinely need a media query.
 | desktop-large | 1280px+ | Default. 720/960px columns, full-bleed marquees, rhythm at its 144px ceiling |
 | desktop | 1024px | Nav stays horizontal; type and rhythm shed size continuously |
 | showcase-crops | 700px | The showcase's floating crops are dropped — at 15–21% of a frame this narrow they are texture, not screens. The capture behind them says the same thing more slowly |
-| tablet | 850px | Pillars go from three columns to one; the early-access split stacks |
+| tablet | 850px | The swarm stacks — stage above the three rows, and it stops being sticky, because a pinned stage over a scrolling list would put text under points and this page has no surface to separate them with. The early-access split stacks |
 | tablet-narrow | 768px | Nav collapses to a drawer; the primary CTA stays visible |
 | mobile | 640px | The clamps have reached their floors: hero at 44px, rhythm at 64px |
 
@@ -1082,10 +1188,13 @@ reading column is not charming.
   the `DESIGN.md` commit sha it was derived from (`inherits-sha` in this file's front matter). It is
   consumed by Tailwind v4's `@theme`, so every utility class on the page derives from the app's
   palette and the two cannot silently diverge.
-- **Astro 5** with React islands for the three interactive pieces only: the spider, the early-access
-  form, and the FAQ. Everything else ships zero JS.
+- **Astro 5** with React islands for the four interactive pieces only: the spider, the swarm, the
+  early-access form, and the FAQ. Everything else ships zero JS. The swarm is the newest and it is
+  the one that had to argue for itself — it is a canvas simulation, so "does it need to be
+  interactive at all" has an answer other than *no*.
 - **Motion** (`motion`) for the spider; **Lenis** for smooth scroll, disabled under reduced-motion.
-  Everything else is CSS — the reveals, the two `.rise` gestures and both marquees. Escalate to GSAP
+  The swarm is hand-rolled canvas — 720 springs a frame is not a job for a declarative animation
+  library, and it needs no dependency. Everything else is CSS — the reveals, the two `.rise` gestures and both marquees. Escalate to GSAP
   ScrollTrigger only if a pinned scroll scene is added.
 - **Three motion primitives, and they are a ladder.** `.reveal` (420ms, 12px) is the default and
   goes on almost everything. `.rise` (780ms, 28px) is for a block that should *arrive* — the hero
@@ -1106,6 +1215,12 @@ reading column is not charming.
 
 ## Known gaps
 
+- **The swarm's rows are clickable but not focusable.** The obvious fix is to make them buttons,
+  and it was rejected: a click selects a formation in an `aria-hidden` canvas and stops a
+  decoration rotating, and a visitor who cannot see the canvas already has the stronger version of
+  that control in `prefers-reduced-motion`, which stops it before it starts. Turning three
+  paragraphs of prose into three controls over a drawing a screen reader will never describe costs
+  more than the gap it closes. Revisit if the swarm ever carries information the rows do not.
 - **The brand image is a 128px raster.** It is the app's real logo, which is the point, but it does
   not scale to a 400px hero and it carries a contact shadow drawn for a light UI (the `Brandmark`
   component lifts brightness in dark mode rather than shipping a second asset that could drift). If
