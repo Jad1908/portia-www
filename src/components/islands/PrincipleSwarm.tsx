@@ -68,11 +68,13 @@ import {
  * picture of one running next to a `setTimeout` that will drift away from it.
  * Everything that stops the bar stops the rotation for free:
  *
- *  - Pointer **on the rows**, or the section off-screen → `is-paused`, and
- *    `animation-play-state: paused` freezes the bar where it stands. The stage
- *    is outside that: disturbing the points is not reading, and a rotation that
- *    stopped because you touched the drawing would hide two thirds of itself
- *    from anyone who did.
+ *  - Pointer on **the row that is currently on display**, or the section
+ *    off-screen → `is-paused`, and `animation-play-state: paused` freezes the
+ *    bar where it stands. Two things are deliberately outside that: the stage,
+ *    because disturbing the points is not reading and a rotation that stopped
+ *    when you touched the drawing would hide two thirds of itself from anyone
+ *    who did; and the two rows that are *not* on display, because reading ahead
+ *    is not a reason to freeze a turn that is counting down something else.
  *  - A click on a row → `is-stopped`, the bar goes full, and the rotation is
  *    over for the session. That is `LANDING.md`'s rule for anything on this
  *    page that moves on its own, and it is why **click and hover are not the
@@ -169,11 +171,10 @@ function sample(name: FormationName): Float32Array {
 
 export default function PrincipleSwarm({ items }: { items: SwarmItem[] }) {
   const [active, setActive] = useState(0);
-  /** Pointer is on the three rows. Someone resting on one is reading it.
-   *  **Not the stage** — pushing the points around is playing with the clock's
-   *  own output, not reading, and a swarm that stopped rotating because you
-   *  touched it would be a swarm you could only see one third of by accident. */
-  const [hovering, setHovering] = useState(false);
+  /** Which row the pointer is resting on, if any. Not *whether* it is on one:
+   *  the clock only holds when the row being read is the row on display, so
+   *  this has to be an index. See `paused` at the foot of the component. */
+  const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   /** The section is on screen. A clock nobody can see should not be running. */
   const [onScreen, setOnScreen] = useState(false);
   /** A visitor clicked a row. Permanent, for the session. */
@@ -439,25 +440,29 @@ export default function PrincipleSwarm({ items }: { items: SwarmItem[] }) {
    * one rung up the elevation ladder and a 3px nudge — and nothing else, which
    * is what lets the affordance actually do its job: it used to be swallowed by
    * the row going active in the same instant. */
-  const paused = hovering || !onScreen;
+  /** **The clock holds only when the row being read is the row on display.**
+   *  Resting on row three while the swarm is showing row one is not a reason to
+   *  freeze row one's turn — the visitor is reading ahead, and the thing they
+   *  are reading is not the thing the clock is counting down. It becomes a
+   *  reason the moment the rotation arrives at that row, which is the pleasant
+   *  case: the section comes round to what you were reading and then waits. */
+  const paused = hoveredRow === active || !onScreen;
 
   return (
     <div
       className={`swarm${paused ? " is-paused" : ""}${stopped ? " is-stopped" : ""}`}
       ref={rootRef}
     >
-      {/* The pause lives here and not on the section, so the stage is outside
-          it: the swarm keeps rotating while you push its points around. */}
-      <ol
-        className="swarm__list"
-        onPointerEnter={() => setHovering(true)}
-        onPointerLeave={() => setHovering(false)}
-      >
+      <ol className="swarm__list">
         {items.map((it, i) => (
           <li
             key={it.index}
             data-swarm-item={i}
             className={`swarm__item${i === active ? " is-active" : ""}`}
+            onPointerEnter={() => setHoveredRow(i)}
+            // Guarded because a leave from the row just vacated can land after
+            // the enter on the row just arrived at, and would clear it.
+            onPointerLeave={() => setHoveredRow((h) => (h === i ? null : h))}
             onClick={() => {
               setActive(i);
               setStopped(true);

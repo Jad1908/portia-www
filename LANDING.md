@@ -913,16 +913,20 @@ third fall out of stopping the same animation:
 | State | Cause | The rule reads |
 |---|---|---|
 | running | nothing else | filling, top to bottom |
-| **paused** | pointer on the three rows, or the section off-screen | frozen exactly where it stood |
+| **paused** | pointer on the row that is **on display**, or the section off-screen | frozen exactly where it stood |
 | **stopped** | a visitor **clicked** a row | full, and the rotation is over for the session |
 
-**The stage is not in the pause's hit area.** Only the three rows are. Pushing the points around is
-playing with what the clock produces rather than reading, and a rotation that stopped the moment you
-touched the drawing would hide two thirds of itself from exactly the visitor who was most interested
-in it.
+**Only the row on display holds the clock.** Resting on one of the other two is reading ahead, and
+what is being read is not what the clock is counting down — so the turn keeps running. It starts
+holding the moment the rotation arrives at that row, which is the case worth having: the section
+comes round to the thing you were reading and then waits there.
+
+**The stage is not in the pause's hit area either.** Pushing the points around is playing with what
+the clock produces rather than reading, and a rotation that stopped the moment you touched the
+drawing would hide two thirds of itself from exactly the visitor who was most interested in it.
 
 **Exactly two things change the formation: the clock, and a click.** Hovering a row is a statement
-about reading, so all it does is *hold the clock* — it does not select. Clicking is choosing, so it
+about reading, so at most it *holds the clock* — it never selects. Clicking is choosing, so it
 selects **and** stops the rotation for the session, which is this file's standing rule for anything
 on the page that moves on its own and the same contract `{components.showcase}` makes with its tab
 strip. The dwell matches the showcase's six seconds too: the page has exactly two things that move
