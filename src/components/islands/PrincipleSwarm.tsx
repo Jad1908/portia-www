@@ -68,8 +68,11 @@ import {
  * picture of one running next to a `setTimeout` that will drift away from it.
  * Everything that stops the bar stops the rotation for free:
  *
- *  - Pointer in the section, or the section off-screen → `is-paused`, and
- *    `animation-play-state: paused` freezes the bar where it stands.
+ *  - Pointer **on the rows**, or the section off-screen → `is-paused`, and
+ *    `animation-play-state: paused` freezes the bar where it stands. The stage
+ *    is outside that: disturbing the points is not reading, and a rotation that
+ *    stopped because you touched the drawing would hide two thirds of itself
+ *    from anyone who did.
  *  - A click on a row → `is-stopped`, the bar goes full, and the rotation is
  *    over for the session. That is `LANDING.md`'s rule for anything on this
  *    page that moves on its own, and it is why **click and hover are not the
@@ -160,7 +163,10 @@ function sample(name: FormationName): Float32Array {
 
 export default function PrincipleSwarm({ items }: { items: SwarmItem[] }) {
   const [active, setActive] = useState(0);
-  /** Pointer is in the section. Someone resting on a row is reading it. */
+  /** Pointer is on the three rows. Someone resting on one is reading it.
+   *  **Not the stage** — pushing the points around is playing with the clock's
+   *  own output, not reading, and a swarm that stopped rotating because you
+   *  touched it would be a swarm you could only see one third of by accident. */
   const [hovering, setHovering] = useState(false);
   /** The section is on screen. A clock nobody can see should not be running. */
   const [onScreen, setOnScreen] = useState(false);
@@ -455,10 +461,15 @@ export default function PrincipleSwarm({ items }: { items: SwarmItem[] }) {
     <div
       className={`swarm${paused ? " is-paused" : ""}${stopped ? " is-stopped" : ""}`}
       ref={rootRef}
-      onPointerEnter={() => setHovering(true)}
-      onPointerLeave={() => setHovering(false)}
     >
-      <ol className="swarm__list" ref={listRef}>
+      {/* The pause lives here and not on the section, so the stage is outside
+          it: the swarm keeps rotating while you push its points around. */}
+      <ol
+        className="swarm__list"
+        ref={listRef}
+        onPointerEnter={() => setHovering(true)}
+        onPointerLeave={() => setHovering(false)}
+      >
         {items.map((it, i) => (
           <li
             key={it.index}

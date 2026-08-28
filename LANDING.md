@@ -913,11 +913,16 @@ third fall out of stopping the same animation:
 | State | Cause | The rule reads |
 |---|---|---|
 | running | nothing else | filling, top to bottom |
-| **paused** | pointer anywhere in the section, or the section off-screen | frozen exactly where it stood |
+| **paused** | pointer on the three rows, or the section off-screen | frozen exactly where it stood |
 | **stopped** | a visitor **clicked** a row | full, and the rotation is over for the session |
 
-**Hover and click are deliberately not the same gesture.** Hovering is looking, so it selects and
-*pauses*. Clicking is choosing, so it selects and *stops* — which is `LANDING.md`'s standing rule
+**The stage is not in the pause's hit area.** Only the three rows are. Pushing the points around is
+playing with what the clock produces rather than reading, and a rotation that stopped the moment you
+touched the drawing would hide two thirds of itself from exactly the visitor who was most interested
+in it.
+
+**Hover and click are deliberately not the same gesture.** Hovering a row is looking, so it selects
+and *pauses*. Clicking is choosing, so it selects and *stops* — which is `LANDING.md`'s standing rule
 for anything on this page that moves on its own, and the same contract `{components.showcase}`
 makes with its tab strip. The dwell matches the showcase's six seconds too: the page has exactly
 two things that move by themselves and they should not disagree about how long a beat is.
@@ -946,7 +951,8 @@ underline means a link, and these are not links.
   so the swarm re-gathers rather than sliding between two drawings; and a sub-pixel per-point wander,
   which is the difference between a settled swarm and a bitmap.
 - **The pointer pushes points out of its way.** It is the only cursor response on the page and it is
-  deliberately soft — the drawing stays legible while it is being disturbed.
+  deliberately soft — the drawing stays legible while it is being disturbed, and the rotation keeps
+  running underneath it.
 - **Selection is pointer, click and scroll — and nothing in the section is focusable.** See "Known
   gaps"; this is a decision with a cost, not an oversight.
 - **Reduced motion renders it static** at the exact sampled coordinates, with no loop, no wander and

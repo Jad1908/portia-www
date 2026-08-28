@@ -503,9 +503,11 @@ pre {
  * means the two states fall out for free rather than needing to be kept in
  * sync with a `setTimeout`:
  *
- *  - **paused** — the pointer is in the section, or the section is off-screen.
- *    The bar freezes exactly where it was. Someone whose pointer is resting on
- *    a row is reading it.
+ *  - **paused** — the pointer is on the three rows, or the section is
+ *    off-screen. The bar freezes exactly where it was. Someone whose pointer is
+ *    resting on a row is reading it. The stage is deliberately **not** in that
+ *    hit area: pushing the points around is playing with what the clock
+ *    produces, not reading, and it does not stop the turn.
  *  - **stopped** — a visitor clicked a row. The bar goes full and the rotation
  *    is over for the session. `LANDING.md`: anything that moves on its own
  *    stops permanently the moment a visitor chooses.
