@@ -530,7 +530,11 @@ pre {
  * row's content nudges 3px off it. The nudge is on the children rather than the
  * row so that the rule and the clock stay anchored while the text moves, and so
  * that nothing reflows. **Not an underline** — on this page an underline means
- * a link, and these are not links. */
+ * a link, and these are not links.
+ *
+ * This is now the *whole* of what hover does to a row. It used to select it as
+ * well, which meant the affordance never had a moment to be read — the row went
+ * active in the same frame, and two of the three signals below fired at once. */
 .swarm__item:hover {
   border-left-color: var(--portia-hairline-strong);
 }
@@ -582,10 +586,11 @@ pre {
 }
 /* The title lifts `body` → `ink` on the active row, and the index `ash` → `ink`
  * with it. **This is the selection signal and the bar is not**, because the bar
- * now spends most of its time part-full and a freshly-hovered row starts its
- * clock at zero — something has to say *this is the one* at that moment. Both
- * rows stay entirely legible either way: `body` is the colour the paragraph
- * under it is already set in. State, moving, on one row at a time. */
+ * is a clock and spends most of its time part-full — something has to say *this
+ * is the one* while it is at zero. Both rows stay entirely legible either way:
+ * `body` is the colour the paragraph under it is already set in. State, moving,
+ * on one row at a time, and it moves only when the clock turns over or somebody
+ * clicks. */
 .swarm__title {
   font-size: var(--text-heading-md);
   line-height: 1.25;

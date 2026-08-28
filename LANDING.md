@@ -921,16 +921,23 @@ playing with what the clock produces rather than reading, and a rotation that st
 touched the drawing would hide two thirds of itself from exactly the visitor who was most interested
 in it.
 
-**Hover and click are deliberately not the same gesture.** Hovering a row is looking, so it selects
-and *pauses*. Clicking is choosing, so it selects and *stops* — which is `LANDING.md`'s standing rule
-for anything on this page that moves on its own, and the same contract `{components.showcase}`
-makes with its tab strip. The dwell matches the showcase's six seconds too: the page has exactly
-two things that move by themselves and they should not disagree about how long a beat is.
+**Exactly two things change the formation: the clock, and a click.** Hovering a row is a statement
+about reading, so all it does is *hold the clock* — it does not select. Clicking is choosing, so it
+selects **and** stops the rotation for the session, which is this file's standing rule for anything
+on the page that moves on its own and the same contract `{components.showcase}` makes with its tab
+strip. The dwell matches the showcase's six seconds too: the page has exactly two things that move
+by themselves and they should not disagree about how long a beat is.
+
+Hover-to-select and scroll-position-to-select both existed and both were cut, for one reason: the
+drawing moved without anyone asking it to. A visitor brushing past a row on the way down the page
+should not be able to reshape what they are looking at, and one who nudges the scrollbar should not
+see the rotation snap backwards. Cutting them also gave the hover affordance below something to do
+— it used to be swallowed by the row going active in the same frame.
 
 **Selection is marked by the title, not by the rule.** The active row's title lifts
 `{colors.body}` → `{colors.ink}` and its index `{colors.ash}` → `{colors.ink}`. This is necessary
-rather than decorative: the rule is a clock now, so it spends most of its time part-full and a
-freshly-hovered row starts from zero — something else has to say *this is the one* at that moment.
+rather than decorative: the rule is a clock now, so it spends most of its time part-full — something
+else has to say *this is the one* while it sits near zero.
 Both states stay fully legible; `{colors.body}` is the colour the paragraph underneath is already
 set in. It is a cursor, on one row at a time, and not a rank.
 
@@ -953,15 +960,16 @@ underline means a link, and these are not links.
 - **The pointer pushes points out of its way.** It is the only cursor response on the page and it is
   deliberately soft — the drawing stays legible while it is being disturbed, and the rotation keeps
   running underneath it.
-- **Selection is pointer, click and scroll — and nothing in the section is focusable.** See "Known
-  gaps"; this is a decision with a cost, not an oversight.
+- **Selection is click only, and nothing in the section is focusable.** See "Known gaps"; the
+  second half is a decision with a cost, not an oversight.
 - **Reduced motion renders it static** at the exact sampled coordinates, with no loop, no wander and
   no pointer response, and it is the *stopped* state from the first frame — no animation, therefore
   no `animationend`, therefore no rotation, in CSS alone. That state is the designed one: it is the
   linework icon, in dots. It is also the sharper of the two.
 - The loop is parked whenever the stage is off-screen.
 - `/swarm` is the proof sheet, the sibling of `/icons`: the island alone, at the top of a blank
-  page, hydrated immediately, with `?i=` to select a formation. Both are unlinked and `noindex`.
+  page, hydrated immediately, with `?i=` to click a row and hold a formation still. Both are
+  unlinked and `noindex`.
 
 ---
 

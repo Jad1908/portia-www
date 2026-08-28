@@ -81,8 +81,14 @@ import {
  *  - `prefers-reduced-motion` → the stopped state from the first frame, in CSS
  *    alone. No animation, therefore no `animationend`, therefore no rotation.
  *
- * Scroll still selects, and it resets nothing — the row crossing the middle of
- * the viewport wins, and its clock starts from zero because the class moved.
+ * **Exactly two things change the formation: the clock, and a click.** Hover
+ * used to, and scroll position used to, and both were wrong for the same
+ * reason — the drawing moved without anyone asking it to, and the two of them
+ * fought the clock and each other. A visitor brushing past on the way down the
+ * page should not be able to reshape the thing they are looking at, and a
+ * visitor who nudges the scrollbar should not see the rotation snap backwards.
+ * Hovering a row is a statement about reading, so all it does is hold the
+ * clock; choosing is a click.
  *
  * **Reduced motion renders it static**, at the exact sampled coordinates of the
  * active formation, with no loop, no wander and no pointer response. That state
@@ -174,7 +180,6 @@ export default function PrincipleSwarm({ items }: { items: SwarmItem[] }) {
   const [stopped, setStopped] = useState(false);
 
   const rootRef = useRef<HTMLDivElement>(null);
-  const listRef = useRef<HTMLOListElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -182,32 +187,6 @@ export default function PrincipleSwarm({ items }: { items: SwarmItem[] }) {
   const activeRef = useRef(0);
   const burstRef = useRef(false);
   const drawStaticRef = useRef<(() => void) | null>(null);
-
-  /* -- selection follows the scroll ------------------------------------- *
-   * The root is collapsed to a zero-height line across the middle of the
-   * viewport, so the item crossing that line is the active one. Hover writes
-   * to the same state and whichever happened last wins — a visitor who has
-   * pointed at something has said what they want to see. */
-  useEffect(() => {
-    const list = listRef.current;
-    if (!list || !("IntersectionObserver" in window)) return;
-
-    const rows = Array.from(
-      list.querySelectorAll<HTMLElement>("[data-swarm-item]"),
-    );
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) {
-            setActive(Number((e.target as HTMLElement).dataset.swarmItem));
-          }
-        }
-      },
-      { rootMargin: "-50% 0px -50% 0px", threshold: 0 },
-    );
-    rows.forEach((r) => io.observe(r));
-    return () => io.disconnect();
-  }, [items.length]);
 
   /* -- the clock only runs while the section is on screen ---------------- */
   useEffect(() => {
@@ -454,7 +433,12 @@ export default function PrincipleSwarm({ items }: { items: SwarmItem[] }) {
    * lifts `body` → `ink` with the index: that is the cursor, and it is on
    * exactly one row. The **rule** filling down the left edge is the clock. Both
    * are state, neither is a rank — they move, they are never on two rows at
-   * once, and at every other property the three rows are identical. */
+   * once, and at every other property the three rows are identical.
+   *
+   * Neither of them follows the pointer. Hover gets the affordance — the rule
+   * one rung up the elevation ladder and a 3px nudge — and nothing else, which
+   * is what lets the affordance actually do its job: it used to be swallowed by
+   * the row going active in the same instant. */
   const paused = hovering || !onScreen;
 
   return (
@@ -466,7 +450,6 @@ export default function PrincipleSwarm({ items }: { items: SwarmItem[] }) {
           it: the swarm keeps rotating while you push its points around. */}
       <ol
         className="swarm__list"
-        ref={listRef}
         onPointerEnter={() => setHovering(true)}
         onPointerLeave={() => setHovering(false)}
       >
@@ -475,7 +458,6 @@ export default function PrincipleSwarm({ items }: { items: SwarmItem[] }) {
             key={it.index}
             data-swarm-item={i}
             className={`swarm__item${i === active ? " is-active" : ""}`}
-            onPointerEnter={() => setActive(i)}
             onClick={() => {
               setActive(i);
               setStopped(true);
