@@ -5,7 +5,7 @@ import Base from "~/layouts/Base.astro";
 import Nav from "~/components/Nav.astro";
 import Footer from "~/components/Footer.astro";
 import SectionHead from "~/components/SectionHead.astro";
-import PrincipleIcon from "~/components/PrincipleIcon.astro";
+import PrincipleSwarm from "~/components/islands/PrincipleSwarm";
 import Marquee from "~/components/Marquee.astro";
 import AppShowcase from "~/components/AppShowcase.astro";
 import Spider from "~/components/islands/Spider";
@@ -38,7 +38,7 @@ import { WAREHOUSES, LOCAL_SOURCES, MODELS, LOCAL_MODELS } from "~/lib/logos";
  *     12px mono label. Contrast is what the first version had none of.
  *
  * The reading order has since changed once more: the showcase moved ahead of
- * the three columns, so the page now asserts, shows, and then names what it
+ * the three principles, so the page now asserts, shows, and then names what it
  * showed. The sequence is a layout constraint rather than a copy suggestion,
  * and LANDING.md → "Reading order" is where it is recorded.
  *
@@ -165,9 +165,9 @@ const faqItems = faqEntries.map((e) => ({
 
     {/* ---- 3. Inside the app. The one section that shows the product.
 
-         It comes **before** the three columns, which reverses what this file
+         It comes **before** the three principles, which reverses what this file
          used to say. The band asserts, the app shows what the assertion looks
-         like running, and the three columns then name what you just watched
+         like running, and the three principles then name what you just watched
          it do. Still one section, still unretouched captures, still never in
          the hero: a picture may follow the claim, it may not replace it.
          LANDING.md → "The showcase" is the spec for the rest of it.
@@ -189,8 +189,20 @@ const faqItems = faqEntries.map((e) => ({
       </div>
     </section>
 
-    {/* ---- 4. The three principles. They now read as the caption to the
-         showcase above rather than as its setup. ---- */}
+    {/* ---- 4. The three principles. They read as the caption to the showcase
+         above rather than as its setup.
+
+         **They are no longer three columns with three icons.** The three
+         linework drawings are still drawn — on `/icons`, which is now their
+         only home — but on the page they have been replaced by a single cloud
+         of points that settles into each of them in turn as you read down the
+         rows. The reason is in `PrincipleSwarm.tsx` and it is not a visual
+         one: three separate drawings in three separate columns say these are
+         three features, and the section exists to say the opposite. One cloud,
+         the same point count in every shape, rearranged.
+
+         The stage sits on the right and sticks; the rows scroll past it. Which
+         row is active follows the scroll and is overridden by the pointer. ---- */}
     <section class="section" id="principles">
       <div class="wrap wrap--wide">
         <SectionHead
@@ -200,20 +212,16 @@ const faqItems = faqEntries.map((e) => ({
           lede={principlesSection.data.lede}
         />
 
-        <div class="section__body pillars">
-          {
-            principles.map((p, i) => (
-              <div class="pillar reveal" style={`--reveal-delay:${i * 90}ms`}>
-                <span class="pillar__index">{p.data.index}</span>
-                <h3 class="pillar__title">{p.data.title}</h3>
-                <p class="pillar__body">{p.data.body}</p>
-                {/* The icon reads *after* the sentence it illustrates, and
-                    `margin-top: auto` in the CSS aligns all three across
-                    columns of unequal text length. */}
-                <PrincipleIcon name={p.data.icon} />
-              </div>
-            ))
-          }
+        <div class="section__body reveal">
+          <PrincipleSwarm
+            client:visible
+            items={principles.map((p) => ({
+              index: p.data.index,
+              title: p.data.title,
+              body: p.data.body,
+              formation: p.data.formation,
+            }))}
+          />
         </div>
       </div>
     </section>

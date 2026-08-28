@@ -452,62 +452,164 @@ pre {
   border-block: 1px solid var(--portia-hairline);
 }
 
-/* ---- pillars. Equal columns, equal weight, no ordering signal.
+/* ---- The swarm. The "How it works" section: three rows of prose on the left,
+ * one sticky square stage on the right holding a cloud of points that settles
+ * into a different formation for whichever row you are reading.
  *
- * The mono index (`01`, `02`, `03`) is a position and not a rank — it is in
- * `ash`, it does not grow, and the three read left-to-right because a row has
- * to. Nothing here is coloured, ticked, or sized by importance. ---- */
-.pillars {
+ * This replaced three equal columns each carrying its own linework icon. The
+ * columns were fine; what they could not do is say the thing the section is
+ * about, which is that these are not three features but one body of facts seen
+ * three ways. Three drawings in three boxes say the opposite. The rules that
+ * governed those columns all survive the move — equal size, equal weight, equal
+ * colour, one mono index in `ash` that is a position and never a rank — and the
+ * swarm adds one of its own: **the point count never changes between
+ * formations.** See `islands/PrincipleSwarm.tsx`. ---- */
+.swarm {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--spacing-xl);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+  gap: var(--spacing-xxxl);
+  align-items: start;
 }
-.pillar {
-  display: flex;
-  flex-direction: column;
+
+.swarm__list {
+  list-style: none;
+  margin: 0;
+  /* The rows are spread out because the stage sticks and the list is what
+   * scrolls past it. Too tight and the sticky never travels; too loose and the
+   * section becomes a scroll scene, which this page does not do. The block
+   * padding is small and it is not there for rhythm — `{spacing.section}`
+   * already handles that on both sides — it is there so the swarm has settled
+   * into the first row's formation before the first row reaches the
+   * centre-line the selection observer watches. */
+  padding: clamp(16px, 4vh, 48px) 0;
+  display: grid;
+  gap: clamp(48px, 9vh, 104px);
+}
+
+/* The left rule is a **cursor, not a divider and not a rank.** It is exactly
+ * one row tall, it is never on two rows at once, and every other property of
+ * the three rows is identical at every moment. It is `ink` rather than the
+ * accent on purpose: the teal is spent on the one primary action per section
+ * and a selection marker is not one. */
+.swarm__item {
+  position: relative;
+  display: grid;
   gap: var(--spacing-md);
-  padding-top: var(--spacing-lg);
-  border-top: 1px solid var(--portia-hairline);
+  padding-left: var(--spacing-xl);
+  border-left: 1px solid var(--portia-hairline);
 }
-.pillar__index {
+.swarm__item::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: var(--portia-ink);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 520ms var(--ease-reveal);
+}
+.swarm__item.is-active::before {
+  transform: scaleY(1);
+}
+
+.swarm__index {
   font-family: var(--font-mono);
   font-size: var(--text-mono-caption);
   color: var(--portia-ash);
   letter-spacing: 0.08em;
+  transition: color 320ms var(--ease-reveal);
+}
+.swarm__item.is-active .swarm__index {
+  color: var(--portia-ink);
+}
+.swarm__title {
+  font-size: var(--text-heading-md);
+  line-height: 1.25;
+  font-weight: 500;
+  color: var(--portia-ink);
+  text-wrap: balance;
+}
+.swarm__body {
+  font-size: var(--text-body-md);
+  line-height: 1.6;
+  color: var(--portia-body);
+  max-width: 42ch;
 }
 
-/* ---- The pillar icons, and the one place on this page where a drawing moves.
+/* The stage is square and sticks below the nav. `color` is not cosmetic here:
+ * the canvas reads its ink out of the computed colour of this element, which is
+ * how a cloud of 720 points inverts with the page mode without a hex anywhere
+ * in the island. `mute`, the same value the linework icons carried — the
+ * drawing labels the rows, it does not compete with them. */
+.swarm__stage {
+  position: sticky;
+  top: calc(56px + clamp(24px, 6vh, 64px));
+  width: 100%;
+  aspect-ratio: 1;
+  color: var(--portia-mute);
+  /* Pointer tracking must never eat a scroll on a touch screen. */
+  touch-action: pan-y;
+}
+.swarm__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .swarm__item::before,
+  .swarm__index {
+    transition: none;
+  }
+}
+
+/* Stacked, and the stage stops sticking. A pinned stage over a scrolling list
+ * would put text under points, and this page has no surface to separate them
+ * with — no wash, no shadow, no fill. Static above the rows it labels is the
+ * designed state at this width, not a degraded one: at three short rows the
+ * whole block sits inside about a screen and a half. */
+@media (max-width: 850px) {
+  .swarm {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--spacing-xxl);
+  }
+  .swarm__stage {
+    position: static;
+    order: -1;
+    max-width: 300px;
+    margin-inline: auto;
+  }
+  .swarm__list {
+    padding: 0;
+    gap: var(--spacing-xxl);
+  }
+}
+
+/* ---- The linework formations, drawn as strokes.
  *
- * Every shape in `PrincipleIcon.astro` carries `pathLength="1"`, which
- * normalises its geometry to a unit length — so this single dash rule animates
- * a rect, a circle and a bezier identically, with nothing measured in JS. The
- * offset resolves off `.is-in`, the class the page's existing observer already
- * puts on the column, so the whole effect costs no script at all.
+ * **Not on the landing page any more** — this is the proof sheet at `/icons`,
+ * where the geometry in `lib/formations.ts` gets eyeballed at 3.5x before it is
+ * trusted in the swarm. A cloud of 720 dots hides a bad coordinate that a 1.1px
+ * stroke shows immediately.
  *
- * `mute`, not `ink`: the icon labels the column, it does not compete with the
- * title under it. One colour, one weight, one size for all three — these sit
- * above columns that are forbidden from ranking, and an icon that ranked would
- * rank them. ---- */
+ * Every shape carries `pathLength="1"`, which normalises its geometry to a unit
+ * length — so this single dash rule animates a rect, a circle and a bezier
+ * identically, with nothing measured in JS. The offset resolves off `.is-in`,
+ * the class the page's existing observer already puts on a block. ---- */
 .p-icon {
   display: block;
   width: 112px;
   height: 112px;
   color: var(--portia-mute);
-  /* Last in the column, and pushed to the bottom of it — so the three icons sit
-   * on one line whatever the paragraphs above them do. Centred across the
-   * column rather than flush with the text: at this size a left-aligned drawing
-   * hangs off the end of a paragraph, and three of them centred read as one
-   * row of drawings under three columns of prose. */
-  margin-top: auto;
-  margin-inline: auto;
-  padding-top: var(--spacing-xl);
 }
 .p-icon > * {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
   transition: stroke-dashoffset 620ms var(--ease-reveal);
-  /* The column's own reveal, then a beat, then an internal stagger — so the
-   * shapes appear to be drawn in sequence rather than to switch on together. */
+  /* A beat after the block arrives, then an internal stagger — so the shapes
+   * appear to be drawn in sequence rather than to switch on together. */
   transition-delay: calc(
     var(--reveal-delay, 0ms) + 180ms + var(--draw-step, 0ms)
   );
@@ -515,12 +617,12 @@ pre {
 .reveal.is-in .p-icon > * {
   stroke-dashoffset: 0;
 }
-/* The stagger is banded rather than per-shape, because the icons now carry
- * fifteen or sixteen strokes each and one step per stroke would still be
- * drawing a second and a half after the column arrived. Later shapes share a
+/* The stagger is banded rather than per-shape, because the formations carry
+ * sixteen to twenty-eight strokes each and one step per stroke would still be
+ * drawing a second and a half after the block arrived. Later shapes share a
  * band: what has to read in sequence is *kind* — the boxes, then the
  * connectors, then the arrowheads — not each individual line. The declaration
- * order in `PrincipleIcon.astro` is what puts them in that order. */
+ * order in `lib/formations.ts` is what puts them in that order. */
 .p-icon > *:nth-child(2) {
   --draw-step: 60ms;
 }
@@ -542,24 +644,6 @@ pre {
 }
 .p-icon > *:nth-child(n + 13) {
   --draw-step: 420ms;
-}
-.pillar__title {
-  font-size: var(--text-heading-md);
-  line-height: 1.25;
-  font-weight: 500;
-  color: var(--portia-ink);
-  text-wrap: balance;
-}
-.pillar__body {
-  font-size: var(--text-body-md);
-  line-height: 1.6;
-  color: var(--portia-body);
-}
-@media (max-width: 850px) {
-  .pillars {
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--spacing-xxl);
-  }
 }
 
 /* ---- claim. A short line of consequence under a section headline, set at

@@ -157,11 +157,14 @@ components:
     typography: "{typography.statement}"
     rounded: "{rounded.none}"
     padding: "clamp(72px, 10vw, 160px) 0px"
-  pillar:
+  # One of three rows beside the swarm. The left rule is a selection cursor and
+  # not a divider — see "The swarm" below.
+  swarm-row:
     backgroundColor: "transparent"
     textColor: "{colors.body}"
     typography: "{typography.body-md}"
-    border-top: "1px solid {colors.hairline}"
+    border-left: "1px solid {colors.hairline}"
+    activeRuleColor: "{colors.ink}"
     rounded: "{rounded.none}"
   claim:
     backgroundColor: "transparent"
@@ -268,12 +271,12 @@ components:
     source: public/portia-mark.png
     navSize: 44px   # in a 56px bar. See "The third build", item 6.
     footerSize: 24px
-  # The linework drawing above each of the three columns. One colour, one
-  # weight, one size for all three — see "The third build", item 7.
-  pillar-icon:
-    strokeColor: "{colors.mute}"
-    strokeWidth: "1.5px at 40px"
-    size: 40px
+  # The point cloud beside the three rows. One cloud, one dot size, one colour,
+  # and the SAME POINT COUNT in every formation — see "The swarm" below.
+  swarm:
+    dotColor: "{colors.mute}"
+    points: 720
+    stage: "1:1, max 420px, sticky"
     rounded: "{rounded.none}"
   # The linework creature. No longer the brand mark; the scroll spider only.
   spider:
@@ -319,8 +322,8 @@ product that looks like two products.
   canvas.
 - Radius vocabulary of two working values — `{rounded.md}` (8px) on interactive, `{rounded.none}` on
   full-bleed bands — matching the app, not OpenCode's 4px.
-- **Three pieces of ornament exist on the whole page and all three are named**: the spider, the two
-  counter-drifting logo marquees, and the showcase's floating crops.
+- **Four pieces of ornament exist on the whole page and all four are named**: the spider, the two
+  counter-drifting logo marquees, the showcase's floating crops, and the "How it works" swarm.
 
 ### The rule that is specific to this product
 
@@ -782,9 +785,10 @@ up; everything else has held since the rebuild.
    each a full capture of the running app with one or two crops of it floating in front. It sits
    **here** and nowhere earlier: the band still speaks first, and nothing moves it into the hero.
    See "The showcase".
-4. **How it works** — three columns: measure · build on what was measured · get sharper. Each
-   carries a `{components.pillar-icon}` that draws itself in. These are the words for the three
-   things the showcase was just doing, in the same order it did them.
+4. **How it works** — three rows: measure · build on what was measured · get sharper. These are
+   the words for the three things the showcase was just doing, in the same order it did them.
+   Beside them, sticky, `{components.swarm}`: one cloud of points that settles into a different
+   formation for whichever row is being read. See "The swarm".
 5. **What you keep** — you keep the pipeline, and it runs without portia. Three `{components.claim}`
    lines, and the only place the app's two pictures are alluded to: the pipeline canvas and the
    knowledge graph. **No file format is named anywhere in it.**
@@ -877,6 +881,50 @@ dragline is also not a liberty: jumping spiders trail one continuously as a safe
 
 ---
 
+## The swarm
+
+The "How it works" section. Three rows of prose on the left; on the right, sticky, a square stage
+holding **one cloud of 720 points that settles into a different formation for whichever row is
+being read** — the three source piles, the pipeline, the knowledge graph.
+
+**Why it is not three icons.** It was, for one build: each column carried its own linework drawing
+that drew itself in on arrival. Those drawings were fine and they still exist, on the unlinked
+`/icons` proof sheet. What they could not do is say the thing the section is for. Three separate
+drawings in three separate boxes say *here are three features*. The section exists to say the
+opposite: measuring, building on what was measured, and remembering it are one body of facts seen
+three ways. One cloud that rearranges says that; three icons contradict it.
+
+**The rule the swarm has to hold, and how.** The point count never changes — not between
+formations, not on resize. Nothing is added when the cloud becomes the pipeline and nothing is
+dropped when it becomes the graph. Equal count, equal dot size, equal colour, so no formation can
+read as bigger or better than another. *Density* does differ between the three, because they hold
+different amounts of ink and points are spaced evenly along it; density follows the drawing, never
+the rank.
+
+**Rules.**
+- One `{colors.mute}` dot size and one colour for all three formations, read out of the stage's
+  computed `color` so it inverts with the page mode with no hex in the island.
+- **The geometry is shared with the icons** (`src/lib/formations.ts`) and may not be forked. A
+  formation is sampled by walking the concatenated ink of its shapes, so a point lands at the same
+  *fraction of ink* in every formation and the cloud reorganises in a readable sweep.
+- **Motion is three forces**: a spring to the target with per-point stiffness (one stiffness moves
+  the cloud in lockstep, which reads as an object being dragged); a scatter impulse on every change,
+  so the swarm re-gathers rather than sliding between two drawings; and a sub-pixel per-point wander,
+  which is the difference between a settled swarm and a bitmap.
+- **The pointer pushes points out of its way.** It is the only cursor response on the page and it is
+  deliberately soft — the drawing stays legible while it is being disturbed.
+- **Selection is pointer and scroll only, and nothing in the section is focusable.** The stage is
+  `aria-hidden` and carries no information the three paragraphs do not already carry, so three tab
+  stops that redraw a decoration would be noise in a keyboard path.
+- **Reduced motion renders it static** at the exact sampled coordinates, with no loop, no wander and
+  no pointer response. That state is the designed one: it is the linework icon, in dots. It is also
+  the sharper of the two.
+- The loop is parked whenever the stage is off-screen.
+- `/swarm` is the proof sheet, the sibling of `/icons`: the island alone, at the top of a blank
+  page, hydrated immediately, with `?i=` to select a formation. Both are unlinked and `noindex`.
+
+---
+
 ## Components
 
 ### Buttons
@@ -928,9 +976,12 @@ that status across the whole page** — currently "Pre-launch", in the hero badg
 because three phrasings of the same fact read as three different facts. **Never** for a metric, and
 it never scales with a number.
 
-**`pillar`** — one of three equal columns under the showcase. A mono index in `{colors.ash}`, a
+**`swarm-row`** — one of three equal rows beside the swarm. A mono index in `{colors.ash}`, a
 `{typography.heading-md}` title, two sentences of `{typography.body-md}`. **The index is a position,
-never a rank**: it does not grow, it is not coloured, and the three are not sorted by weight.
+never a rank**: it does not grow, it is not coloured, and the three are not sorted by weight. The
+active row carries a 1px `{colors.ink}` rule down its left edge and lifts its index from
+`{colors.ash}` to `{colors.ink}`. That is a **cursor**: it is on exactly one row, it moves, and at
+every other property the three rows are identical.
 
 **`claim`** — one short line of consequence, set at `{typography.heading-md}` so it is read rather
 than skimmed, with a mono `[+]` marker and a hairline top rule. `lead` in `{colors.ink}`, the rest
@@ -1038,7 +1089,8 @@ uses.
 - **Don't put a spec or a SQL excerpt on the page**, in the showcase or anywhere else.
 - **Don't redraw the logo.** One brand image, generated by `pnpm mark` from the app's asset.
 - **Don't add a mode toggle back.** The system preference is the whole mechanism.
-- **Don't let an icon rank its column.** One colour, one weight, one size, or it does not ship.
+- **Don't let the swarm rank a row.** Same point count in every formation, one dot size, one
+  colour, or it does not ship. The same rule that governed the three icons it replaced.
 - Don't add a gradient, a glow, an atmospheric background, or a shadow on persistent chrome.
 - Don't introduce a third font, a 700 weight, or an italic style.
 - Don't use OpenCode's 4px interactive radius — it desynchronizes the page from the app.
@@ -1060,7 +1112,7 @@ the changes that genuinely need a media query.
 | desktop-large | 1280px+ | Default. 720/960px columns, full-bleed marquees, rhythm at its 144px ceiling |
 | desktop | 1024px | Nav stays horizontal; type and rhythm shed size continuously |
 | showcase-crops | 700px | The showcase's floating crops are dropped — at 15–21% of a frame this narrow they are texture, not screens. The capture behind them says the same thing more slowly |
-| tablet | 850px | Pillars go from three columns to one; the early-access split stacks |
+| tablet | 850px | The swarm stacks — stage above the three rows, and it stops being sticky, because a pinned stage over a scrolling list would put text under points and this page has no surface to separate them with. The early-access split stacks |
 | tablet-narrow | 768px | Nav collapses to a drawer; the primary CTA stays visible |
 | mobile | 640px | The clamps have reached their floors: hero at 44px, rhythm at 64px |
 
@@ -1082,10 +1134,13 @@ reading column is not charming.
   the `DESIGN.md` commit sha it was derived from (`inherits-sha` in this file's front matter). It is
   consumed by Tailwind v4's `@theme`, so every utility class on the page derives from the app's
   palette and the two cannot silently diverge.
-- **Astro 5** with React islands for the three interactive pieces only: the spider, the early-access
-  form, and the FAQ. Everything else ships zero JS.
+- **Astro 5** with React islands for the four interactive pieces only: the spider, the swarm, the
+  early-access form, and the FAQ. Everything else ships zero JS. The swarm is the newest and it is
+  the one that had to argue for itself — it is a canvas simulation, so "does it need to be
+  interactive at all" has an answer other than *no*.
 - **Motion** (`motion`) for the spider; **Lenis** for smooth scroll, disabled under reduced-motion.
-  Everything else is CSS — the reveals, the two `.rise` gestures and both marquees. Escalate to GSAP
+  The swarm is hand-rolled canvas — 720 springs a frame is not a job for a declarative animation
+  library, and it needs no dependency. Everything else is CSS — the reveals, the two `.rise` gestures and both marquees. Escalate to GSAP
   ScrollTrigger only if a pinned scroll scene is added.
 - **Three motion primitives, and they are a ladder.** `.reveal` (420ms, 12px) is the default and
   goes on almost everything. `.rise` (780ms, 28px) is for a block that should *arrive* — the hero
