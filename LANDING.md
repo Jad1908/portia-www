@@ -481,8 +481,9 @@ durable, git-diffable spec you keep. That framing is **legacy** — it is what t
 lead with, and it is no longer what the product is for. The claim now is that portia builds real
 context on data that cannot fit in a model's window, by **measuring rather than sampling**, and then
 **keeps** what it learned. The band carries it (*no model can read a billion rows; so portia never
-asks one to*), the three columns argue it, and the artifact section — still on the page, now
-fifth — is now a **consequence** of it rather than the point.
+asks one to*), the three columns argue it, and the artifact section — kept at the time as a
+**consequence** of it rather than as the point — has since been cut from the page entirely. Nothing
+replaced it; what it claimed was the legacy thesis stated one more time, further down.
 
 The reading order has since moved once more, and "Reading order" below is the current one: the
 showcase now sits between the band and the three columns.
@@ -777,7 +778,8 @@ Everything below 32px is `DESIGN.md`'s scale unchanged. `{spacing.xxxl}` (48px) 
 
 The band asserts, the showcase shows, and the three columns name what was shown. This is a layout
 constraint, not a copy suggestion. Steps 3 and 4 were the other way round until the showcase moved
-up; everything else has held since the rebuild.
+up, and *what you keep* sat between 4 and 5 until it was cut; everything else has held since the
+rebuild.
 
 1. **Hero** — two lines and one sentence. The spider drops on its dragline as the page settles.
 2. **The band** — *data has no value without context; portia builds yours.* On
@@ -792,21 +794,21 @@ up; everything else has held since the rebuild.
    the words for the three things the showcase was just doing, in the same order it did them.
    Beside them, sticky, `{components.swarm}`: one cloud of points that settles into a different
    formation for whichever row is being read. See "The swarm".
-5. **What you keep** — you keep the pipeline, and it runs without portia. Three `{components.claim}`
-   lines, and the only place the app's two pictures are alluded to: the pipeline canvas and the
-   knowledge graph. **No file format is named anywhere in it.**
-6. **Your data** — **two** counter-drifting rails, split by kind: the warehouse somebody
+5. **Your data** — **two** counter-drifting rails, split by kind: the warehouse somebody
    administers, and what is already on your own machine. Two claims. **No numbers.**
-7. **Your model** — the provider marquee, then a counter-drifting second band for the local
+6. **Your model** — the provider marquee, then a counter-drifting second band for the local
    runtimes, because the claim about those is different.
-8. **Early access.**
-9. **FAQ** — a closing appendix rather than a step in the argument. Five questions, and an answer
+7. **Early access.**
+8. **FAQ** — a closing appendix rather than a step in the argument. Five questions, and an answer
    that runs past four sentences is a signal the page failed to make its case earlier.
 
 **One section came back and one is still not coming back.** *The app* returned — as capture rather
 than as a drawn mockup, and below the band rather than in the hero; what was wrong with it was
 never that it showed the product. *The graph* stays cut: it was true, well-written, and
-the third consecutive block of dense prose, which is the kind of thing that belongs in docs.
+the third consecutive block of dense prose, which is the kind of thing that belongs in docs. *What
+you keep* is cut on the same grounds and is not coming back either — a third claim block restating
+the legacy artifact thesis, after the band and the columns had already made the argument. **Nothing
+took its slot**: the page goes from how it works straight to where your data is.
 
 ---
 

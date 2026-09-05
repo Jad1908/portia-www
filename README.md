@@ -122,8 +122,9 @@ prose in a diff — the same rule the product applies to its prompt text, for th
 
 ## Reproducing the fixture
 
-The mockup, the artifact section and the `artifact` evidence rows all come from one project. To
-rebuild it:
+Nothing on the page draws on this any more — the mockup, the evidence rows and the *what you keep*
+section that used it are all gone. It is kept because it is the demo project any future cited number
+would come from. To rebuild it:
 
 ```sh
 cd ../portia/sandbox/www-demo

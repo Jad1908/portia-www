@@ -9,43 +9,26 @@
 #
 # No claim here names a file format, a schema or a library.
 
-# --- The artifact -----------------------------------------------------------
-
-- id: claim-1
-  group: artifact
-  lead: "You can see it."
-  rest: "Your pipeline as a graph, and your data as the map it built."
-
-- id: claim-2
-  group: artifact
-  lead: "You can hand it over."
-  rest: "It reads and re-runs without you in the room."
-
-- id: claim-3
-  group: artifact
-  lead: "It is production code."
-  rest: "Versioned, reproducible, and it detects when a source moves."
-
 # --- Warehouses -------------------------------------------------------------
 
-- id: claim-4
+- id: claim-1
   group: warehouse
   lead: "Nothing gets copied."
   rest: "No extract, no staging table, no second version to keep in sync."
 
-- id: claim-5
+- id: claim-2
   group: warehouse
   lead: "Size is not your problem."
   rest: "A table too big to open is one portia still knows."
 
 # --- Models -----------------------------------------------------------------
 
-- id: claim-6
+- id: claim-3
   group: models
   lead: "Bring your own."
   rest: "The provider you already pay for, or none at all."
 
-- id: claim-7
+- id: claim-4
   group: models
   lead: "Small models are enough."
   rest: "The context does the work, so your bill stays small too."

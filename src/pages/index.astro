@@ -52,8 +52,9 @@ import { WAREHOUSES, LOCAL_SOURCES, MODELS, LOCAL_MODELS } from "~/lib/logos";
  *    portia's value was a git-diffable spec you keep. That is legacy. The
  *    product's actual claim is that it builds real context on data it cannot
  *    fit in a window — by measuring rather than sampling — and then *keeps*
- *    that knowledge. The artifact section still exists and now comes fourth,
- *    as a consequence rather than as the thesis.
+ *    that knowledge. The *what you keep* section, which survived that pass as a
+ *    consequence rather than as the thesis, has since been cut outright: it was
+ *    the last of the artifact framing still on the page.
  *  - **The audience is data scientists, and the hero says so once.** Nowhere
  *    else, because saying it twice is a pitch deck. The rest is carried by
  *    vocabulary: this page talks about sources, joins and modelling, and
@@ -75,7 +76,6 @@ const hero = byAnchor["top"]!;
 const line = byAnchor["the-line"]!;
 const principlesSection = byAnchor["principles"]!;
 const app = byAnchor["the-app"]!;
-const artifact = byAnchor["the-artifact"]!;
 const warehouses = byAnchor["warehouses"]!;
 const models = byAnchor["models"]!;
 const early = byAnchor["early-access"]!;
@@ -226,30 +226,7 @@ const faqItems = faqEntries.map((e) => ({
       </div>
     </section>
 
-    {/* ---- 5. The artifact. ---- */}
-    <section class="section" id="the-artifact">
-      <div class="wrap wrap--wide">
-        <SectionHead
-          label={artifact.data.label}
-          title={artifact.data.title}
-          titleSecond={artifact.data.titleSecond}
-          lede={artifact.data.lede}
-        />
-        <div class="section__body claims">
-          {
-            claimsIn("artifact").map((c, i) => (
-              <p class="claim reveal" style={`--reveal-delay:${i * 70}ms`}>
-                <span>
-                  <strong>{c.data.lead}</strong> {c.data.rest}
-                </span>
-              </p>
-            ))
-          }
-        </div>
-      </div>
-    </section>
-
-    {/* ---- 6. Wherever your data is.
+    {/* ---- 5. Wherever your data is.
 
          Two rails, running opposite ways. They split by KIND and not by rank —
          a warehouse somebody administers, versus what is already sitting on
@@ -299,7 +276,7 @@ const faqItems = faqEntries.map((e) => ({
       </div>
     </section>
 
-    {/* ---- 7. Whichever model you trust. Two bands, running opposite ways:
+    {/* ---- 6. Whichever model you trust. Two bands, running opposite ways:
          the second one is not a continuation of the first, it is a different
          claim, and counter-motion is what says so without a second heading. ---- */}
     <section class="section section--marquee" id="models">
@@ -341,7 +318,7 @@ const faqItems = faqEntries.map((e) => ({
       </div>
     </section>
 
-    {/* ---- 8. Early access. ---- */}
+    {/* ---- 7. Early access. ---- */}
     <section class="section" id="early-access">
       <div class="wrap wrap--wide">
         <SectionHead
