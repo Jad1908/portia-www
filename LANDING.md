@@ -95,10 +95,10 @@ spacing:
 motion:
   reveal:       { duration: 420ms, easing: "cubic-bezier(0.16, 1, 0.3, 1)", distance: 12px }
   stagger:      { delay: 60ms }
-  # The showcase's idle rotation: three views, six seconds each, cross-fading
+  # The showcase's idle rotation: four views, six seconds each, cross-fading
   # over the last 0.6s. Pauses on hover and focus; stops for good on the first
   # tab a visitor picks. See "The showcase" → The rotation.
-  showcase-cycle: { duration: 18s, perView: 6s, crossfade: 600ms }
+  showcase-cycle: { duration: 24s, perView: 6s, crossfade: 600ms }
   spider-drop:  { stiffness: 90, damping: 18, mass: 1.1 }
   spider-swing: { maxRotate: 14deg, velocityScale: 0.02, restDelay: 400ms }
   dragline-bow: { maxOffset: 18px }
@@ -182,7 +182,7 @@ components:
     typography: "{typography.heading-sm}"
     rounded: "{rounded.none}"
     glyphSize: 22px
-  # The three views of the app — see "The showcase" for the rules that govern
+  # The four views of the app — see "The showcase" for the rules that govern
   # every value below.
   showcase-tab:
     backgroundColor: "transparent"
@@ -525,7 +525,7 @@ were cut because they invited a doubt the page had not raised.
 ## The showcase — how the page shows the product
 
 The page shows the app in exactly one place: `#the-app`, between the manifesto band and the three
-principles. Three views behind a centred row of pills, one at a time, each a **full capture
+principles. Four views behind a centred row of pills, one at a time, each a **full capture
 of the running application** with a crop or two of that same capture floating in front of it over
 one flat accent card. `AppShowcase.astro`; copy in `showcase.yaml`, captures in `lib/appShots.ts`.
 
@@ -593,7 +593,7 @@ full-bleed frame; centred, it belongs to the frame instead of hanging off the he
 
 ### The rotation
 
-With nothing selected the three views cycle on an 18-second loop, six seconds each, cross-fading
+With nothing selected the four views cycle on a 24-second loop, six seconds each, cross-fading
 over the last 0.6s. **It is CSS, and it is not a fourth island.** No radio is checked at build, so
 `:has(:checked)` is false and the animation runs; the first tab a visitor picks makes it true, the
 animation stops for good and the `:checked ~` rules take the panels. Hover or focus anywhere in the
@@ -772,7 +772,8 @@ Everything below 32px is `DESIGN.md`'s scale unchanged. `{spacing.xxxl}` (48px) 
   hero** — this reverses the original spec. At 88px a centred headline sitting over a left-flush
   page reads as a different page's header, and left-flush is also what gives the two headline lines
   a shared edge, which is what makes the ink/mute split legible as one sentence.
-- The two-column split (the early-access form) goes 50/50 at desktop and stacks at tablet.
+- The two-column split (the new-version form under the install block) goes 50/50 at desktop and
+  stacks at tablet.
 
 ### Reading order
 
@@ -786,7 +787,7 @@ rebuild.
    `{components.band}`, the page's one dark surface, with **no body copy and no section label**:
    its one sentence is the section, and a heading above it was a heading for nothing. It is the
    only block on the page that drops its label.
-3. **Inside the app** — the product, before it is described. Three views behind a row of pills,
+3. **Inside the app** — the product, before it is described. Four views behind a row of pills,
    each a full capture of the running app with one or two crops of it floating in front. It sits
    **here** and nowhere earlier: the band still speaks first, and nothing moves it into the hero.
    See "The showcase".
@@ -798,7 +799,10 @@ rebuild.
    administers, and what is already on your own machine. Two claims. **No numbers.**
 6. **Your model** — the provider marquee, then a counter-drifting second band for the local
    runtimes, because the claim about those is different.
-7. **Early access.**
+7. **Install** — two tabs, *install it yourself* and *have your agent do it*: the README's commands,
+   or one sentence pointing an agent at `INSTALL.md`. Each block has a copy button. Under a hairline,
+   the form, for anyone who would rather hear about the next version. It was *early access* until
+   the code went public.
 8. **FAQ** — a closing appendix rather than a step in the argument. Five questions, and an answer
    that runs past four sentences is a signal the page failed to make its case earlier.
 
@@ -1080,6 +1084,11 @@ Held to the ranking rule like everything else:
   dropped and the track wraps into a plain centred row — not a frozen frame with a logo sliced in
   half at the mask edge.
 - Pure CSS, duplicated track translated -50%, the copy `aria-hidden`. No island and no JS.
+- **Available and upcoming share a band.** A logo portia cannot use yet carries a small mono `soon`
+  after its name, in the quiet badge's form. Nothing else about it changes: same ink, same size,
+  same place in the drift. Status is a kind, so it gets a word, never a dimmer logo. Which ones are
+  available is checked against `../portia/docs/CONNECTORS.md` and `PROVIDERS.md`, and recorded at
+  the head of the lists in `src/lib/logos.ts`.
 
 ### Chrome
 
