@@ -71,9 +71,10 @@
   lede: >-
     It keeps everything it learns, so nothing starts from scratch.
   altFull: >-
-    The knowledge graph by table. The five sources, the eight models built from
-    them and the two groups the copilot recorded, with arrows tracing which
-    table reads which and dashed lines where two sources share columns.
+    The knowledge graph by column. Every column of the five sources and the
+    eight models built from them drawn as a node around its table, with arrows
+    tracing where each one came from and the two groups the copilot recorded
+    marked among them.
   # No crop. The graph fills its own frame edge to edge and a card in front of it
   # covers the thing the view exists to show — the one place where the layering
   # cost more than it bought.
