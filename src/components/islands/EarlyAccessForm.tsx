@@ -1,7 +1,11 @@
 import { useState } from "react";
 
 /**
- * The early-access form.
+ * The new-version form, under the install block.
+ *
+ * It was the early-access form while there was nothing to download, and the
+ * component, the endpoint and the sheet behind it keep that name: renaming a
+ * live route to match a button label buys nothing.
  *
  * Validation is **prose in a caption beneath the field**, `{colors.error}` for
  * a rejected submission and nothing else coloured. No red-tinted field fills:
@@ -83,7 +87,7 @@ export default function EarlyAccessForm() {
       <div className="ea ea--sent">
         <p className="ea__sent-head">On the list.</p>
         <p className="ea__sent-body">
-          Nothing will arrive in the meantime.
+          The next email is the next version.
         </p>
       </div>
     );
@@ -148,7 +152,7 @@ export default function EarlyAccessForm() {
       )}
 
       <button className="btn btn--primary ea__submit" disabled={sending}>
-        {sending ? "Sending…" : "Request early access"}
+        {sending ? "Sending…" : "Tell me about new versions"}
       </button>
 
       <style>{CSS}</style>

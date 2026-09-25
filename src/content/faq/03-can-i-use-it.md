@@ -1,6 +1,7 @@
 ---
 order: 3
-question: "Can I use it today?"
+question: "Can I use it today, and what does it cost?"
 ---
 
-Not yet. Ask for early access and you get a build before anyone else.
+Yes. It is open source and early, so expect rough edges. portia is free, and
+the only bills are your model provider's and your warehouse's.

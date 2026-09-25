@@ -66,7 +66,7 @@ comparison table. There is no measurement of the copilot's quality to cite, and 
 be the exact failure the product is built to prevent.
 
 **2. Separate what is shipped from what is vision, and never blur them.** As of the last read of
-`PLAN.md`:
+`PLAN.md` and `CHANGELOG.md` (2026-09-25):
 
 | | Status |
 |---|---|
@@ -76,7 +76,11 @@ be the exact failure the product is built to prevent.
 | SQL as the artifact — one committed `.sql` per spec, dbt-shaped | **Shipped** |
 | Knowledge graph (Neo4j), column-level lineage | **Shipped** |
 | Multi-turn conversation, chats and indexing histories | **Shipped** |
-| **Warehouse / cloud-hosted projects** | **Vision.** `VISION.md` calls it *"later, and a UI vision before it is a mechanism… Nothing here is scheduled."* |
+| Warehouse connectors: Snowflake, BigQuery, PostgreSQL. Queries run where the data is | **Shipped** (`CONNECTORS.md`). Every other warehouse on the page carries a `soon` tag |
+| Model providers: Claude, Ollama, llama.cpp; Codex built | **Shipped** (`PROVIDERS.md`). Every other provider on the page carries a `soon` tag |
+| portia inside Claude Code, as a plugin | **Shipped** (`HEADLESS.md`) |
+| Charts in the conversation | **Shipped** (`VISUALIZATION.md`) |
+| Public repo, AGPL-3.0, installable from GitHub | **Shipped.** The page says *install*, not *early access* |
 | **Collaboration / multi-user** | **Vision.** portia today is project-local with no central store and nothing that aggregates across projects. |
 
 The brief for this page is to reflect **the final vision — a collaborative, cloud-connected DS
@@ -109,8 +113,9 @@ product whose entire pitch is that two surfaces must never disagree about a numb
 ## Stack
 
 - **Astro 5** — the page is overwhelmingly static and ships zero JS for prose.
-- **React islands, four of them only**: the spider, the "How it works" swarm, the early-access
-  form, the FAQ. Anything else wanting an island is a signal to check whether it needs to be
+- **React islands, four of them only**: the spider, the "How it works" swarm, the new-version
+  form (still `EarlyAccessForm`, on the `/api/early-access` route), the FAQ. The install tabs and
+  their copy button are CSS and a few lines of inline script, not a fifth island. Anything else wanting an island is a signal to check whether it needs to be
   interactive at all — the swarm is the one that had an answer, being a canvas simulation.
 - **Tailwind v4**, theming through `@theme` off `tokens.css`.
 - **Motion** (`motion`) for reveals and the spider. **Lenis** for smooth scroll, disabled under

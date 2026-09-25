@@ -33,7 +33,18 @@ export interface Logo {
   name: string;
   /** Inner SVG markup, on a 24×24 viewBox, drawn in `currentColor`. */
   inner: string;
+  /**
+   * Named because portia is going there, not because it works there today.
+   * The band draws a small mono `soon` after the name, and changes nothing
+   * else: same ink, same glyph size, same place in the drift. Available and
+   * upcoming are two kinds of logo, not two ranks, so the tag is a word and
+   * never a dimmer logo.
+   */
+  soon?: boolean;
 }
+
+/** Marks a logo as upcoming. See `Logo.soon`. */
+const soon = (logo: Logo): Logo => ({ ...logo, soon: true });
 
 /* -------------------------------------------------------------------------
  * lobehub — a whole `<svg>` document per brand
@@ -77,15 +88,27 @@ function si(exportName: string, name: string): Logo {
  * alphabetical, and it is not a tier list — a marquee has to start somewhere.
  * ---------------------------------------------------------------------- */
 
+/*
+ * **Available or `soon`** is checked against the product, not remembered.
+ * Available means a connector or provider is on portia's `main` and has run
+ * against the real thing: `docs/CONNECTORS.md` for the sources,
+ * `docs/PROVIDERS.md` for the models. Anything else wraps in `soon()`. When a
+ * connector ships, the fix is deleting that call, and nothing else moves.
+ *
+ * Open-weight families (Llama, Qwen, Mistral, DeepSeek) count as available
+ * because they run through Ollama or llama.cpp today. OpenAI counts as
+ * available through the Codex harness.
+ */
+
 /** Where the team's data lives. */
 export const WAREHOUSES: Logo[] = [
   lobe("snowflake", "Snowflake"),
   si("siGooglebigquery", "BigQuery"),
-  si("siDatabricks", "Databricks"),
-  lobe("aws", "AWS"),
-  lobe("azure", "Azure"),
-  si("siApachespark", "Spark"),
-  si("siTrino", "Trino"),
+  soon(si("siDatabricks", "Databricks")),
+  soon(lobe("aws", "AWS")),
+  soon(lobe("azure", "Azure")),
+  soon(si("siApachespark", "Spark")),
+  soon(si("siTrino", "Trino")),
 ];
 
 /** What is already on the data scientist's own machine. Split off `WAREHOUSES`
@@ -96,35 +119,43 @@ export const WAREHOUSES: Logo[] = [
 export const LOCAL_SOURCES: Logo[] = [
   si("siPostgresql", "Postgres"),
   si("siDuckdb", "DuckDB"),
-  si("siClickhouse", "ClickHouse"),
-  si("siMysql", "MySQL"),
-  si("siSqlite", "SQLite"),
-  si("siGooglesheets", "Sheets"),
+  soon(si("siClickhouse", "ClickHouse")),
+  soon(si("siMysql", "MySQL")),
+  soon(si("siSqlite", "SQLite")),
+  soon(si("siGooglesheets", "Sheets")),
 ];
 
 /** Hosted models, and the gateways that front them. */
 export const MODELS: Logo[] = [
   lobe("anthropic", "Anthropic"),
   lobe("openai", "OpenAI"),
-  lobe("gemini", "Gemini"),
+  soon(lobe("gemini", "Gemini")),
   lobe("mistral", "Mistral"),
   lobe("meta", "Llama"),
   lobe("deepseek", "DeepSeek"),
   lobe("qwen", "Qwen"),
-  lobe("xai", "xAI"),
-  lobe("cohere", "Cohere"),
-  lobe("groq", "Groq"),
-  lobe("bedrock", "Bedrock"),
-  lobe("vertexai", "Vertex AI"),
-  lobe("openrouter", "OpenRouter"),
-  lobe("together", "Together"),
+  soon(lobe("xai", "xAI")),
+  soon(lobe("cohere", "Cohere")),
+  soon(lobe("groq", "Groq")),
+  soon(lobe("bedrock", "Bedrock")),
+  soon(lobe("vertexai", "Vertex AI")),
+  soon(lobe("openrouter", "OpenRouter")),
+  soon(lobe("together", "Together")),
 ];
 
 /** Models that never leave the machine. Kept separate from `MODELS` because the
  *  section makes a different claim about them, not because they rank lower. */
 export const LOCAL_MODELS: Logo[] = [
   lobe("ollama", "Ollama"),
-  lobe("lmstudio", "LM Studio"),
-  lobe("vllm", "vLLM"),
+  soon(lobe("lmstudio", "LM Studio")),
+  soon(lobe("vllm", "vLLM")),
   lobe("huggingface", "Hugging Face"),
 ];
+
+/* -------------------------------------------------------------------------
+ * One-offs
+ * ---------------------------------------------------------------------- */
+
+/** Where portia's source lives. Not part of any list: it is a destination in
+ *  the chrome, not an integration being named in a band. */
+export const GITHUB: Logo = si("siGithub", "GitHub");

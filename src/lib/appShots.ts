@@ -3,6 +3,8 @@ import type { ImageMetadata } from "astro";
 import measureWorkspace from "~/assets/app/measure-workspace.png";
 import measureIndex from "~/assets/app/measure-index.png";
 import measureInterpret from "~/assets/app/measure-interpret.png";
+import chartsWorkspace from "~/assets/app/charts-workspace.png";
+import chartsQuestion from "~/assets/app/charts-question.png";
 import buildCanvas from "~/assets/app/build-canvas.png";
 import buildQuestion from "~/assets/app/build-question.png";
 import memoryGraph from "~/assets/app/memory-graph.png";
@@ -36,13 +38,14 @@ import memoryGraph from "~/assets/app/memory-graph.png";
  *  - **A crop never covers something the capture is being shown for.** The
  *    workspace's crops sit low and left, over the preview table rather than over
  *    the column measurements; the canvas's sits low and left too, clear of the
- *    graph of models. **The knowledge graph has no crop at all** — it fills its
+ *    graph of models, and the chart view's sits low and left, clear of the
+ *    chart. **The knowledge graph has no crop at all** — it fills its
  *    frame edge to edge, so anything in front of it covers the thing the view
  *    exists to show. An empty `cards` array is a decision, not an omission.
  *  - **They gather on the left.** Every crop hangs off the same corner, so the
- *    three views read as one composition seen three ways rather than as three
+ *    four views read as one composition seen four ways rather than as four
  *    layouts. The right side stays clear, which is also where the app puts its
- *    copilot pane in two of the three.
+ *    copilot pane in three of the four.
  *  - **They may hang below the frame.** The full capture is masked away at its
  *    bottom edge and the crops are not, so a card that overhangs reads as being
  *    in front of the picture rather than pasted into it — which is the one
@@ -76,6 +79,10 @@ export const APP_SHOTS: Record<string, AppShot> = {
       { src: measureIndex, place: { left: 2, bottom: -8, width: 21 } },
       { src: measureInterpret, place: { left: 25, bottom: 2, width: 21 } },
     ],
+  },
+  charts: {
+    full: chartsWorkspace,
+    cards: [{ src: chartsQuestion, place: { left: 3, bottom: -10, width: 18 } }],
   },
   builds: {
     full: buildCanvas,
