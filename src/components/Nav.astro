@@ -1,10 +1,13 @@
 ---
 import Brandmark from "./Brandmark.astro";
+import { GITHUB } from "~/lib/logos";
 
 interface Props {
   links: { href: string; label: string }[];
 }
 const { links } = Astro.props;
+
+const REPO_URL = "https://github.com/Jad1908/portia";
 ---
 
 {/* `primary-nav` — canvas fill, 56px, one hairline bottom rule, square corners.
@@ -32,9 +35,28 @@ const { links } = Astro.props;
     </nav>
 
     <div class="nav__actions">
-      <a class="btn btn--primary nav__cta" href="#early-access"
-        >Request early access</a
+      {/* The repo, as the mark and the word, in the secondary button so it
+          reads as a destination and leaves the teal to Install. No star count
+          beside it: a figure on this page has to be one portia produced, with
+          what produced it named next to it, and a follower count is neither.
+          Under the tablet band the word goes and the mark stays. */}
+      <a
+        class="btn btn--secondary nav__gh"
+        href={REPO_URL}
+        target="_blank"
+        rel="noopener"
+        aria-label="portia on GitHub"
       >
+        <svg
+          class="nav__gh-glyph"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"
+          set:html={GITHUB.inner}
+        />
+        <span class="nav__gh-label">GitHub</span>
+      </a>
+      <a class="btn btn--primary nav__cta" href="#install">Install</a>
 
       <button
         class="nav__icon-btn nav__drawer-btn"
@@ -161,6 +183,17 @@ const { links } = Astro.props;
   .nav__icon-btn:hover {
     color: var(--portia-ink);
   }
+  /* The CTA's height, which is every button's, so the pair reads as one row
+   * of two buttons rather than a link beside a button. */
+  .nav__gh {
+    padding-inline: 14px;
+  }
+  .nav__gh-glyph {
+    width: 18px;
+    height: 18px;
+    flex: none;
+  }
+
   .nav__drawer-btn {
     display: none;
   }
@@ -183,6 +216,13 @@ const { links } = Astro.props;
 
   @media (max-width: 768px) {
     .nav__links {
+      display: none;
+    }
+    .nav__gh {
+      width: 40px;
+      padding-inline: 0;
+    }
+    .nav__gh-label {
       display: none;
     }
     .nav__drawer-btn {

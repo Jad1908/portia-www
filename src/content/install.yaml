@@ -1,0 +1,40 @@
+# The two ways in, behind the tabs in the install section.
+#
+# `lines` is what gets copied, exactly as written: the copy button takes the
+# lines joined by newlines, so nothing may be in here that should not be pasted
+# into a terminal or an agent. It is set in mono because it is typed input.
+#
+# The commands are the README's, and the README is the authority. When it
+# changes, this changes: an install block that disagrees with the repo it points
+# at is the first thing a visitor who tries it will find.
+#
+# `kind` is `shell` for commands, which get a `$` drawn in front of each line
+# (drawn, not copied), or `prompt` for a sentence meant for an agent, which
+# wraps instead of scrolling.
+#
+# `tab` is a position in a row, never a rank. Two pills, one size, one weight.
+
+- id: yourself
+  order: 0
+  tab: "Install it yourself"
+  kind: shell
+  lines:
+    - "git clone https://github.com/Jad1908/portia.git"
+    - "cd portia"
+    - "uv sync --extra ui --extra agent --extra graph"
+    - "uv run python -m portia.ui"
+  caption: "Needs Python 3.11 and uv. The README covers warehouses and the knowledge graph."
+  link:
+    label: "Read the README"
+    href: "https://github.com/Jad1908/portia#readme"
+
+- id: agent
+  order: 1
+  tab: "Have your agent do it"
+  kind: prompt
+  lines:
+    - "Install portia for me by following https://github.com/Jad1908/portia/blob/main/INSTALL.md"
+  caption: "Paste it into Claude Code, Codex or any agent that can run commands. It asks what you need and checks every step."
+  link:
+    label: "Read INSTALL.md"
+    href: "https://github.com/Jad1908/portia/blob/main/INSTALL.md"

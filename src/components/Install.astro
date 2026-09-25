@@ -1,0 +1,296 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+/**
+ * The two ways in: the commands, or one sentence to hand an agent.
+ *
+ * The split is the one most developer tools now open with, and portia has an
+ * honest reason to offer it: `INSTALL.md` in the product repo is written to an
+ * agent, asks which version you want and where your data is, and checks each
+ * step before the next. The second tab is a pointer to that file and nothing
+ * more.
+ *
+ * ## No island
+ *
+ * The tabs are the showcase's mechanism without its rotation: a radio group,
+ * off-screen, with `:checked ~` choosing the panel. Here the first radio **is**
+ * checked at build, because an install block that cycles on its own would move
+ * a command out from under someone selecting it.
+ *
+ * The copy button is the only script, and it is a few lines inline at the foot
+ * of this file, the way `Nav.astro` handles its drawer. Four islands is the
+ * page's cap and a clipboard write does not need React.
+ *
+ * The CSS pairs radio *n* with pill *n* and panel *n* by hand, for two. A third
+ * way in fails the build below rather than rendering a tab nobody can reach.
+ */
+
+interface Props {
+  ways: CollectionEntry<"install">[];
+}
+const { ways } = Astro.props;
+
+if (ways.length !== 2) {
+  throw new Error(
+    `Install is written for exactly two tabs; got ${ways.length}. Add the ` +
+      `matching :nth-of-type pair in its <style> before adding one.`,
+  );
+}
+---
+
+<div class="install" role="group" aria-label="Ways to install portia">
+  {
+    ways.map((way, i) => (
+      <input
+        class="install__radio"
+        type="radio"
+        name="install"
+        id={`install-${way.id}`}
+        checked={i === 0}
+      />
+    ))
+  }
+
+  <div class="install__tabs">
+    {
+      ways.map((way) => (
+        <label class="install__tab" for={`install-${way.id}`}>
+          {way.data.tab}
+        </label>
+      ))
+    }
+  </div>
+
+  <div class="install__panels">
+    {
+      ways.map((way) => (
+        <div class="install__panel">
+          <div class:list={["code-block", "install__block"]}>
+            <pre
+              class:list={[
+                "install__code",
+                way.data.kind === "shell" && "install__code--shell",
+              ]}
+            >
+              {way.data.lines.map((line) => (
+                <span class="install__line">{line}</span>
+              ))}
+            </pre>
+            <button
+              class="install__copy"
+              type="button"
+              data-copy={way.data.lines.join("\n")}
+              aria-label={`Copy: ${way.data.tab}`}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <rect x="5.5" y="5.5" width="8" height="8" rx="1.5" />
+                <path d="M10.5 5.5V3.5a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2" />
+              </svg>
+              <span class="install__copy-label" data-copy-label>Copy</span>
+            </button>
+          </div>
+          <p class="t-caption install__caption">
+            {way.data.caption}{" "}
+            <a href={way.data.link.href} target="_blank" rel="noopener">
+              {way.data.link.label}
+            </a>
+          </p>
+        </div>
+      ))
+    }
+  </div>
+
+  {/* Announces the copy for a screen reader. The button's own label changes
+      too, but a change to a focused button's text is not reliably read out. */}
+  <p class="install__status" aria-live="polite" data-copy-status></p>
+</div>
+
+<script>
+  const status = document.querySelector<HTMLElement>("[data-copy-status]");
+
+  document
+    .querySelectorAll<HTMLButtonElement>(".install__copy")
+    .forEach((btn) => {
+      const label = btn.querySelector<HTMLElement>("[data-copy-label]");
+      let timer: number | undefined;
+
+      btn.addEventListener("click", async () => {
+        const text = btn.dataset.copy ?? "";
+        let said = "Copied";
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          // No clipboard permission (an insecure origin, an old browser). The
+          // text is on screen and selectable, so say so instead of failing mute.
+          said = "Select and copy";
+        }
+        if (label) label.textContent = said;
+        if (status) status.textContent = said === "Copied" ? "Copied." : "";
+        window.clearTimeout(timer);
+        timer = window.setTimeout(() => {
+          if (label) label.textContent = "Copy";
+          if (status) status.textContent = "";
+        }, 1600);
+      });
+    });
+</script>
+
+<style>
+  .install__radio {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* ---- The tab row. The showcase's pills, left-flush: this row belongs to
+   * the column of type it sits in, not to a full-bleed frame. ---- */
+  .install__tabs {
+    display: flex;
+    gap: var(--spacing-sm);
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 3px;
+    margin: -3px;
+  }
+  .install__tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .install__tab {
+    display: inline-flex;
+    align-items: center;
+    height: 40px;
+    padding-inline: 20px;
+    border: 1px solid var(--portia-hairline);
+    border-radius: var(--radius-md);
+    color: var(--portia-mute);
+    font-size: var(--text-button);
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color 120ms linear, background-color 120ms linear,
+      border-color 120ms linear;
+  }
+  .install__tab:hover {
+    color: var(--portia-ink);
+  }
+
+  /* Selected means selected. Same tint as the showcase's pill. */
+  .install__radio:nth-of-type(1):checked ~ .install__tabs .install__tab:nth-child(1),
+  .install__radio:nth-of-type(2):checked ~ .install__tabs .install__tab:nth-child(2) {
+    background-color: var(--portia-accent-soft);
+    border-color: transparent;
+    color: var(--portia-accent-text);
+  }
+  .install__radio:nth-of-type(1):focus-visible ~ .install__tabs .install__tab:nth-child(1),
+  .install__radio:nth-of-type(2):focus-visible ~ .install__tabs .install__tab:nth-child(2) {
+    outline: 2px solid var(--portia-accent-primary);
+    outline-offset: 2px;
+  }
+
+  /* ---- The panels share one grid cell, so switching tabs never moves the
+   * form below. `visibility` keeps the hidden one out of tab order. ---- */
+  .install__panels {
+    display: grid;
+    margin-top: var(--spacing-lg);
+  }
+  .install__panel {
+    grid-area: 1 / 1;
+    visibility: hidden;
+  }
+  .install__radio:nth-of-type(1):checked ~ .install__panels .install__panel:nth-child(1),
+  .install__radio:nth-of-type(2):checked ~ .install__panels .install__panel:nth-child(2) {
+    visibility: visible;
+  }
+
+  .install__block {
+    position: relative;
+    padding-right: 104px;
+  }
+
+  .install__code {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    line-height: 1.7;
+    color: var(--portia-ink);
+    /* The whitespace this file's own indentation leaves between the lines is
+     * collapsed here, and each line sets its own. */
+    white-space: normal;
+  }
+  .install__line {
+    display: block;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  /* Commands scroll rather than wrap: a wrapped command reads as two. */
+  .install__code--shell .install__line {
+    white-space: pre;
+    overflow-wrap: normal;
+  }
+  /* The prompt is drawn, not copied: it is a pseudo-element, so neither the
+   * copy button nor a drag-select picks it up. */
+  .install__code--shell .install__line::before {
+    content: "$ ";
+    color: var(--portia-ash);
+    user-select: none;
+  }
+
+  .install__copy {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 30px;
+    padding-inline: 10px;
+    border: 1px solid var(--portia-hairline);
+    border-radius: var(--radius-md);
+    background-color: var(--portia-surface-elevated);
+    color: var(--portia-mute);
+    font-family: var(--font-sans);
+    font-size: var(--text-caption);
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 120ms linear, border-color 120ms linear;
+  }
+  .install__copy:hover {
+    color: var(--portia-ink);
+    border-color: var(--portia-hairline-strong);
+  }
+  .install__copy:focus-visible {
+    outline: 2px solid var(--portia-accent-primary);
+    outline-offset: 2px;
+  }
+
+  .install__caption {
+    margin: var(--spacing-md) 0 0;
+    max-width: 60ch;
+  }
+  .install__caption a {
+    color: var(--portia-ink);
+    text-underline-offset: 3px;
+  }
+
+  .install__status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+</style>

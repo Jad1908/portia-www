@@ -57,6 +57,7 @@ const { items, duration = 46, reverse = false, label } = Astro.props;
                 set:html={logo.inner}
               />
               <span class="marquee__name">{logo.name}</span>
+              {logo.soon && <span class="marquee__soon">soon</span>}
             </li>
           ))}
         </ul>
@@ -137,6 +138,20 @@ const { items, duration = 46, reverse = false, label } = Astro.props;
     font-size: var(--text-heading-sm);
     font-weight: 500;
     letter-spacing: 0.1px;
+  }
+
+  /* An upcoming integration. A word beside the name, in the badge's quiet
+   * form, and nothing else about the item changes: the logo keeps its ink and
+   * its size, so a band of available and upcoming names still has no brighter
+   * or bigger member. Mono, because it is a status and not a sentence. */
+  .marquee__soon {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-caption);
+    line-height: 1.5;
+    color: var(--portia-mute);
+    border: 1px solid var(--portia-hairline);
+    border-radius: var(--radius-xs);
+    padding: 0 6px;
   }
 
   @keyframes marquee-drift {

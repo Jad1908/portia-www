@@ -11,6 +11,7 @@ import AppShowcase from "~/components/AppShowcase.astro";
 import Spider from "~/components/islands/Spider";
 import EarlyAccessForm from "~/components/islands/EarlyAccessForm";
 import Faq from "~/components/islands/Faq";
+import Install from "~/components/Install.astro";
 import { WAREHOUSES, LOCAL_SOURCES, MODELS, LOCAL_MODELS } from "~/lib/logos";
 
 /**
@@ -78,10 +79,10 @@ const principlesSection = byAnchor["principles"]!;
 const app = byAnchor["the-app"]!;
 const warehouses = byAnchor["warehouses"]!;
 const models = byAnchor["models"]!;
-const early = byAnchor["early-access"]!;
+const install = byAnchor["install"]!;
 const faqSection = byAnchor["faq"]!;
 
-const { Content: EarlyBody } = await render(early);
+const { Content: InstallBody } = await render(install);
 
 const navLinks = sections
   .filter((s) => s.data.nav)
@@ -95,6 +96,10 @@ const allClaims = await getCollection("claims");
 const claimsIn = (g: string) => allClaims.filter((c) => c.data.group === g);
 
 const showcase = (await getCollection("showcase")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+const installWays = (await getCollection("install")).sort(
   (a, b) => a.data.order - b.data.order,
 );
 
@@ -138,9 +143,7 @@ const faqItems = faqEntries.map((e) => ({
         </p>
 
         <div class="hero__actions rise" style="--reveal-delay:420ms">
-          <a class="btn btn--primary" href="#early-access">
-            Request early access
-          </a>
+          <a class="btn btn--primary" href="#install">Install</a>
           <a class="btn btn--secondary" href="#the-app">See it running</a>
         </div>
       </div>
@@ -318,18 +321,28 @@ const faqItems = faqEntries.map((e) => ({
       </div>
     </section>
 
-    {/* ---- 7. Early access. ---- */}
-    <section class="section" id="early-access">
+    {/* ---- 7. Install.
+
+         It used to be early access, back when there was nothing to download.
+         The code is public now, so the section leads with the two ways to
+         install it, and the form stays underneath for anyone who wants to hear
+         about the next version instead. The form keeps the section's one teal
+         button: the install block's only control is a copy button, and that
+         is not the primary action of anything. ---- */}
+    <section class="section" id="install">
       <div class="wrap wrap--wide">
         <SectionHead
-          label={early.data.label}
-          title={early.data.title}
-          titleSecond={early.data.titleSecond}
-          lede={early.data.lede}
+          label={install.data.label}
+          title={install.data.title}
+          titleSecond={install.data.titleSecond}
+          lede={install.data.lede}
         />
-        <div class="section__body split split--form">
+        <div class="section__body install-ways reveal">
+          <Install ways={installWays} />
+        </div>
+        <div class="section__body split split--form install-later">
           <div class="prose reveal">
-            <EarlyBody />
+            <InstallBody />
           </div>
           <div class="reveal" style="--reveal-delay:60ms">
             <EarlyAccessForm client:visible />
@@ -412,6 +425,18 @@ const faqItems = faqEntries.map((e) => ({
   }
   .marquee-stack__label .section-label {
     margin: 0;
+  }
+
+  /* The install block keeps to a readable measure rather than the wide
+   * column: a command line 1100px across is read like a banner. The form
+   * underneath is set off by one hairline, because it is the other way to
+   * answer the section and not a continuation of the first. */
+  .install-ways {
+    max-width: 760px;
+  }
+  .install-later {
+    padding-top: var(--spacing-xxl);
+    border-top: 1px solid var(--portia-hairline);
   }
 
   .split {

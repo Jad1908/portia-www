@@ -7,12 +7,13 @@ import { glob, file } from "astro/loaders";
  * That mirrors the product's own rule about prompt text, and for the same
  * reason — the copy is the least stable, most consequential part of the page.
  *
- * Five collections:
+ * Six collections:
  *   sections   — one MDX file per section of the page, in reading order
- *   showcase   — the three views of the app, under the manifesto band
+ *   showcase   — the four views of the app, under the manifesto band
  *   principles — the three columns naming what the showcase just showed
  *   claims     — short lines of consequence, grouped by section
  *   faq        — one MD file per question
+ *   install    — the two ways in, behind the install section's tabs
  *
  * The `mockup` collection is gone and is **not** what `showcase` is. That one
  * fed a drawn three-pane mockup in the hero, and it went because a picture the
@@ -92,7 +93,7 @@ const principles = defineCollection({
 });
 
 /**
- * The three views of the app in the showcase section.
+ * The four views of the app in the showcase section.
  *
  * Prose only. The captures themselves are in `lib/appShots.ts`, joined to these
  * by `id`, because an image is an asset and not copy — and because the
@@ -134,4 +135,33 @@ const claims = defineCollection({
   }),
 });
 
-export const collections = { sections, principles, showcase, claims, faq };
+/**
+ * The two ways to install, behind the tabs in the install section.
+ *
+ * `lines` is what the copy button puts on the clipboard, joined by newlines, so
+ * it holds nothing a visitor should not paste. It is copy rather than an asset
+ * because the commands change with the README, and a diff to them should read
+ * as a diff to the page's words.
+ */
+const install = defineCollection({
+  loader: file("./src/content/install.yaml"),
+  schema: z.object({
+    /** Position in the tab row. Never a rank. */
+    order: z.number(),
+    tab: z.string(),
+    /** `shell` draws a `$` before each line; `prompt` wraps as a sentence. */
+    kind: z.enum(["shell", "prompt"]),
+    lines: z.array(z.string()).min(1),
+    caption: z.string(),
+    link: z.object({ label: z.string(), href: z.string().url() }),
+  }),
+});
+
+export const collections = {
+  sections,
+  principles,
+  showcase,
+  claims,
+  faq,
+  install,
+};
