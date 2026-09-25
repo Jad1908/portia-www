@@ -53,8 +53,7 @@
   order: 2
   tab: "Builds the pipeline"
   lede: >-
-    Describe the table you want. It builds the pipeline, and every step stands
-    on something it measured in your sources.
+    It builds every step of the pipeline on something measured.
   altFull: >-
     The pipeline canvas after a run. Three sources flow through staging and
     intermediate models into one hotel-month table. Below the canvas is that
@@ -70,12 +69,11 @@
   order: 3
   tab: "Keeps what it learned"
   lede: >-
-    Nothing it learns is thrown away. Everything it has measured about your data
-    sits in one place, and all of it is yours to open.
+    It keeps everything it learns, so nothing starts from scratch.
   altFull: >-
     The knowledge graph. Every column of every source and model drawn as a node,
-    the edges between them tracing where each one came from, with the written
-    context of one group of sources shown where the pointer rests.
+    with the edges between them tracing where each one came from, and two
+    groups of related sources marked among them.
   # No crop. The graph fills its own frame edge to edge and a card in front of it
   # covers the thing the view exists to show — the one place where the layering
   # cost more than it bought.

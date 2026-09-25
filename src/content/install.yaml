@@ -23,7 +23,7 @@
     - "cd portia"
     - "uv sync --extra ui --extra agent --extra graph"
     - "uv run python -m portia.ui"
-  caption: "Needs Python 3.11 and uv. The README covers warehouses and the knowledge graph."
+  caption: "Needs Python 3.11 and uv."
   link:
     label: "Read the README"
     href: "https://github.com/Jad1908/portia#readme"
@@ -34,7 +34,7 @@
   kind: prompt
   lines:
     - "Install portia for me by following https://github.com/Jad1908/portia/blob/main/INSTALL.md"
-  caption: "Paste it into Claude Code, Codex or any agent that can run commands. It asks what you need and checks every step."
+  caption: "Paste it into Claude Code, Codex or any agent that can run commands."
   link:
     label: "Read INSTALL.md"
     href: "https://github.com/Jad1908/portia/blob/main/INSTALL.md"
