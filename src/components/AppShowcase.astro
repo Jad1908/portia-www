@@ -3,6 +3,7 @@ import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 
 import { APP_SHOTS } from "~/lib/appShots";
+import LaunchFilm from "./LaunchFilm.astro";
 
 /**
  * The one place on this page that shows the product. LANDING.md → "The showcase"
@@ -19,10 +20,12 @@ import { APP_SHOTS } from "~/lib/appShots";
  *
  * ## What it is
  *
- * Four views, one at a time, behind a centred row of pills. Each view is a
- * full capture of the app with a crop or two of it floating in front, over one
- * flat accent card. The arrangement is borrowed openly from Clay's product
- * section, and two things about it were changed on the way in:
+ * Five views, one at a time, behind a centred row of pills. The first is the
+ * launch film — `LaunchFilm.astro` is the inside of that panel, and
+ * LANDING.md → "The film" is its spec. The other four are each a full capture
+ * of the app with a crop or two of it floating in front, over one flat accent
+ * card. The arrangement is borrowed openly from Clay's product section, and
+ * two things about it were changed on the way in:
  *
  *  - **The card behind the frame is one flat colour, not a tinted blur.** Clay
  *    backs each screenshot with a large blurred wash that changes hue with the
@@ -51,28 +54,38 @@ import { APP_SHOTS } from "~/lib/appShots";
  * Keyboard arrows move between tabs for free because that is what a radio group
  * already does, and hovering anywhere in the section pauses the rotation.
  *
- * The `:nth-of-type` pairing below is what keeps that from being four
- * hand-written rules per state. **It assumes exactly four views**, which is
- * asserted at the foot of this frontmatter rather than left to be discovered
- * when a fifth is added and silently never reached.
+ * The `:nth-of-type` pairing below is what keeps that from being five
+ * hand-written rules per state. **It assumes exactly five views** — the film
+ * and four captures — which is asserted at the foot of this frontmatter rather
+ * than left to be discovered when a sixth is added and silently never reached.
+ *
+ * The film gets one concession from the rotation: pressing play selects its
+ * tab, which stops the cycle the same way clicking a pill does, and picking
+ * another tab pauses it. Both live in `LaunchFilm.astro`.
  */
 
 interface Props {
+  film: CollectionEntry<"film">;
   views: CollectionEntry<"showcase">[];
 }
-const { views } = Astro.props;
+const { film, views } = Astro.props;
 
 /** The CSS below pairs radio *n* with pill *n* and panel *n* by hand, and the
- *  rotation keyframes divide the cycle into quarters. Both are written for four.
- *  A fifth view would render and never be reached, so it fails here instead —
- *  loudly, at build time, next to the assumption it breaks. */
+ *  rotation keyframes divide the cycle into fifths. Both are written for the
+ *  film plus four captures. A fifth capture would render and never be reached,
+ *  so it fails here instead — loudly, at build time, next to the assumption it
+ *  breaks. */
 if (views.length !== 4) {
   throw new Error(
-    `AppShowcase is written for exactly four views; got ${views.length}. ` +
-      `Add the matching :nth-of-type pair and re-cut the cycle keyframes in ` +
-      `its <style> before adding one.`,
+    `AppShowcase is written for the film plus exactly four captures; got ` +
+      `${views.length} captures. Add the matching :nth-of-type pair and ` +
+      `re-cut the cycle keyframes in its <style> before adding one.`,
   );
 }
+
+/** The radio that stands for the film's view. It is first, so it is the
+ *  resting state under reduced motion and the view the rotation opens on. */
+const FILM_RADIO = "showcase-film";
 
 /** Every full capture is a 2:1-ish window grab. Pinning the frame to one ratio
  *  stops the panels resizing the page as they swap, and stops a card placement
@@ -87,7 +100,7 @@ const FRAME_SIZES = "(max-width: 1256px) calc(100vw - 48px), 1160px";
 /** One full turn of the idle rotation. Six seconds a view: long enough to read
  *  the lede and look at the capture, short enough that a visitor who scrolled
  *  here sees there are several of them without deciding to wait. */
-const CYCLE = 24;
+const CYCLE = 30;
 ---
 
 <div class="showcase" role="group" aria-label="Views of the portia app">
@@ -97,6 +110,7 @@ const CYCLE = 24;
       **None is checked.** That is what starts the rotation — the CSS runs it
       only while `:has(:checked)` is false, so the first pick a visitor makes
       stops it permanently. */}
+  <input class="showcase__radio" type="radio" name="showcase" id={FILM_RADIO} />
   {
     views.map((view) => (
       <input
@@ -109,6 +123,7 @@ const CYCLE = 24;
   }
 
   <div class="showcase__tabs reveal">
+    <label class="showcase__tab" for={FILM_RADIO}>{film.data.tab}</label>
     {
       views.map((view) => (
         <label class="showcase__tab" for={`showcase-${view.id}`}>
@@ -119,6 +134,19 @@ const CYCLE = 24;
   </div>
 
   <div class="showcase__panels">
+    {/* The film. Same lede slot, same stage, same mat as the captures, so
+        switching to it moves nothing; its frame drops the bottom mask, for
+        the reason given in `LaunchFilm.astro`. */}
+    <figure class="showcase__panel">
+      <figcaption class="t-lede showcase__lede">{film.data.lede}</figcaption>
+      <div class="showcase__stage">
+        <div class="showcase__mat" aria-hidden="true"></div>
+        <div class="showcase__frame showcase__frame--film">
+          <LaunchFilm film={film} selects={FILM_RADIO} />
+        </div>
+      </div>
+    </figure>
+
     {
       views.map((view) => {
         const shot = APP_SHOTS[view.id];
@@ -196,7 +224,7 @@ const CYCLE = 24;
    * Pills at the page's interactive radius and the page's button type, so a
    * control here and a control anywhere else on the page are the same object.
    * Scrolls sideways below the tablet band rather than wrapping to two lines:
-   * four pills stacked read as a menu, and the row is a row.
+   * five pills stacked read as a menu, and the row is a row.
    *
    * **Centred**, which is the one thing on this page that is. The rule is that
    * nothing is centred because a centred block over a left-flush page reads as
@@ -249,14 +277,15 @@ const CYCLE = 24;
   }
 
   /* The selected pill takes the accent tint. It means **selected** and nothing
-   * else: the four pills are one size, one weight and one type, and the tint
+   * else: the five pills are one size, one weight and one type, and the tint
    * moves with the visitor rather than marking one view as the good one. This
    * is the same wash `text-input-focused` uses, which is one of the three
    * places DESIGN.md permits it. */
   .showcase__radio:nth-of-type(1):checked ~ .showcase__tabs .showcase__tab:nth-child(1),
   .showcase__radio:nth-of-type(2):checked ~ .showcase__tabs .showcase__tab:nth-child(2),
   .showcase__radio:nth-of-type(3):checked ~ .showcase__tabs .showcase__tab:nth-child(3),
-  .showcase__radio:nth-of-type(4):checked ~ .showcase__tabs .showcase__tab:nth-child(4) {
+  .showcase__radio:nth-of-type(4):checked ~ .showcase__tabs .showcase__tab:nth-child(4),
+  .showcase__radio:nth-of-type(5):checked ~ .showcase__tabs .showcase__tab:nth-child(5) {
     background-color: var(--portia-accent-soft);
     border-color: transparent;
     color: var(--portia-accent-text);
@@ -276,18 +305,19 @@ const CYCLE = 24;
   .showcase__radio:nth-of-type(1):focus-visible ~ .showcase__tabs .showcase__tab:nth-child(1),
   .showcase__radio:nth-of-type(2):focus-visible ~ .showcase__tabs .showcase__tab:nth-child(2),
   .showcase__radio:nth-of-type(3):focus-visible ~ .showcase__tabs .showcase__tab:nth-child(3),
-  .showcase__radio:nth-of-type(4):focus-visible ~ .showcase__tabs .showcase__tab:nth-child(4) {
+  .showcase__radio:nth-of-type(4):focus-visible ~ .showcase__tabs .showcase__tab:nth-child(4),
+  .showcase__radio:nth-of-type(5):focus-visible ~ .showcase__tabs .showcase__tab:nth-child(5) {
     outline: 2px solid var(--portia-accent-primary);
     outline-offset: 2px;
   }
 
   /* ---- The panels.
    *
-   * All four occupy one grid cell, so the block is as tall as its tallest view
+   * All five occupy one grid cell, so the block is as tall as its tallest view
    * and swapping a tab never moves the page under the pointer. The inactive
    * ones take `visibility: hidden`, which is what keeps them out of the
    * accessibility tree and out of tab order — `opacity: 0` alone would leave
-   * four captures announced on top of each other. ---- */
+   * five views announced on top of each other. ---- */
   .showcase__panels {
     display: grid;
     margin-top: var(--spacing-xxl);
@@ -317,7 +347,8 @@ const CYCLE = 24;
   .showcase__radio:nth-of-type(1):checked ~ .showcase__panels .showcase__panel:nth-child(1),
   .showcase__radio:nth-of-type(2):checked ~ .showcase__panels .showcase__panel:nth-child(2),
   .showcase__radio:nth-of-type(3):checked ~ .showcase__panels .showcase__panel:nth-child(3),
-  .showcase__radio:nth-of-type(4):checked ~ .showcase__panels .showcase__panel:nth-child(4) {
+  .showcase__radio:nth-of-type(4):checked ~ .showcase__panels .showcase__panel:nth-child(4),
+  .showcase__radio:nth-of-type(5):checked ~ .showcase__panels .showcase__panel:nth-child(5) {
     opacity: 1;
     visibility: visible;
     transition: opacity 420ms var(--ease-reveal), visibility 0s;
@@ -325,7 +356,7 @@ const CYCLE = 24;
 
   /* ---- The rotation.
    *
-   * Four views on a 24-second loop, six seconds each, cross-fading over the
+   * Five views on a 30-second loop, six seconds each, cross-fading over the
    * last 0.6s of each turn. It runs **only while nothing is selected** — the
    * whole mechanism is that `:has(:checked)` is false until a visitor picks a
    * tab, after which the rules above take the panels and the animation is
@@ -337,32 +368,38 @@ const CYCLE = 24;
    * rather than opening with a six-second wait on view one and catching up
    * afterwards. **They run backwards, and that is not a typo.** A negative delay
    * winds the clock *forward*, so the view that should come up second is the one
-   * that needs to be furthest from the start of its own turn: three quarters
-   * back, not one. Wired the intuitive way round the section plays 1 · 4 · 3 · 2.
+   * that needs to be furthest from the start of its own turn: four fifths
+   * back, not one. Wired the intuitive way round the section plays 1 · 5 · 4 · 3 · 2.
    * ---- */
   .showcase:not(:has(.showcase__radio:checked)) .showcase__panel {
     animation: showcase-cycle var(--cycle) linear infinite;
   }
   .showcase:not(:has(.showcase__radio:checked)) .showcase__panel:nth-child(2) {
-    animation-delay: calc(var(--cycle) * -3 / 4);
+    animation-delay: calc(var(--cycle) * -4 / 5);
   }
   .showcase:not(:has(.showcase__radio:checked)) .showcase__panel:nth-child(3) {
-    animation-delay: calc(var(--cycle) * -2 / 4);
+    animation-delay: calc(var(--cycle) * -3 / 5);
   }
   .showcase:not(:has(.showcase__radio:checked)) .showcase__panel:nth-child(4) {
-    animation-delay: calc(var(--cycle) * -1 / 4);
+    animation-delay: calc(var(--cycle) * -2 / 5);
+  }
+  .showcase:not(:has(.showcase__radio:checked)) .showcase__panel:nth-child(5) {
+    animation-delay: calc(var(--cycle) * -1 / 5);
   }
   .showcase:not(:has(.showcase__radio:checked)) .showcase__tab {
     animation: showcase-tab-cycle var(--cycle) linear infinite;
   }
   .showcase:not(:has(.showcase__radio:checked)) .showcase__tab:nth-child(2) {
-    animation-delay: calc(var(--cycle) * -3 / 4);
+    animation-delay: calc(var(--cycle) * -4 / 5);
   }
   .showcase:not(:has(.showcase__radio:checked)) .showcase__tab:nth-child(3) {
-    animation-delay: calc(var(--cycle) * -2 / 4);
+    animation-delay: calc(var(--cycle) * -3 / 5);
   }
   .showcase:not(:has(.showcase__radio:checked)) .showcase__tab:nth-child(4) {
-    animation-delay: calc(var(--cycle) * -1 / 4);
+    animation-delay: calc(var(--cycle) * -2 / 5);
+  }
+  .showcase:not(:has(.showcase__radio:checked)) .showcase__tab:nth-child(5) {
+    animation-delay: calc(var(--cycle) * -1 / 5);
   }
 
   /* Anywhere in the section, not just on the pills: someone whose pointer is
@@ -378,20 +415,20 @@ const CYCLE = 24;
 
   @keyframes showcase-cycle {
     0%,
-    22.5% {
+    18% {
       opacity: 1;
       visibility: visible;
     }
-    25% {
+    20% {
       opacity: 0;
       visibility: visible;
     }
-    25.01%,
-    97.49% {
+    20.01%,
+    97.99% {
       opacity: 0;
       visibility: hidden;
     }
-    97.5% {
+    98% {
       opacity: 0;
       visibility: visible;
     }
@@ -405,12 +442,12 @@ const CYCLE = 24;
    * across two pills reads as both being half-selected. */
   @keyframes showcase-tab-cycle {
     0%,
-    24.6% {
+    19.6% {
       background-color: var(--portia-accent-soft);
       border-color: transparent;
       color: var(--portia-accent-text);
     }
-    25.1%,
+    20.1%,
     99.6% {
       background-color: transparent;
       border-color: var(--portia-hairline);
@@ -475,6 +512,17 @@ const CYCLE = 24;
      * argument `Marquee.astro` makes for its feathered edges. */
     -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent 100%);
     mask-image: linear-gradient(to bottom, #000 70%, transparent 100%);
+  }
+
+  /* The film's frame keeps the hairline and the radius and drops the mask:
+   * it ends on its own card, and a fade over a moving picture reads as a
+   * fault. */
+  .showcase__frame--film {
+    -webkit-mask-image: none;
+    mask-image: none;
+    /* A 16:9 picture fitted into this 2:1 stage leaves a band of
+     * (1 − 8/9) / 2 of the width down each side. The play control reads it. */
+    --film-band: calc(100% / 18);
   }
 
   .showcase__shot {

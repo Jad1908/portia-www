@@ -148,7 +148,7 @@ film's play control.
 
 ## The launch film
 
-The film at the top of the app section is served from an R2 bucket, not from this repo: the 1080p
+The film, the first tab of the app section, is served from an R2 bucket, not from this repo: the 1080p
 encode is 56 MB and Workers static assets stop at 25 MiB a file. Three steps when the cut changes:
 
 1. `pnpm film ../portia/sandbox/film/hf/portia-launch/renders/<render>.mp4` — makes both encodes

@@ -15,9 +15,10 @@ description: |
   as in the app. The product rule carries over unchanged and binds hardest here, where marketing
   instinct pushes against it: **color and prominence communicate kind, never rank.**
 
-  **The page shows the app**, in one section, directly after the manifesto band: the launch film,
-  then four unretouched captures. "The film" and "The showcase" are the specs for it and the one
-  rule under everything else there is *unedited or not at all*. Earlier drafts of this file banned screenshots outright; that was aimed
+  **The page shows the app**, in one section, directly after the manifesto band: five views behind
+  one row of pills, the launch film first and four unretouched captures after it. "The showcase"
+  and "The film" are the specs for it and the one rule under everything else there is *unedited or
+  not at all*. Earlier drafts of this file banned screenshots outright; that was aimed
   at a drawn mockup of unshipped software sitting in the hero, and it did not survive contact with
   a product that runs. See "The second build" for the history.
 
@@ -525,10 +526,10 @@ were cut because they invited a doubt the page had not raised.
 ## The showcase — how the page shows the product
 
 The page shows the app in exactly one place: `#the-app`, between the manifesto band and the three
-principles. Two things are in it, in this order. First the launch film — "The film", below, is its
-spec. Then four views behind a centred row of pills, one at a time, each a **full capture of the
-running application** with a crop or two of that same capture floating in front of it over one flat
-accent card. `AppShowcase.astro`; copy in `showcase.yaml`, captures in `lib/appShots.ts`.
+principles. Five views behind a centred row of pills, one at a time. The first is the launch film —
+"The film", below, is its spec. The other four are each a **full capture of the running
+application** with a crop or two of that same capture floating in front of it over one flat accent
+card. `AppShowcase.astro`; copy in `showcase.yaml` and `film.yaml`, captures in `lib/appShots.ts`.
 
 **Why it exists at all.** The page's pitch is that portia measures rather than asserts. A page that
 will not show the product, while claiming the product refuses to guess, asks the reader to take on
@@ -552,10 +553,11 @@ the cardinalities, the cost and token line. This is the page's oldest rule in it
 they are not the page's numbers, they are the app's, and the page did not choose them. No number is
 added in copy, and the no-stat-block rule is untouched.
 
-**3. Nothing in it ranks.** Three pills, one size, one weight, one type. The selected one takes
+**3. Nothing in it ranks.** Five pills, one size, one weight, one type. The selected one takes
 `{components.showcase-tab-selected}` and means *selected* — never *best*, never *recommended*. The
-accent card behind the frame is the same colour on all three views. There is no ordering signal
-beyond left-to-right, which a row has to have.
+accent card behind the frame is the same colour on all five views. There is no ordering signal
+beyond left-to-right, which a row has to have; the film is first because it is the one to start
+with, not the one that matters most.
 
 **4. A crop never covers what the capture is being shown for.** The workspace's two crops sit low
 and left over the preview table, not over the column measurements. The knowledge graph gets **no
@@ -594,15 +596,18 @@ full-bleed frame; centred, it belongs to the frame instead of hanging off the he
 
 ### The rotation
 
-With nothing selected the four views cycle on a 24-second loop, six seconds each, cross-fading
-over the last 0.6s. **It is CSS, and it is not a fourth island.** No radio is checked at build, so
+With nothing selected the five views cycle on a 30-second loop, six seconds each, cross-fading
+over the last 0.6s. **It is CSS, and it is not a fifth island.** No radio is checked at build, so
 `:has(:checked)` is false and the animation runs; the first tab a visitor picks makes it true, the
 animation stops for good and the `:checked ~` rules take the panels. Hover or focus anywhere in the
 section pauses it. Under `prefers-reduced-motion` it does not run at all — the resting state is the
-first view held with its pill selected, which is a designed state and not a frozen frame.
+first view held with its pill selected, which is the film's poster: a designed state and not a
+frozen frame.
 
 A carousel that keeps moving after someone has said what they want to look at is the reason the
-pattern has the reputation it has. This one cannot.
+pattern has the reputation it has. This one cannot. The film adds one more way of saying it:
+pressing play checks the film's radio, exactly as clicking its pill would, so a film never rotates
+away mid-play; and picking any other tab pauses the film, so nothing sounds from a hidden panel.
 
 ### Known gap: the captures are light-mode
 
@@ -613,20 +618,26 @@ replacement. The film is light for the same reason and gets the same treatment, 
 
 ---
 
-## The film — the other half of the one section that shows the product
+## The film — the first of the showcase's five views
 
-The launch film sits at the top of `#the-app`, above the pills, in a frame at the same width as
-the captures. It is 83 seconds of the running app on a city bike-share project, cut to a music bed
-with text cards and no voiceover, and the hero's *See it running* lands on it. `LaunchFilm.astro`;
-copy and provenance in `film.yaml`; the poster in `assets/film`; the encodes not in this repo at
-all.
+The launch film is the first pill in the showcase row, *Watch the film*, ahead of the four
+captures. It is 83 seconds of the running app on a city bike-share project, cut to a music bed with
+text cards and no voiceover, and the hero's *See it running* lands on the section it opens.
+`LaunchFilm.astro` is the inside of its panel; `AppShowcase.astro` owns the pill, the stage and the
+rotation; copy and provenance in `film.yaml`; the poster in `assets/film`; the encodes not in this
+repo at all.
+
+**Why it is a tab and not a block.** It was first built as its own frame above the pills, and that
+added a full frame's height ahead of four more frames of the same thing. As a view it adds no
+height at all, and the pill row already says *here are several ways to look at this*. It takes the
+same lede slot, the same stage and the same mat as the captures, so switching to it moves nothing.
 
 **Why it is here and not in the hero.** Every convention of the genre puts a launch film at the
 top of the page with autoplay on. The rule under the showcase — a picture may follow the claim, it
 may not replace it — applies to a film at least as hard as to a still, and a film that opens the
-page is a film doing the arguing. Following the manifesto band is not leading. Putting it in the
-same section as the captures also keeps the sentence at the head of "The showcase" true: the page
-still shows the app in exactly one place.
+page is a film doing the arguing. Following the manifesto band is not leading. Living inside the
+showcase also keeps the sentence at the head of that section true: the page still shows the app in
+exactly one place.
 
 ### The rules
 
@@ -647,15 +658,18 @@ of the 1080p60 one — that is the only choice the script makes, and it is a cho
 about which visitor deserves the better picture.
 
 **4. One control, on the lower left.** The play button is the section's one primary action, which
-`#the-app` had none of before. It hangs off the same corner the showcase's crops gather on, so the
-two frames read as one composition, and it is **not** centred: the pill row keeps its title as the
+`#the-app` had none of before. It hangs off the same corner the captures' crops gather on, so the
+five views read as one composition, and it is **not** centred: the pill row keeps its title as the
 only centred thing on the page. Beside the label, in mono, the running time — the file's own
-figure, which a human reads as data, and not a number the page chose.
+figure, which a human reads as data, and not a number the page chose. Pressing it selects the
+film's tab, which is what stops the rotation.
 
-**5. The frame is the showcase's, minus its mask.** Hairline, `{radius.md}`, surface behind. No
-bottom mask, because the film ends on its own card and a fade over a moving picture reads as a
-fault. No shadow: the elevation carve-out is for a transient overlay, and a frame in the flow of
-the page is not one.
+**5. The frame is the showcase's, minus its mask, and the film is fitted, not cropped.** The stage
+is 2:1 and the film is 16:9, so it sits on the surface colour with a band down each side rather
+than losing its top and bottom, which is where its own text cards are. No bottom mask, because the
+film ends on its own card and a fade over a moving picture reads as a fault. No shadow: the
+elevation carve-out is for a transient overlay, and a frame in the flow of the page is not one.
+There is no caption under it and no crop in front of it.
 
 ### Not an island, and where the file lives
 

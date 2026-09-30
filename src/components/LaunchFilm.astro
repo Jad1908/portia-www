@@ -5,9 +5,12 @@ import type { CollectionEntry } from "astro:content";
 import poster from "~/assets/film/launch-poster.jpg";
 
 /**
- * The launch film. It sits at the top of `#the-app`, above the four captures,
- * and it is the other half of the one section that shows the product.
- * LANDING.md → "The film" is the spec; this file implements it.
+ * The launch film. It is the first of the showcase's five views — the pill
+ * reads *Watch the film*, and the other four are the captures. This file is
+ * the inside of that one panel: the frame, the poster, the play control and
+ * the few lines of script that run it. `AppShowcase.astro` owns the pill, the
+ * rotation and the stage the frame sits on. LANDING.md → "The film" is the
+ * spec.
  *
  * Three decisions to have in front of you before editing anything here:
  *
@@ -20,7 +23,7 @@ import poster from "~/assets/film/launch-poster.jpg";
  *
  *  - **Nothing downloads until someone asks for it.** `preload="none"` and a
  *    poster the page already optimised. The 1080p file is 56 MB; a visitor who
- *    scrolls past pays for a JPEG.
+ *    never presses play pays for a JPEG.
  *
  *  - **The file is not in this repo and not in `public/` at deploy.** Workers
  *    static assets cap a file at 25 MiB, so both encodes are served from an R2
@@ -28,27 +31,42 @@ import poster from "~/assets/film/launch-poster.jpg";
  *    locally it is unset, falls back to `/film`, and the dev server plays the
  *    gitignored copies in `public/film/` that `pnpm film` puts there.
  *
+ * ## It lives inside a carousel, and the carousel yields to it
+ *
+ * The showcase rotates its views on a timer until a visitor picks one. A film
+ * that rotates away mid-play would be the failure that pattern is known for,
+ * so pressing play **selects the film's tab**, which is what stops the
+ * rotation for good — the same thing clicking the pill does. And picking any
+ * other tab pauses the film, so nothing keeps playing under a hidden panel.
+ * `selects` is the id of the radio that stands for this view.
+ *
  * ## No island
  *
  * The play control is a few lines of script at the foot of this file, the way
- * the install block's copy button and the nav drawer are. It does three things:
- * picks the encode (720p30 on a phone or a metered connection, 1080p60
- * otherwise), switches on the native controls, and plays. Without script the
- * `<noscript>` rule hides the custom button and the `controls` attribute in
- * the markup does the job on its own, so there is no state in which a button
- * is drawn that does nothing.
+ * the install block's copy button and the nav drawer are. It picks the encode
+ * (720p30 on a phone or a metered connection, 1080p60 otherwise), switches on
+ * the native controls, and plays. Without script the `<noscript>` rule hides
+ * the custom button and the `controls` attribute in the markup does the job on
+ * its own, so there is no state in which a button is drawn that does nothing.
  *
- * The frame is the showcase's: hairline, `radius-md`, surface behind. It has no
- * bottom mask — the film has its own end card, and a mask over a picture that
- * moves reads as a fault — and it has no shadow, because it is not a transient
- * overlay. The play control hangs off the lower left, which is the corner the
- * showcase's crops gather on, so the two frames read as one composition.
+ * ## The frame
+ *
+ * It fills whatever stage it is put on — the showcase's is 2:1 — and the film
+ * is 16:9, so it is **letterboxed on the surface colour, never cropped**: a
+ * crop would cut the film's own text cards. There is no bottom mask, because
+ * the film has its own end card and a fade over a picture that moves reads as
+ * a fault; and there is no shadow, because a frame in the flow of the page is
+ * not a transient overlay. The play control hangs off the lower left, the
+ * corner the captures' crops gather on, so the five views read as one
+ * composition.
  */
 
 interface Props {
   film: CollectionEntry<"film">;
+  /** The id of the showcase radio that stands for this view. */
+  selects: string;
 }
-const { film } = Astro.props;
+const { film, selects } = Astro.props;
 
 /** Where the encodes live. Set in the Cloudflare build environment to the R2
  *  bucket's hostname; unset locally, where `public/film/` stands in. */
@@ -61,50 +79,44 @@ const sd = `${base}/${film.data.sources.sd}`;
  *  `<Image>`. 1920 wide: the frame is 1160px at most, but a poster is shown on
  *  a retina display at 2× and it is the only thing most visitors will see. */
 const posterImg = await getImage({ src: poster, width: 1920, format: "jpg" });
-
-/** The film is 1920×1080. Pinning the ratio stops the frame resizing the page
- *  when the poster arrives, and again when the video does. */
-const FRAME_RATIO = "16 / 9";
 ---
 
-<figure class="film reveal" data-film>
-  <div class="film__frame">
-    {/* `controls` is in the markup so the no-script case is a working player;
-        the script removes it and gives it back on play, so the only control a
-        scripted visitor sees before pressing play is the one below. */}
-    <video
-      class="film__video"
-      preload="none"
-      playsinline
-      controls
-      poster={posterImg.src}
-      width="1920"
-      height="1080"
-      aria-label={film.data.title}
-      data-film-video
-      data-src-hd={hd}
-      data-src-sd={sd}
-    >
-      <source src={hd} type="video/mp4" />
-    </video>
+<div class="film" data-film data-film-selects={selects}>
+  {/* `controls` is in the markup so the no-script case is a working player;
+      the script removes it and gives it back on play, so the only control a
+      scripted visitor sees before pressing play is the one below. */}
+  <video
+    class="film__video"
+    preload="none"
+    playsinline
+    controls
+    poster={posterImg.src}
+    width="1920"
+    height="1080"
+    aria-label={film.data.title}
+    data-film-video
+    data-src-hd={hd}
+    data-src-sd={sd}
+  >
+    <source src={hd} type="video/mp4" />
+  </video>
 
-    <button class="btn btn--primary film__play" type="button" data-film-play>
-      <svg
-        width="12"
-        height="12"
-        viewBox="0 0 12 12"
-        fill="currentColor"
-        aria-hidden="true"
-      >
-        <path d="M2.5 1.5v9l7.5-4.5z" />
-      </svg>
-      <span>{film.data.action}</span>
-      {/* The running time. Mono, because it is a figure a human reads as data
-          — and it is the film's own, not one the page chose. */}
-      <span class="film__duration">{film.data.duration}</span>
-    </button>
-  </div>
-</figure>
+  <button class="btn btn--primary film__play" type="button" data-film-play>
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M2.5 1.5v9l7.5-4.5z" />
+    </svg>
+    <span>{film.data.action}</span>
+    {/* The running time. Mono, because it is a figure a human reads as data
+        — and it is the film's own, not one the page chose. */}
+    <span class="film__duration">{film.data.duration}</span>
+  </button>
+</div>
 
 <noscript>
   <style>
@@ -124,6 +136,13 @@ const FRAME_RATIO = "16 / 9";
     // native bar comes back the moment the film starts.
     video.removeAttribute("controls");
 
+    // The showcase radio this panel belongs to. Checking it is what stops the
+    // rotation, and it is how the film's own tab lights up when play is
+    // pressed rather than the pill.
+    const radio = document.getElementById(
+      film.dataset.filmSelects ?? "",
+    ) as HTMLInputElement | null;
+
     // The lighter encode on a phone or on a connection that has asked for
     // less. `connection` is Chromium-only; elsewhere the width decides alone.
     const conn = (navigator as { connection?: { saveData?: boolean; effectiveType?: string } })
@@ -134,6 +153,7 @@ const FRAME_RATIO = "16 / 9";
       /2g/.test(conn?.effectiveType ?? "");
 
     play.addEventListener("click", async () => {
+      if (radio) radio.checked = true;
       const src = lean ? video.dataset.srcSd : video.dataset.srcHd;
       if (src) video.src = src;
       video.controls = true;
@@ -146,29 +166,41 @@ const FRAME_RATIO = "16 / 9";
       }
       video.focus({ preventScroll: true });
     });
+
+    // Another view was picked while the film was playing: stop it, so nothing
+    // keeps sounding from a panel that is no longer visible.
+    if (radio) {
+      document.addEventListener("change", (e) => {
+        const t = e.target;
+        if (
+          t instanceof HTMLInputElement &&
+          t.name === radio.name &&
+          t !== radio
+        ) {
+          video.pause();
+        }
+      });
+    }
   });
 </script>
 
-<style define:vars={{ frameRatio: FRAME_RATIO }}>
+<style>
+  /* Fills the stage it is put on. The showcase's frame draws the hairline and
+   * the radius; this only has to fill it and place the control. */
   .film {
-    margin: 0;
-  }
-
-  /* ---- The frame. The showcase's, without its mask. ---- */
-  .film__frame {
     position: relative;
-    aspect-ratio: var(--frameRatio);
-    overflow: hidden;
-    border: 1px solid var(--portia-hairline);
-    border-radius: var(--radius-md);
+    height: 100%;
     background-color: var(--portia-surface);
   }
 
+  /* `contain`, never `cover`: a 16:9 film on a 2:1 stage is letterboxed on
+   * the surface colour rather than losing its top and bottom. The poster
+   * follows the same fit. */
   .film__video {
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     /* The focus ring after play lands on the video: draw it inside the frame
      * rather than clipped by it. */
     outline-offset: -3px;
@@ -177,12 +209,15 @@ const FRAME_RATIO = "16 / 9";
   /* ---- The play control.
    *
    * The section's one primary action — `#the-app` had none before the film.
-   * Lower left, on the corner the showcase's crops gather on, and never
-   * centred: the pill row above the captures is the one centred thing on the
-   * page and it stays that way. ---- */
+   * Lower left, on the corner the captures' crops gather on, and never
+   * centred: the pill row above is the one centred thing on the page and it
+   * stays that way. ---- */
+  /* `--film-band` is the width of the fitted picture's side band, set by
+   * whoever owns the stage, so the control sits on the picture and not
+   * astride the band's edge. Zero on a stage that is already 16:9. */
   .film__play {
     position: absolute;
-    left: 20px;
+    left: calc(var(--film-band, 0px) + 20px);
     bottom: 20px;
     z-index: 1;
   }
@@ -199,7 +234,7 @@ const FRAME_RATIO = "16 / 9";
 
   @media (max-width: 640px) {
     .film__play {
-      left: 12px;
+      left: calc(var(--film-band, 0px) + 12px);
       bottom: 12px;
     }
   }

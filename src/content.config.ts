@@ -9,8 +9,8 @@ import { glob, file } from "astro/loaders";
  *
  * Seven collections:
  *   sections   — one MDX file per section of the page, in reading order
- *   film       — the launch film, at the top of the app section
- *   showcase   — the four views of the app, under the film
+ *   film       — the launch film, the first view in the showcase
+ *   showcase   — the four captures of the app that follow it
  *   principles — the three columns naming what the showcase just showed
  *   claims     — short lines of consequence, grouped by section
  *   faq        — one MD file per question
@@ -94,7 +94,7 @@ const principles = defineCollection({
 });
 
 /**
- * The launch film, above the four captures in the app section.
+ * The launch film, the first of the showcase's five views.
  *
  * Prose and provenance. The poster is an asset and lives in `src/assets/film`;
  * the two encodes live nowhere in this repo at all (see `LaunchFilm.astro` and
@@ -106,6 +106,10 @@ const principles = defineCollection({
 const film = defineCollection({
   loader: file("./src/content/film.yaml"),
   schema: z.object({
+    /** The pill label. First in the row; a position, never a rank. */
+    tab: z.string(),
+    /** One short sentence, in the slot the captures' ledes use. */
+    lede: z.string(),
     /** The video's accessible name. What it is, not what it sells. */
     title: z.string(),
     /** The play control's label. */

@@ -15,10 +15,14 @@
 # `duration` is the one figure in this file and it is rendered in mono: it is
 # the file's running time, which the film has and the page did not choose. It
 # is not a claim about the product. `title` is the video's accessible name and
-# describes what it is. There is no caption: the frame carries no prose, the
-# same as the manifesto band above it.
+# describes what it is. `tab` is the first pill in the showcase row — a
+# position, never a rank — and `lede` fills the same slot the four captures'
+# ledes do, so switching to the film moves nothing.
 
 - id: launch
+  tab: "Watch the film"
+  lede: >-
+    Start to finish, in one sitting. Sound on.
   title: >-
     The portia launch film: the app reading, measuring and modelling a city
     bike-share project, start to finish.
