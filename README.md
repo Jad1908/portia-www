@@ -77,8 +77,9 @@ old code, which is the confusing failure.
 In the Worker → **Settings → Variables and Secrets**, set `EARLY_ACCESS_WEBHOOK_URL` to the `/exec`
 URL. Variables apply to the *next* deploy, not to the running one, so redeploy after adding it or
 the endpoint keeps answering 503. `SITE_URL` is different: it is read at build time by
-`astro.config.mjs`, so it belongs in the build settings, not here. The compatibility date is pinned
-in `wrangler.jsonc` rather than in the dashboard.
+`astro.config.mjs`, and production leaves it unset so the page names `https://portiadata.dev`. The
+domain, its `www`, the workers.dev address and the compatibility date are all in `wrangler.jsonc`
+rather than in the dashboard.
 
 ### Testing it before you merge
 
