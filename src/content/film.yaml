@@ -21,8 +21,7 @@
 
 - id: launch
   tab: "Watch the film"
-  lede: >-
-    Start to finish, in one sitting. Sound on.
+  lede: "Watch it work."
   title: >-
     The portia launch film: the app reading, measuring and modelling a city
     bike-share project, start to finish.
