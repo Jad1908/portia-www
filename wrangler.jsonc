@@ -12,6 +12,18 @@
   // which means the runtime a deploy gets depends on the day it ran.
   "compatibility_date": "2026-08-11",
 
+  // The page's address. `custom_domain` has the deploy create the DNS record and
+  // the certificate itself, which it can because the zone is in this account.
+  // `www` serves the same page; the canonical tag names the bare domain.
+  "routes": [
+    { "pattern": "portiadata.dev", "custom_domain": true },
+    { "pattern": "www.portiadata.dev", "custom_domain": true }
+  ],
+
+  // On by default, and written down anyway: the workers.dev address is in
+  // resumes already sent, so it has to keep answering beside the domain.
+  "workers_dev": true,
+
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
