@@ -115,8 +115,14 @@ product whose entire pitch is that two surfaces must never disagree about a numb
 - **Astro 5** — the page is overwhelmingly static and ships zero JS for prose.
 - **React islands, four of them only**: the spider, the "How it works" swarm, the new-version
   form (still `EarlyAccessForm`, on the `/api/early-access` route), the FAQ. The install tabs and
-  their copy button are CSS and a few lines of inline script, not a fifth island. Anything else wanting an island is a signal to check whether it needs to be
-  interactive at all — the swarm is the one that had an answer, being a canvas simulation.
+  their copy button, and the launch film's play control, are CSS and a few lines of inline
+  script, not a fifth island. Anything else wanting an island is a signal to check whether it
+  needs to be interactive at all — the swarm is the one that had an answer, being a canvas
+  simulation.
+- **The launch film is not in the repo.** Its two encodes are over the 25 MiB per-file cap on
+  Workers static assets and are served from R2; `PUBLIC_FILM_BASE` names the bucket at build
+  time, and locally the gitignored `public/film/` that `pnpm film` fills stands in. The render it
+  came from is recorded in `src/content/film.yaml`. `LANDING.md` → "The film" is the spec.
 - **Tailwind v4**, theming through `@theme` off `tokens.css`.
 - **Motion** (`motion`) for reveals and the spider. **Lenis** for smooth scroll, disabled under
   `prefers-reduced-motion`. Escalate to GSAP ScrollTrigger only if a pinned scroll scene is added.

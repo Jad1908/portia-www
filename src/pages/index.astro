@@ -7,6 +7,7 @@ import Footer from "~/components/Footer.astro";
 import SectionHead from "~/components/SectionHead.astro";
 import PrincipleSwarm from "~/components/islands/PrincipleSwarm";
 import Marquee from "~/components/Marquee.astro";
+import LaunchFilm from "~/components/LaunchFilm.astro";
 import AppShowcase from "~/components/AppShowcase.astro";
 import Spider from "~/components/islands/Spider";
 import EarlyAccessForm from "~/components/islands/EarlyAccessForm";
@@ -99,6 +100,11 @@ const showcase = (await getCollection("showcase")).sort(
   (a, b) => a.data.order - b.data.order,
 );
 
+/** One entry. The film sits above the captures in the same section, so the
+ *  page still shows the product in exactly one place. */
+const film = (await getCollection("film"))[0];
+if (!film) throw new Error("film.yaml has no entry; the app section needs one.");
+
 const installWays = (await getCollection("install")).sort(
   (a, b) => a.data.order - b.data.order,
 );
@@ -171,13 +177,19 @@ const faqItems = faqEntries.map((e) => ({
          It comes **before** the three principles, which reverses what this file
          used to say. The band asserts, the app shows what the assertion looks
          like running, and the three principles then name what you just watched
-         it do. Still one section, still unretouched captures, still never in
-         the hero: a picture may follow the claim, it may not replace it.
-         LANDING.md → "The showcase" is the spec for the rest of it.
+         it do. Still one section, still unretouched, still never in the hero:
+         a picture may follow the claim, it may not replace it.
 
-         The frame runs at `wrap--frame`, wider than the 960px column, because a
-         three-pane application shrunk into a prose measure reads as a thumbnail
-         of itself. That width already reserves the spider's lane. ---- */}
+         Two things in it now, in this order: the launch film, then the four
+         captures. The film carries the rhythm — the whole arc in one sitting,
+         with sound, on a click — and the captures carry what you can read at
+         rest. The hero's "See it running" lands here, on the film. It does not
+         autoplay and it is not a fifth island; LANDING.md → "The film" and
+         "The showcase" are the specs.
+
+         Both frames run at `wrap--frame`, wider than the 960px column, because
+         a three-pane application shrunk into a prose measure reads as a
+         thumbnail of itself. That width already reserves the spider's lane. ---- */}
     <section class="section" id="the-app">
       <div class="wrap wrap--wide">
         <SectionHead
@@ -185,6 +197,10 @@ const faqItems = faqEntries.map((e) => ({
           title={app.data.title}
           titleSecond={app.data.titleSecond}
         />
+      </div>
+
+      <div class="wrap wrap--frame section__body">
+        <LaunchFilm film={film} />
       </div>
 
       <div class="wrap wrap--frame section__body">

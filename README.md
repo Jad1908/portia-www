@@ -35,6 +35,8 @@ Python projects/
 | `src/styles/tokens.css` | Generated from `../portia/DESIGN.md`. The only place a color is declared. |
 | `src/content/sections/` | One MDX file per section, in reading order. All the prose lives here. |
 | `src/content/faq/` | One file per question. |
+| `src/content/film.yaml` | The launch film's copy, its two file names and the render they came from. |
+| `scripts/film.sh` | Re-encodes a render into the two web files and cuts the poster. |
 | `src/content/evidence.yaml` | **Every number on the page**, each with what produced it and where it was checked. |
 | `src/content/mockup.yaml` | What the three panes of the hero mockup show. All of it off real runs. |
 | `src/lib/mark.ts` | The spider's geometry, shared by the nav lockup and the scroll creature. |
@@ -140,5 +142,23 @@ answer key in `../portia/tests/fixtures/hotels.answers.yaml`.
 Astro 5 · Tailwind v4 · Motion · Lenis · Inter + JetBrains Mono, self-hosted · pnpm ·
 deployed to Cloudflare Workers.
 
-Three React islands and no more: the spider, the early-access form, the FAQ. Everything else ships
-zero JavaScript.
+Four React islands and no more: the spider, the swarm, the early-access form, the FAQ. Everything
+else ships zero JavaScript, bar a few inline lines for the copy button, the nav drawer and the
+film's play control.
+
+## The launch film
+
+The film at the top of the app section is served from an R2 bucket, not from this repo: the 1080p
+encode is 56 MB and Workers static assets stop at 25 MiB a file. Three steps when the cut changes:
+
+1. `pnpm film ../portia/sandbox/film/hf/portia-launch/renders/<render>.mp4` — makes both encodes
+   in `public/film/` (gitignored, never deployed) and the poster in `src/assets/film/`. Bump the
+   version in the file names in `scripts/film.sh` and `src/content/film.yaml` first: a new cut is
+   a new URL, because the old one is cached at the edge.
+2. Upload the two files to the bucket. `wrangler r2 object put <bucket>/<name> --file public/film/<name>`
+   does it once you are logged in.
+3. `PUBLIC_FILM_BASE` in the Cloudflare **build** environment is the bucket's public hostname, no
+   trailing slash. It is inlined by Astro at build time, so it is not a Worker variable and a change
+   to it needs a rebuild.
+
+Locally nothing needs setting: the dev server plays the copies in `public/film/`.

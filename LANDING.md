@@ -15,9 +15,9 @@ description: |
   as in the app. The product rule carries over unchanged and binds hardest here, where marketing
   instinct pushes against it: **color and prominence communicate kind, never rank.**
 
-  **The page shows the app**, in one section, in unretouched captures, directly after the
-  manifesto band. "The showcase" is the spec for it and the one rule under everything else there is
-  *unedited or not at all*. Earlier drafts of this file banned screenshots outright; that was aimed
+  **The page shows the app**, in one section, directly after the manifesto band: the launch film,
+  then four unretouched captures. "The film" and "The showcase" are the specs for it and the one
+  rule under everything else there is *unedited or not at all*. Earlier drafts of this file banned screenshots outright; that was aimed
   at a drawn mockup of unshipped software sitting in the hero, and it did not survive contact with
   a product that runs. See "The second build" for the history.
 
@@ -525,9 +525,10 @@ were cut because they invited a doubt the page had not raised.
 ## The showcase — how the page shows the product
 
 The page shows the app in exactly one place: `#the-app`, between the manifesto band and the three
-principles. Four views behind a centred row of pills, one at a time, each a **full capture
-of the running application** with a crop or two of that same capture floating in front of it over
-one flat accent card. `AppShowcase.astro`; copy in `showcase.yaml`, captures in `lib/appShots.ts`.
+principles. Two things are in it, in this order. First the launch film — "The film", below, is its
+spec. Then four views behind a centred row of pills, one at a time, each a **full capture of the
+running application** with a crop or two of that same capture floating in front of it over one flat
+accent card. `AppShowcase.astro`; copy in `showcase.yaml`, captures in `lib/appShots.ts`.
 
 **Why it exists at all.** The page's pitch is that portia measures rather than asserts. A page that
 will not show the product, while claiming the product refuses to guess, asks the reader to take on
@@ -608,7 +609,68 @@ pattern has the reputation it has. This one cannot.
 In dark page mode the section is a bright block, and it is deliberately **not** dimmed — rule 1.
 The bottom mask does most of the work of settling it into the dark canvas. If dark-mode captures
 are ever taken they belong beside these behind a `prefers-color-scheme` `<source>`, not as a
-replacement.
+replacement. The film is light for the same reason and gets the same treatment, which is none.
+
+---
+
+## The film — the other half of the one section that shows the product
+
+The launch film sits at the top of `#the-app`, above the pills, in a frame at the same width as
+the captures. It is 83 seconds of the running app on a city bike-share project, cut to a music bed
+with text cards and no voiceover, and the hero's *See it running* lands on it. `LaunchFilm.astro`;
+copy and provenance in `film.yaml`; the poster in `assets/film`; the encodes not in this repo at
+all.
+
+**Why it is here and not in the hero.** Every convention of the genre puts a launch film at the
+top of the page with autoplay on. The rule under the showcase — a picture may follow the claim, it
+may not replace it — applies to a film at least as hard as to a still, and a film that opens the
+page is a film doing the arguing. Following the manifesto band is not leading. Putting it in the
+same section as the captures also keeps the sentence at the head of "The showcase" true: the page
+still shows the app in exactly one place.
+
+### The rules
+
+**1. A re-encode of the render, and no more.** Nothing retimed, cropped, graded or captioned on
+the way in. The film's own brief holds every number on its screen to one the app measured; that is
+rule 2 of the showcase, and it was already satisfied before the file arrived. `scripts/film.sh` is
+the whole of what happens to a render between the film project and this page.
+
+**2. It plays once, with sound, on a click. It never autoplays.** The cut is on a 124 bpm grid and
+carries no voice; a muted loop would keep the pictures and throw away the edit. A click is also
+what lets it carry sound at all. Under `prefers-reduced-motion` nothing is different, because
+nothing was moving: the poster is the resting state and it is a designed one — a real frame, run
+through the same optimiser as the captures.
+
+**3. Nothing downloads until someone asks.** `preload="none"`. A visitor who scrolls past pays for
+one JPEG. On a phone, or on a connection that has asked for less, the 720p30 encode plays instead
+of the 1080p60 one — that is the only choice the script makes, and it is a choice about bytes, not
+about which visitor deserves the better picture.
+
+**4. One control, on the lower left.** The play button is the section's one primary action, which
+`#the-app` had none of before. It hangs off the same corner the showcase's crops gather on, so the
+two frames read as one composition, and it is **not** centred: the pill row keeps its title as the
+only centred thing on the page. Beside the label, in mono, the running time — the file's own
+figure, which a human reads as data, and not a number the page chose.
+
+**5. The frame is the showcase's, minus its mask.** Hairline, `{radius.md}`, surface behind. No
+bottom mask, because the film ends on its own card and a fade over a moving picture reads as a
+fault. No shadow: the elevation carve-out is for a transient overlay, and a frame in the flow of
+the page is not one.
+
+### Not an island, and where the file lives
+
+The play control is a few lines of script at the foot of the component, in the same budget as the
+install block's copy button and the nav drawer. Without script, `<noscript>` hides the custom
+button and the `controls` attribute in the markup makes the native player the whole interface, so
+there is no state in which a button is drawn that does nothing.
+
+The two encodes are served from an **R2 bucket on its own hostname**, not from this repo and not
+from `public/`. Workers static assets cap a file at 25 MiB and the 1080p encode is 56 MB;
+committing it would also put a binary the size of the rest of the repo into every clone.
+`PUBLIC_FILM_BASE` names the bucket at build time (`.env.example`). Locally it is unset and the
+page falls back to `/film`, which is the gitignored `public/film/` that `pnpm film` fills and that
+`public/.assetsignore` keeps out of any deploy. A new cut gets a new file name and a new URL — the
+old one is cached at the edge and stays that way.
 
 ---
 
@@ -1200,9 +1262,10 @@ reading column is not charming.
   consumed by Tailwind v4's `@theme`, so every utility class on the page derives from the app's
   palette and the two cannot silently diverge.
 - **Astro 5** with React islands for the four interactive pieces only: the spider, the swarm, the
-  early-access form, and the FAQ. Everything else ships zero JS. The swarm is the newest and it is
-  the one that had to argue for itself — it is a canvas simulation, so "does it need to be
-  interactive at all" has an answer other than *no*.
+  early-access form, and the FAQ. Everything else ships zero JS, with three exceptions of a few
+  lines each: the install block's copy button, the nav drawer, and the film's play control. The
+  swarm is the newest island and it is the one that had to argue for itself — it is a canvas
+  simulation, so "does it need to be interactive at all" has an answer other than *no*.
 - **Motion** (`motion`) for the spider; **Lenis** for smooth scroll, disabled under reduced-motion.
   The swarm is hand-rolled canvas — 720 springs a frame is not a job for a declarative animation
   library, and it needs no dependency. Everything else is CSS — the reveals, the two `.rise` gestures and both marquees. Escalate to GSAP

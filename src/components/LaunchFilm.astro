@@ -1,0 +1,213 @@
+---
+import { getImage } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+
+import poster from "~/assets/film/launch-poster.jpg";
+
+/**
+ * The launch film. It sits at the top of `#the-app`, above the four captures,
+ * and it is the other half of the one section that shows the product.
+ * LANDING.md → "The film" is the spec; this file implements it.
+ *
+ * Three decisions to have in front of you before editing anything here:
+ *
+ *  - **It does not autoplay, muted or otherwise.** The film is cut on a music
+ *    bed with no voiceover, so a muted loop would throw away the edit and keep
+ *    the pictures. It plays once, with sound, on a click — which is also what
+ *    lets it play with sound at all, since a browser will not start audio
+ *    without a gesture. Under `prefers-reduced-motion` nothing is different:
+ *    the poster is the resting state, and it is a designed one.
+ *
+ *  - **Nothing downloads until someone asks for it.** `preload="none"` and a
+ *    poster the page already optimised. The 1080p file is 56 MB; a visitor who
+ *    scrolls past pays for a JPEG.
+ *
+ *  - **The file is not in this repo and not in `public/` at deploy.** Workers
+ *    static assets cap a file at 25 MiB, so both encodes are served from an R2
+ *    bucket on its own hostname. `PUBLIC_FILM_BASE` names it at build time;
+ *    locally it is unset, falls back to `/film`, and the dev server plays the
+ *    gitignored copies in `public/film/` that `pnpm film` puts there.
+ *
+ * ## No island
+ *
+ * The play control is a few lines of script at the foot of this file, the way
+ * the install block's copy button and the nav drawer are. It does three things:
+ * picks the encode (720p30 on a phone or a metered connection, 1080p60
+ * otherwise), switches on the native controls, and plays. Without script the
+ * `<noscript>` rule hides the custom button and the `controls` attribute in
+ * the markup does the job on its own, so there is no state in which a button
+ * is drawn that does nothing.
+ *
+ * The frame is the showcase's: hairline, `radius-md`, surface behind. It has no
+ * bottom mask — the film has its own end card, and a mask over a picture that
+ * moves reads as a fault — and it has no shadow, because it is not a transient
+ * overlay. The play control hangs off the lower left, which is the corner the
+ * showcase's crops gather on, so the two frames read as one composition.
+ */
+
+interface Props {
+  film: CollectionEntry<"film">;
+}
+const { film } = Astro.props;
+
+/** Where the encodes live. Set in the Cloudflare build environment to the R2
+ *  bucket's hostname; unset locally, where `public/film/` stands in. */
+const base = (import.meta.env.PUBLIC_FILM_BASE ?? "/film").replace(/\/$/, "");
+const hd = `${base}/${film.data.sources.hd}`;
+const sd = `${base}/${film.data.sources.sd}`;
+
+/** The poster is a real frame of the film, run through the same optimiser the
+ *  captures use. `poster` takes a URL, so it is resolved here rather than with
+ *  `<Image>`. 1920 wide: the frame is 1160px at most, but a poster is shown on
+ *  a retina display at 2× and it is the only thing most visitors will see. */
+const posterImg = await getImage({ src: poster, width: 1920, format: "jpg" });
+
+/** The film is 1920×1080. Pinning the ratio stops the frame resizing the page
+ *  when the poster arrives, and again when the video does. */
+const FRAME_RATIO = "16 / 9";
+---
+
+<figure class="film reveal" data-film>
+  <div class="film__frame">
+    {/* `controls` is in the markup so the no-script case is a working player;
+        the script removes it and gives it back on play, so the only control a
+        scripted visitor sees before pressing play is the one below. */}
+    <video
+      class="film__video"
+      preload="none"
+      playsinline
+      controls
+      poster={posterImg.src}
+      width="1920"
+      height="1080"
+      aria-label={film.data.title}
+      data-film-video
+      data-src-hd={hd}
+      data-src-sd={sd}
+    >
+      <source src={hd} type="video/mp4" />
+    </video>
+
+    <button class="btn btn--primary film__play" type="button" data-film-play>
+      <svg
+        width="12"
+        height="12"
+        viewBox="0 0 12 12"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path d="M2.5 1.5v9l7.5-4.5z" />
+      </svg>
+      <span>{film.data.action}</span>
+      {/* The running time. Mono, because it is a figure a human reads as data
+          — and it is the film's own, not one the page chose. */}
+      <span class="film__duration">{film.data.duration}</span>
+    </button>
+  </div>
+
+  <figcaption class="t-caption film__caption">{film.data.caption}</figcaption>
+</figure>
+
+<noscript>
+  <style>
+    .film__play {
+      display: none;
+    }
+  </style>
+</noscript>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-film]").forEach((film) => {
+    const video = film.querySelector<HTMLVideoElement>("[data-film-video]");
+    const play = film.querySelector<HTMLButtonElement>("[data-film-play]");
+    if (!video || !play) return;
+
+    // Script is running, so the custom control is the one that shows. The
+    // native bar comes back the moment the film starts.
+    video.removeAttribute("controls");
+
+    // The lighter encode on a phone or on a connection that has asked for
+    // less. `connection` is Chromium-only; elsewhere the width decides alone.
+    const conn = (navigator as { connection?: { saveData?: boolean; effectiveType?: string } })
+      .connection;
+    const lean =
+      window.matchMedia("(max-width: 700px)").matches ||
+      conn?.saveData === true ||
+      /2g/.test(conn?.effectiveType ?? "");
+
+    play.addEventListener("click", async () => {
+      const src = lean ? video.dataset.srcSd : video.dataset.srcHd;
+      if (src) video.src = src;
+      video.controls = true;
+      film.classList.add("is-playing");
+      try {
+        await video.play();
+      } catch {
+        // A decode or network failure. The native controls are up, so the
+        // visitor has the same retry the browser offers everywhere else.
+      }
+      video.focus({ preventScroll: true });
+    });
+  });
+</script>
+
+<style define:vars={{ frameRatio: FRAME_RATIO }}>
+  .film {
+    margin: 0;
+  }
+
+  /* ---- The frame. The showcase's, without its mask. ---- */
+  .film__frame {
+    position: relative;
+    aspect-ratio: var(--frameRatio);
+    overflow: hidden;
+    border: 1px solid var(--portia-hairline);
+    border-radius: var(--radius-md);
+    background-color: var(--portia-surface);
+  }
+
+  .film__video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* The focus ring after play lands on the video: draw it inside the frame
+     * rather than clipped by it. */
+    outline-offset: -3px;
+  }
+
+  /* ---- The play control.
+   *
+   * The section's one primary action — `#the-app` had none before the film.
+   * Lower left, on the corner the showcase's crops gather on, and never
+   * centred: the pill row above the captures is the one centred thing on the
+   * page and it stays that way. ---- */
+  .film__play {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    z-index: 1;
+  }
+  .film.is-playing .film__play {
+    display: none;
+  }
+
+  .film__duration {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-caption);
+    line-height: 1;
+    opacity: 0.72;
+  }
+
+  .film__caption {
+    margin: var(--spacing-md) 0 0;
+    max-width: 60ch;
+  }
+
+  @media (max-width: 640px) {
+    .film__play {
+      left: 12px;
+      bottom: 12px;
+    }
+  }
+</style>

@@ -1,0 +1,5 @@
+# The launch film is not a static asset: it is over the 25 MiB per-file cap
+# Workers assets enforce, and it is served from R2 instead. See LANDING.md ->
+# "The film". `public/film/` is gitignored and holds the local copy the dev
+# server plays.
+film/
