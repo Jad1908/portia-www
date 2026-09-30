@@ -62,44 +62,11 @@
 /* =========================================================================
  * [A] INHERITED FROM DESIGN.md — DARK
  *
- * Declared once as a custom property set, then applied by three selectors:
- * system preference, explicit override, and the .mode-dark scope used by the
- * hero mockup. One list, three entry points — so the mockup cannot drift.
+ * The page is light only. The dark palette survives for one scope: the
+ * .mode-dark band, which is the app's dark mode running in a box. The page
+ * no longer follows prefers-color-scheme into it (LANDING.md → rule 8).
  * ====================================================================== */
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-mode="light"]) {
-    --portia-accent-primary:         #0D9488;
-    --portia-accent-primary-pressed: #0B7D72;
-    --portia-on-accent:              #FFFFFF;
-    --portia-accent-text:            #2DD4BF;
-    --portia-accent-soft:            rgba(13, 148, 136, 0.18);
-
-    --portia-canvas:           #08090C;
-    --portia-surface:          #0D0F14;
-    --portia-surface-elevated: #12141B;
-    --portia-surface-card:     #171922;
-
-    --portia-hairline:        #25282F;
-    --portia-hairline-strong: rgba(255, 255, 255, 0.16);
-    --portia-hairline-soft:   rgba(255, 255, 255, 0.08);
-
-    --portia-ink:   #F3F4F7;
-    --portia-body:  #C9CCD3;
-    --portia-mute:  #969AA4;
-    --portia-ash:   #696D77;
-    --portia-stone: #43464E;
-
-    --portia-error:        #FF6B6B;
-    --portia-error-soft:   rgba(255, 107, 107, 0.16);
-    --portia-warning:      #FFC94D;
-    --portia-warning-soft: rgba(255, 201, 77, 0.16);
-    --portia-success:      #5FD49B;
-    --portia-success-soft: rgba(95, 212, 155, 0.16);
-  }
-}
-
-:root[data-mode="dark"],
 .mode-dark {
   --portia-accent-primary:         #0D9488;
   --portia-accent-primary-pressed: #0B7D72;

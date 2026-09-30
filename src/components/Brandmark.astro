@@ -38,11 +38,10 @@ const { size = 32, title = null, class: className = "" } = Astro.props;
   .brandmark {
     display: block;
     flex: none;
-    /* The source has a soft contact shadow baked in, drawn for a light UI. In
-     * dark mode it reads as a grey smudge under the creature; dropping the
+    /* The source has a soft contact shadow baked in, drawn for a light UI. On
+     * the dark band it reads as a grey smudge under the creature; dropping the
      * shadow's contribution is cheaper and more honest than shipping a second
      * asset that could drift from the app's. */
-    :global(:root[data-mode="dark"]) &,
     :global(.mode-dark) & {
       filter: brightness(1.06);
     }

@@ -11,8 +11,8 @@ description: |
   atmospheric backgrounds, hairlines as the only divider — with three named exceptions: the portia
   spider hanging from a dragline that tracks the scroll, two counter-drifting logo marquees, and
   the showcase, which is where the page shows the product. The brand image is the application's
-  own logo rather than a redraw of it. Light and dark are equal first-class modes,
-  as in the app. The product rule carries over unchanged and binds hardest here, where marketing
+  own logo rather than a redraw of it. The page is light only; the band is the one dark
+  surface. The product rule carries over unchanged and binds hardest here, where marketing
   instinct pushes against it: **color and prominence communicate kind, never rank.**
 
   **The page shows the app**, in one section, directly after the manifesto band: five views behind
@@ -307,9 +307,9 @@ marketing page usually reaches for. What was **not** taken: its 100%-monospace i
 cream palette, its Apple semantic ramp, and its ink-as-brand-color. Each of those collided with
 something portia's own system already decides, and in each case portia's decision won.
 
-The page is **light and dark**, resolved from `prefers-color-scheme` with a manual override, exactly
-as the app is. A landing page that only exists in light while every screenshot on it is dark is a
-product that looks like two products.
+The page is **light only** (since 2026-09-30, rule 8). It used to be light and dark, resolved from
+`prefers-color-scheme`, on the argument that a landing page that only exists in light while every
+screenshot on it is dark is a product that looks like two products.
 
 **Key characteristics:**
 - The app's entire palette, inherited unchanged. Cool, never warm.
@@ -455,11 +455,15 @@ consistent with a system that has been austere about ornament:
   the offset resolves to 0 with no transition — the icon is simply *there*, which is the designed
   state and not a frame of the drawing.
 
-**8. There is no light/dark toggle.** The mode follows `prefers-color-scheme` and nothing else. A
-switch in the chrome asks a visitor to state a preference they have already given their OS, and it
-costs a blocking pre-paint script to stop the stored answer flashing. **Both modes are still
-first-class** — this removed the control, not dark mode, and the band still renders by scoping the
-app's dark tokens exactly as before.
+**8. The page is light only.** It does not follow `prefers-color-scheme`, and `color-scheme: only
+light` keeps a browser's forced dark mode off it too. The band still renders by scoping the app's
+dark tokens with `.mode-dark`, exactly as before; that is the page's one dark surface, and the only
+place the dark palette in `tokens.css` applies.
+
+*Reversed 2026-09-30.* This rule used to read: there is no toggle, the mode follows
+`prefers-color-scheme` and nothing else, and both modes are first-class. The argument for dark was
+the one above, that a light page beside dark screenshots looks like two products. The owner took
+dark down anyway. Anything below that describes the page "in dark mode" is from before this.
 
 
 **A note on the logo bands.** Two marquees, drifting in opposite directions, are the second piece of

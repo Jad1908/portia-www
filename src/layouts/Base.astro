@@ -35,24 +35,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
 
-    {/* Both modes are first-class, as in the app. Light is not the real one
-        with a dark variant bolted on, so `theme-color` states both. */}
-    <meta
-      name="theme-color"
-      content="#F4F6F9"
-      media="(prefers-color-scheme: light)"
-    />
-    <meta
-      name="theme-color"
-      content="#08090C"
-      media="(prefers-color-scheme: dark)"
-    />
+    {/* Light only. `only light` also stops a browser's forced dark mode from
+        inverting the page on a visitor whose system is dark. */}
+    <meta name="color-scheme" content="only light" />
+    <meta name="theme-color" content="#F4F6F9" />
 
-    {/* **There is no manual override.** The mode follows the system, full stop.
-        A toggle is a preference the visitor already expressed to their OS, and
-        asking again in the chrome of a one-page site buys a control nobody
-        needs and a pre-paint blocking script to make it not flash. Both modes
-        stay first-class — this removes the switch, not dark mode. */}
   </head>
 
   <body>

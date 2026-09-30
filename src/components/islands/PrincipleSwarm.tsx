@@ -220,7 +220,6 @@ export default function PrincipleSwarm({ items }: { items: SwarmItem[] }) {
     if (!ctx) return;
 
     const reducedQ = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const schemeQ = window.matchMedia("(prefers-color-scheme: dark)");
 
     const formations = items.map((it) => sample(it.formation));
 
@@ -395,16 +394,11 @@ export default function PrincipleSwarm({ items }: { items: SwarmItem[] }) {
     );
     vis.observe(stage);
 
-    const onScheme = () => {
-      readInk();
-      drawStatic();
-    };
     const onReduced = () => {
       stop();
       if (reducedQ.matches) drawStatic();
       else start();
     };
-    schemeQ.addEventListener("change", onScheme);
     reducedQ.addEventListener("change", onReduced);
 
     return () => {
@@ -413,7 +407,6 @@ export default function PrincipleSwarm({ items }: { items: SwarmItem[] }) {
       vis.disconnect();
       stage.removeEventListener("pointermove", onMove);
       stage.removeEventListener("pointerleave", onLeave);
-      schemeQ.removeEventListener("change", onScheme);
       reducedQ.removeEventListener("change", onReduced);
       drawStaticRef.current = null;
     };
