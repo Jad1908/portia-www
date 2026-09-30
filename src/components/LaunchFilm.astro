@@ -104,8 +104,6 @@ const FRAME_RATIO = "16 / 9";
       <span class="film__duration">{film.data.duration}</span>
     </button>
   </div>
-
-  <figcaption class="t-caption film__caption">{film.data.caption}</figcaption>
 </figure>
 
 <noscript>
@@ -197,11 +195,6 @@ const FRAME_RATIO = "16 / 9";
     font-size: var(--text-mono-caption);
     line-height: 1;
     opacity: 0.72;
-  }
-
-  .film__caption {
-    margin: var(--spacing-md) 0 0;
-    max-width: 60ch;
   }
 
   @media (max-width: 640px) {

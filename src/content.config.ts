@@ -112,8 +112,6 @@ const film = defineCollection({
     action: z.string(),
     /** `m:ss`. Rendered in mono beside the control. */
     duration: z.string().regex(/^\d+:\d\d$/),
-    /** One or two short sentences under the frame. */
-    caption: z.string(),
     /** File names under `PUBLIC_FILM_BASE`. `hd` is what desktops play; `sd`
      *  is what a phone or a metered connection gets instead. */
     sources: z.object({ hd: z.string(), sd: z.string() }),

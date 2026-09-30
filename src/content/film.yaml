@@ -15,8 +15,8 @@
 # `duration` is the one figure in this file and it is rendered in mono: it is
 # the file's running time, which the film has and the page did not choose. It
 # is not a claim about the product. `title` is the video's accessible name and
-# describes what it is; `caption` is one or two short sentences, the same
-# budget the rest of the page keeps.
+# describes what it is. There is no caption: the frame carries no prose, the
+# same as the manifesto band above it.
 
 - id: launch
   title: >-
@@ -24,9 +24,6 @@
     bike-share project, start to finish.
   action: "Watch the film"
   duration: "1:23"
-  caption: >-
-    portia on a city bike-share project, from the first source to the finished
-    pipeline. Every number on screen is one it measured.
   sources:
     hd: portia-launch-v2-1080.mp4
     sd: portia-launch-v2-720.mp4
