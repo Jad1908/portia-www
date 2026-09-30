@@ -7,9 +7,10 @@ import { glob, file } from "astro/loaders";
  * That mirrors the product's own rule about prompt text, and for the same
  * reason — the copy is the least stable, most consequential part of the page.
  *
- * Six collections:
+ * Seven collections:
  *   sections   — one MDX file per section of the page, in reading order
- *   showcase   — the four views of the app, under the manifesto band
+ *   film       — the launch film, the first view in the showcase
+ *   showcase   — the four captures of the app that follow it
  *   principles — the three columns naming what the showcase just showed
  *   claims     — short lines of consequence, grouped by section
  *   faq        — one MD file per question
@@ -93,6 +94,42 @@ const principles = defineCollection({
 });
 
 /**
+ * The launch film, the first of the showcase's five views.
+ *
+ * Prose and provenance. The poster is an asset and lives in `src/assets/film`;
+ * the two encodes live nowhere in this repo at all (see `LaunchFilm.astro` and
+ * `.env.example` → `PUBLIC_FILM_BASE`), so `sources` names them and `render`
+ * records the cut they came from. The one figure here, `duration`, is the
+ * file's running time — the film's own, rendered in mono, not a number the
+ * page chose.
+ */
+const film = defineCollection({
+  loader: file("./src/content/film.yaml"),
+  schema: z.object({
+    /** The pill label. First in the row; a position, never a rank. */
+    tab: z.string(),
+    /** One short sentence, in the slot the captures' ledes use. */
+    lede: z.string(),
+    /** The video's accessible name. What it is, not what it sells. */
+    title: z.string(),
+    /** The play control's label. */
+    action: z.string(),
+    /** `m:ss`. Rendered in mono beside the control. */
+    duration: z.string().regex(/^\d+:\d\d$/),
+    /** File names under `PUBLIC_FILM_BASE`. `hd` is what desktops play; `sd`
+     *  is what a phone or a metered connection gets instead. */
+    sources: z.object({ hd: z.string(), sd: z.string() }),
+    /** Where the encodes came from, so the film on the page is traceable. */
+    render: z.object({
+      project: z.string(),
+      file: z.string(),
+      revision: z.string(),
+      date: z.string(),
+    }),
+  }),
+});
+
+/**
  * The four views of the app in the showcase section.
  *
  * Prose only. The captures themselves are in `lib/appShots.ts`, joined to these
@@ -159,6 +196,7 @@ const install = defineCollection({
 
 export const collections = {
   sections,
+  film,
   principles,
   showcase,
   claims,

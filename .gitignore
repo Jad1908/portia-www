@@ -14,6 +14,12 @@ node_modules/
 .dev.vars
 !.env.example
 
+# the launch film — two encodes, 56 MB and 17 MB. `pnpm film` puts them here
+# for the dev server to play; production serves them from R2 and
+# `public/.assetsignore` keeps a deploy from trying to upload them.
+# See LANDING.md → "The film".
+public/film/
+
 # deploy
 .wrangler/
 .vercel/

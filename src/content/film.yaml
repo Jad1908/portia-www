@@ -1,0 +1,37 @@
+# The launch film, at the top of the app section, above the four captures.
+#
+# The film is the other half of the one place the page shows the product. It
+# is a render of the running app on a city bike-share project, cut to a music
+# bed with text cards and no voiceover, and every number on its screen is one
+# the app measured — that is its own brief's rule, and it is the same rule the
+# captures below it run under. LANDING.md → "The film" is the spec.
+#
+# The file itself is not in this repo. `sources` names the two encodes and
+# `render` says where they came from, so the film on the page can always be
+# traced to the cut that produced it. `pnpm film <render.mp4>` makes both
+# encodes and the poster; `PUBLIC_FILM_BASE` says where the encodes are served
+# from (see `.env.example`).
+#
+# `duration` is the one figure in this file and it is rendered in mono: it is
+# the file's running time, which the film has and the page did not choose. It
+# is not a claim about the product. `title` is the video's accessible name and
+# describes what it is. `tab` is the first pill in the showcase row — a
+# position, never a rank — and `lede` fills the same slot the four captures'
+# ledes do, so switching to the film moves nothing.
+
+- id: launch
+  tab: "Watch the film"
+  lede: "Watch it work."
+  title: >-
+    The portia launch film: the app reading, measuring and modelling a city
+    bike-share project, start to finish.
+  action: "Watch the film"
+  duration: "1:23"
+  sources:
+    hd: portia-launch-v2-1080.mp4
+    sd: portia-launch-v2-720.mp4
+  render:
+    project: ../portia/sandbox/film/hf/portia-launch
+    file: renders/portia-launch-r2-draft.mp4
+    revision: "r2 draft"
+    date: "2026-09-30"

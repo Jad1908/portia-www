@@ -12,7 +12,8 @@
     "check": "astro check",
     "astro": "astro",
     "og": "node scripts/og.mjs",
-    "mark": "node scripts/mark.mjs"
+    "mark": "node scripts/mark.mjs",
+    "film": "sh scripts/film.sh"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.7",
