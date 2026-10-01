@@ -115,8 +115,9 @@ product whose entire pitch is that two surfaces must never disagree about a numb
 - **Astro 5** — the page is overwhelmingly static and ships zero JS for prose.
 - **React islands, four of them only**: the spider, the "How it works" swarm, the new-version
   form (still `EarlyAccessForm`, on the `/api/early-access` route), the FAQ. The install tabs and
-  their copy button, and the launch film's play control, are CSS and a few lines of inline
-  script, not a fifth island. Anything else wanting an island is a signal to check whether it
+  their copy button are CSS and a few lines of inline script, not a fifth island. The launch
+  film's player isn't one either: it is **Media Chrome** — web components round a plain
+  `<video>`, five elements imported, themed off the tokens, no React. Anything else wanting an island is a signal to check whether it
   needs to be interactive at all — the swarm is the one that had an answer, being a canvas
   simulation.
 - **The launch film is the first tab of the showcase, and it is not in the repo.** Its one encode, 1080p, is over the 25 MiB per-file cap on

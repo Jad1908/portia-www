@@ -144,8 +144,8 @@ Astro 5 · Tailwind v4 · Motion · Lenis · Inter + JetBrains Mono, self-hosted
 deployed to Cloudflare Workers.
 
 Four React islands and no more: the spider, the swarm, the early-access form, the FAQ. Everything
-else ships zero JavaScript, bar a few inline lines for the copy button, the nav drawer and the
-film's play control.
+else ships zero JavaScript, bar a few inline lines for the copy button and the nav drawer, and the
+film's player, which is Media Chrome's web components round a plain `<video>` — not an island.
 
 ## The launch film
 

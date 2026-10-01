@@ -40,14 +40,19 @@ import poster from "~/assets/film/launch-poster.jpg";
  * other tab pauses the film, so nothing keeps playing under a hidden panel.
  * `selects` is the id of the radio that stands for this view.
  *
- * ## No island
+ * ## The player is Media Chrome, and it is not an island
  *
- * The play control is a few lines of script at the foot of this file, the way
- * the install block's copy button and the nav drawer are. It picks the encode
- * (720p30 on a phone or a metered connection, 1080p60 otherwise), switches on
- * the native controls, and plays. Without script the `<noscript>` rule hides
- * the custom button and the `controls` attribute in the markup does the job on
- * its own, so there is no state in which a button is drawn that does nothing.
+ * The controls are Media Chrome's web components wrapped round the plain
+ * `<video>`: no React, no hydration, only the five elements the bar uses
+ * imported. What they buy over the browser's own controls is a click anywhere
+ * on the picture to play and pause, keyboard shortcuts on the frame, and a bar
+ * drawn in the page's own tokens — the time in mono like every other figure.
+ *
+ * Before the first play the bar is hidden and the teal control below is the
+ * only one drawn. Without script the `<noscript>` rule hides that button, the
+ * custom elements never upgrade, and the `controls` attribute in the markup
+ * makes the native player the whole interface — so there is no state in which
+ * a button is drawn that does nothing.
  *
  * ## The frame
  *
@@ -81,22 +86,34 @@ const posterImg = await getImage({ src: poster, width: 1920, format: "jpg" });
 ---
 
 <div class="film" data-film data-film-selects={selects}>
-  {/* `controls` is in the markup so the no-script case is a working player;
-      the script removes it and gives it back on play, so the only control a
-      scripted visitor sees before pressing play is the one below. */}
-  <video
-    class="film__video"
-    preload="none"
-    playsinline
-    controls
-    poster={posterImg.src}
-    width="1920"
-    height="1080"
-    aria-label={film.data.title}
-    data-film-video
-  >
-    <source src={src} type="video/mp4" />
-  </video>
+  {/* `autohide` hides the bar and the cursor two seconds into playback, and
+      only then: paused, the bar stays. */}
+  <media-controller class="film__player" autohide="2" data-film-player>
+    {/* `controls` is in the markup so the no-script case is a working player;
+        the script removes it, so a scripted visitor only ever sees the bar. */}
+    <video
+      slot="media"
+      class="film__video"
+      preload="none"
+      playsinline
+      controls
+      poster={posterImg.src}
+      width="1920"
+      height="1080"
+      aria-label={film.data.title}
+      data-film-video
+    >
+      <source src={src} type="video/mp4" />
+    </video>
+
+    <media-control-bar class="film__bar">
+      <media-play-button></media-play-button>
+      <media-time-display showduration></media-time-display>
+      <media-time-range></media-time-range>
+      <media-mute-button></media-mute-button>
+      <media-fullscreen-button></media-fullscreen-button>
+    </media-control-bar>
+  </media-controller>
 
   <button class="btn btn--primary film__play" type="button" data-film-play>
     <svg
@@ -124,13 +141,22 @@ const posterImg = await getImage({ src: poster, width: 1920, format: "jpg" });
 </noscript>
 
 <script>
+  // Only the elements the bar uses, not the whole library.
+  import "media-chrome/dist/media-controller.js";
+  import "media-chrome/dist/media-control-bar.js";
+  import "media-chrome/dist/media-play-button.js";
+  import "media-chrome/dist/media-time-display.js";
+  import "media-chrome/dist/media-time-range.js";
+  import "media-chrome/dist/media-mute-button.js";
+  import "media-chrome/dist/media-fullscreen-button.js";
+
   document.querySelectorAll<HTMLElement>("[data-film]").forEach((film) => {
     const video = film.querySelector<HTMLVideoElement>("[data-film-video]");
     const play = film.querySelector<HTMLButtonElement>("[data-film-play]");
-    if (!video || !play) return;
+    const player = film.querySelector<HTMLElement>("[data-film-player]");
+    if (!video || !play || !player) return;
 
-    // Script is running, so the custom control is the one that shows. The
-    // native bar comes back the moment the film starts.
+    // Script is running, so Media Chrome's bar is the one that shows.
     video.removeAttribute("controls");
 
     // The showcase radio this panel belongs to. Checking it is what stops the
@@ -140,17 +166,21 @@ const posterImg = await getImage({ src: poster, width: 1920, format: "jpg" });
       film.dataset.filmSelects ?? "",
     ) as HTMLInputElement | null;
 
-    play.addEventListener("click", async () => {
+    // Any start selects the film's tab — the teal control, a click on the
+    // picture, the bar's own button or a key — so the rotation can never carry
+    // a playing film away. Checking a radio from script fires no `change`, so
+    // this does not trip the pause below.
+    video.addEventListener("play", () => {
       if (radio) radio.checked = true;
-      video.controls = true;
       film.classList.add("is-playing");
-      try {
-        await video.play();
-      } catch {
-        // A decode or network failure. The native controls are up, so the
-        // visitor has the same retry the browser offers everywhere else.
-      }
-      video.focus({ preventScroll: true });
+    });
+
+    play.addEventListener("click", () => {
+      // A decode or network failure leaves the bar up, with its play button
+      // as the retry.
+      video.play().catch(() => {});
+      // The controller is what holds the keyboard shortcuts.
+      player.focus({ preventScroll: true });
     });
 
     // Another view was picked while the film was playing: stop it, so nothing
@@ -179,6 +209,60 @@ const posterImg = await getImage({ src: poster, width: 1920, format: "jpg" });
     background-color: var(--portia-surface);
   }
 
+  /* ---- The player.
+   *
+   * Media Chrome is themed through its custom properties, and every one of
+   * them is set from a token. The bar is a flat slab of `canvas-deep` over the
+   * picture, not a scrim fading up from the bottom edge: the page has no
+   * gradients, and a scrim is one. ---- */
+  .film__player {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: var(--portia-surface);
+    cursor: pointer;
+
+    --media-font-family: var(--font-mono);
+    --media-font-size: var(--text-mono-caption);
+    --media-primary-color: var(--portia-surface-elevated);
+    --media-secondary-color: transparent;
+    --media-text-color: var(--portia-surface-elevated);
+    --media-icon-color: var(--portia-surface-elevated);
+    --media-control-background: transparent;
+    --media-control-hover-background: color-mix(
+      in srgb,
+      var(--portia-surface-elevated) 10%,
+      transparent
+    );
+    --media-control-height: 20px;
+    --media-control-padding: 10px;
+    --media-range-track-height: 3px;
+    --media-range-track-border-radius: 2px;
+    --media-range-track-background: color-mix(
+      in srgb,
+      var(--portia-surface-elevated) 24%,
+      transparent
+    );
+    --media-range-bar-color: var(--portia-surface-elevated);
+    --media-range-thumb-width: 10px;
+    --media-range-thumb-height: 10px;
+    --media-range-thumb-background: var(--portia-surface-elevated);
+    --media-range-thumb-box-shadow: none;
+    --media-time-range-buffered-color: color-mix(
+      in srgb,
+      var(--portia-surface-elevated) 40%,
+      transparent
+    );
+    --media-focus-box-shadow: inset 0 0 0 2px var(--portia-accent-primary);
+  }
+
+  /* Fullscreen fills a screen that is already 16:9 or close to it; whatever
+   * band is left is the film's own black, not the page's surface. */
+  .film__player[mediaisfullscreen] {
+    --film-band: 0px;
+    background-color: var(--portia-canvas-deep);
+  }
+
   /* `contain`, never `cover`: a 16:9 film on a 2:1 stage is letterboxed on
    * the surface colour rather than losing its top and bottom. The poster
    * follows the same fit. */
@@ -187,9 +271,31 @@ const posterImg = await getImage({ src: poster, width: 1920, format: "jpg" });
     width: 100%;
     height: 100%;
     object-fit: contain;
-    /* The focus ring after play lands on the video: draw it inside the frame
-     * rather than clipped by it. */
-    outline-offset: -3px;
+  }
+
+  /* Inset off the picture's own edges, so it sits on the film and not across
+   * the letterbox band. Hidden until the first play: before that the teal
+   * control is the only one on the frame. */
+  .film__bar {
+    margin: 0 calc(var(--film-band, 0px) + 12px) 12px;
+    padding: 2px 4px;
+    gap: 2px;
+    align-items: center;
+    border-radius: var(--radius-md);
+    background-color: color-mix(
+      in srgb,
+      var(--portia-canvas-deep) 72%,
+      transparent
+    );
+  }
+  .film__player:not([mediahasplayed]) .film__bar {
+    display: none;
+  }
+  .film__bar media-time-display {
+    padding-inline: 8px;
+  }
+  .film__bar media-time-range {
+    flex: 1;
   }
 
   /* ---- The play control.
