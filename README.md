@@ -36,7 +36,7 @@ Python projects/
 | `src/content/sections/` | One MDX file per section, in reading order. All the prose lives here. |
 | `src/content/faq/` | One file per question. |
 | `src/content/film.yaml` | The launch film's copy, its two file names and the render they came from. |
-| `scripts/film.sh` | Re-encodes a render into the two web files and cuts the poster. |
+| `scripts/film.sh` | Re-encodes a render into the web file and cuts the poster. |
 | `src/content/evidence.yaml` | **Every number on the page**, each with what produced it and where it was checked. |
 | `src/content/mockup.yaml` | What the three panes of the hero mockup show. All of it off real runs. |
 | `src/lib/mark.ts` | The spider's geometry, shared by the nav lockup and the scroll creature. |
@@ -152,14 +152,20 @@ film's play control.
 The film, the first tab of the app section, is served from an R2 bucket, not from this repo: the 1080p
 encode is 56 MB and Workers static assets stop at 25 MiB a file. Three steps when the cut changes:
 
-1. `pnpm film ../portia/sandbox/film/hf/portia-launch/renders/<render>.mp4` — makes both encodes
+1. `pnpm film ../portia/sandbox/film/hf/portia-launch/renders/<render>.mp4` — makes the encode
    in `public/film/` (gitignored, never deployed) and the poster in `src/assets/film/`. Bump the
-   version in the file names in `scripts/film.sh` and `src/content/film.yaml` first: a new cut is
+   version in the file name in `scripts/film.sh` and `src/content/film.yaml` first: a new cut is
    a new URL, because the old one is cached at the edge.
-2. Upload the two files to the bucket. `wrangler r2 object put <bucket>/<name> --file public/film/<name>`
+2. Upload the file to the bucket. `wrangler r2 object put <bucket>/<name> --file public/film/<name>`
    does it once you are logged in.
-3. `PUBLIC_FILM_BASE` in the Cloudflare **build** environment is the bucket's public hostname, no
-   trailing slash. It is inlined by Astro at build time, so it is not a Worker variable and a change
-   to it needs a rebuild.
+3. Nothing to set: `.env.production` names the bucket's hostname, `https://film.portiadata.dev`,
+   as `PUBLIC_FILM_BASE`. Astro inlines it at build time, so it is not a Worker variable, and it is
+   committed rather than set in the dashboard because it is a public URL and the build should not
+   depend on a setting nobody can see in a diff.
 
-Locally nothing needs setting: the dev server plays the copies in `public/film/`.
+The bucket is `portia-film`, Standard storage class (the free tier does not cover Infrequent
+Access), served through the `film.portiadata.dev` custom domain rather than `r2.dev`, so the edge
+caches the file and `r2.dev`'s rate limit never applies.
+
+Locally nothing needs setting: `astro dev` does not read `.env.production`, and the dev server plays
+the copy in `public/film/`.

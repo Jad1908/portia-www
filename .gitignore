@@ -10,13 +10,16 @@ node_modules/
 # `.dev.vars` is the one wrangler reads locally, so it is the one that will
 # actually hold a key; see .env.example for what goes in it.
 .env
-.env.production
 .dev.vars
 !.env.example
+# `.env.production` is committed on purpose: it holds `PUBLIC_FILM_BASE`, a
+# public URL the build inlines. Nothing secret belongs in it — `PUBLIC_*` ships
+# to every browser.
 
-# the launch film — two encodes, 56 MB and 17 MB. `pnpm film` puts them here
-# for the dev server to play; production serves them from R2 and
-# `public/.assetsignore` keeps a deploy from trying to upload them.
+
+# the launch film — one 56 MB encode. `pnpm film` puts it here for the dev
+# server to play; production serves it from R2 and `public/.assetsignore`
+# keeps a deploy from trying to upload it.
 # See LANDING.md → "The film".
 public/film/
 

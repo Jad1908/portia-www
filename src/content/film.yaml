@@ -6,11 +6,11 @@
 # the app measured — that is its own brief's rule, and it is the same rule the
 # captures below it run under. LANDING.md → "The film" is the spec.
 #
-# The file itself is not in this repo. `sources` names the two encodes and
-# `render` says where they came from, so the film on the page can always be
-# traced to the cut that produced it. `pnpm film <render.mp4>` makes both
-# encodes and the poster; `PUBLIC_FILM_BASE` says where the encodes are served
-# from (see `.env.example`).
+# The file itself is not in this repo. `source` names the encode and `render`
+# says where it came from, so the film on the page can always be
+# traced to the cut that produced it. `pnpm film <render.mp4>` makes the
+# encode and the poster; `PUBLIC_FILM_BASE` says where the encode is served from
+# (see `.env.example`).
 #
 # `duration` is the one figure in this file and it is rendered in mono: it is
 # the file's running time, which the film has and the page did not choose. It
@@ -27,9 +27,7 @@
     bike-share project, start to finish.
   action: "Watch the film"
   duration: "1:23"
-  sources:
-    hd: portia-launch-v2-1080.mp4
-    sd: portia-launch-v2-720.mp4
+  source: portia-launch-v2-1080.mp4
   render:
     project: ../portia/sandbox/film/hf/portia-launch
     file: renders/portia-launch-r2-draft.mp4
