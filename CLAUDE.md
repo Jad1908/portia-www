@@ -119,8 +119,8 @@ product whose entire pitch is that two surfaces must never disagree about a numb
   script, not a fifth island. Anything else wanting an island is a signal to check whether it
   needs to be interactive at all — the swarm is the one that had an answer, being a canvas
   simulation.
-- **The launch film is the first tab of the showcase, and it is not in the repo.** Its two encodes are over the 25 MiB per-file cap on
-  Workers static assets and are served from R2; `PUBLIC_FILM_BASE` names the bucket at build
+- **The launch film is the first tab of the showcase, and it is not in the repo.** Its one encode, 1080p, is over the 25 MiB per-file cap on
+  Workers static assets and is served from R2; `PUBLIC_FILM_BASE` names the bucket at build
   time, and locally the gitignored `public/film/` that `pnpm film` fills stands in. The render it
   came from is recorded in `src/content/film.yaml`. `LANDING.md` → "The film" is the spec.
 - **Tailwind v4**, theming through `@theme` off `tokens.css`.

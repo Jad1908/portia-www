@@ -628,7 +628,7 @@ The launch film is the first pill in the showcase row, *Watch the film*, ahead o
 captures. It is 83 seconds of the running app on a city bike-share project, cut to a music bed with
 text cards and no voiceover, and the hero's *See it running* lands on the section it opens.
 `LaunchFilm.astro` is the inside of its panel; `AppShowcase.astro` owns the pill, the stage and the
-rotation; copy and provenance in `film.yaml`; the poster in `assets/film`; the encodes not in this
+rotation; copy and provenance in `film.yaml`; the poster in `assets/film`; the encode not in this
 repo at all.
 
 **Why it is a tab and not a block.** It was first built as its own frame above the pills, and that
@@ -657,9 +657,9 @@ nothing was moving: the poster is the resting state and it is a designed one —
 through the same optimiser as the captures.
 
 **3. Nothing downloads until someone asks.** `preload="none"`. A visitor who scrolls past pays for
-one JPEG. On a phone, or on a connection that has asked for less, the 720p30 encode plays instead
-of the 1080p60 one — that is the only choice the script makes, and it is a choice about bytes, not
-about which visitor deserves the better picture.
+one JPEG. There is one encode, 1080p60, and phones play it too: the film is a screen recording,
+and a lighter 720p cut for phones was tried and dropped, because small text is the first thing it
+loses and small text is what the film is showing.
 
 **4. One control, on the lower left.** The play button is the section's one primary action, which
 `#the-app` had none of before. It hangs off the same corner the captures' crops gather on, so the
@@ -682,7 +682,7 @@ install block's copy button and the nav drawer. Without script, `<noscript>` hid
 button and the `controls` attribute in the markup makes the native player the whole interface, so
 there is no state in which a button is drawn that does nothing.
 
-The two encodes are served from an **R2 bucket on its own hostname**, not from this repo and not
+The encode is served from an **R2 bucket on its own hostname**, not from this repo and not
 from `public/`. Workers static assets cap a file at 25 MiB and the 1080p encode is 56 MB;
 committing it would also put a binary the size of the rest of the repo into every clone.
 `PUBLIC_FILM_BASE` names the bucket at build time (`.env.example`). Locally it is unset and the

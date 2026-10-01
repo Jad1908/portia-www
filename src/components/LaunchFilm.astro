@@ -26,10 +26,10 @@ import poster from "~/assets/film/launch-poster.jpg";
  *    never presses play pays for a JPEG.
  *
  *  - **The file is not in this repo and not in `public/` at deploy.** Workers
- *    static assets cap a file at 25 MiB, so both encodes are served from an R2
+ *    static assets cap a file at 25 MiB, so the encode is served from an R2
  *    bucket on its own hostname. `PUBLIC_FILM_BASE` names it at build time;
  *    locally it is unset, falls back to `/film`, and the dev server plays the
- *    gitignored copies in `public/film/` that `pnpm film` puts there.
+ *    gitignored copy in `public/film/` that `pnpm film` puts there.
  *
  * ## It lives inside a carousel, and the carousel yields to it
  *
@@ -68,11 +68,10 @@ interface Props {
 }
 const { film, selects } = Astro.props;
 
-/** Where the encodes live. Set in the Cloudflare build environment to the R2
+/** Where the encode lives. Set in the Cloudflare build environment to the R2
  *  bucket's hostname; unset locally, where `public/film/` stands in. */
 const base = (import.meta.env.PUBLIC_FILM_BASE ?? "/film").replace(/\/$/, "");
-const hd = `${base}/${film.data.sources.hd}`;
-const sd = `${base}/${film.data.sources.sd}`;
+const src = `${base}/${film.data.source}`;
 
 /** The poster is a real frame of the film, run through the same optimiser the
  *  captures use. `poster` takes a URL, so it is resolved here rather than with
@@ -95,10 +94,8 @@ const posterImg = await getImage({ src: poster, width: 1920, format: "jpg" });
     height="1080"
     aria-label={film.data.title}
     data-film-video
-    data-src-hd={hd}
-    data-src-sd={sd}
   >
-    <source src={hd} type="video/mp4" />
+    <source src={src} type="video/mp4" />
   </video>
 
   <button class="btn btn--primary film__play" type="button" data-film-play>
@@ -143,19 +140,8 @@ const posterImg = await getImage({ src: poster, width: 1920, format: "jpg" });
       film.dataset.filmSelects ?? "",
     ) as HTMLInputElement | null;
 
-    // The lighter encode on a phone or on a connection that has asked for
-    // less. `connection` is Chromium-only; elsewhere the width decides alone.
-    const conn = (navigator as { connection?: { saveData?: boolean; effectiveType?: string } })
-      .connection;
-    const lean =
-      window.matchMedia("(max-width: 700px)").matches ||
-      conn?.saveData === true ||
-      /2g/.test(conn?.effectiveType ?? "");
-
     play.addEventListener("click", async () => {
       if (radio) radio.checked = true;
-      const src = lean ? video.dataset.srcSd : video.dataset.srcHd;
-      if (src) video.src = src;
       video.controls = true;
       film.classList.add("is-playing");
       try {

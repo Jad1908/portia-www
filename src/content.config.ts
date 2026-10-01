@@ -97,9 +97,9 @@ const principles = defineCollection({
  * The launch film, the first of the showcase's five views.
  *
  * Prose and provenance. The poster is an asset and lives in `src/assets/film`;
- * the two encodes live nowhere in this repo at all (see `LaunchFilm.astro` and
- * `.env.example` → `PUBLIC_FILM_BASE`), so `sources` names them and `render`
- * records the cut they came from. The one figure here, `duration`, is the
+ * the encode lives nowhere in this repo at all (see `LaunchFilm.astro` and
+ * `.env.example` → `PUBLIC_FILM_BASE`), so `source` names it and `render`
+ * records the cut it came from. The one figure here, `duration`, is the
  * file's running time — the film's own, rendered in mono, not a number the
  * page chose.
  */
@@ -116,10 +116,10 @@ const film = defineCollection({
     action: z.string(),
     /** `m:ss`. Rendered in mono beside the control. */
     duration: z.string().regex(/^\d+:\d\d$/),
-    /** File names under `PUBLIC_FILM_BASE`. `hd` is what desktops play; `sd`
-     *  is what a phone or a metered connection gets instead. */
-    sources: z.object({ hd: z.string(), sd: z.string() }),
-    /** Where the encodes came from, so the film on the page is traceable. */
+    /** The file name under `PUBLIC_FILM_BASE`. One 1080p encode, which every
+     *  visitor plays — phones included, where its text is what stays legible. */
+    source: z.string(),
+    /** Where the encode came from, so the film on the page is traceable. */
     render: z.object({
       project: z.string(),
       file: z.string(),
