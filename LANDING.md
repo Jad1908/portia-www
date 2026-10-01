@@ -675,12 +675,27 @@ film ends on its own card and a fade over a moving picture reads as a fault. No 
 elevation carve-out is for a transient overlay, and a frame in the flow of the page is not one.
 There is no caption under it and no crop in front of it.
 
-### Not an island, and where the file lives
+### The player, not an island, and where the file lives
 
-The play control is a few lines of script at the foot of the component, in the same budget as the
-install block's copy button and the nav drawer. Without script, `<noscript>` hides the custom
-button and the `controls` attribute in the markup makes the native player the whole interface, so
-there is no state in which a button is drawn that does nothing.
+Once the film has started, the controls are **Media Chrome** — web components wrapped round the
+plain `<video>`, so there is no React and no hydration, and only the five elements the bar uses are
+imported (about 34 KB gzipped, loaded as a deferred module). The browser's own controls were the
+first build and they were replaced for one reason: a click on the picture did nothing. Now it plays
+and pauses, the keyboard works on the frame, and on touch a tap shows the bar rather than pausing.
+
+The bar is drawn in the page's tokens: a flat slab of `canvas-deep` at 72% inset off the picture's
+own edges, never across the letterbox band; icons, progress and text in `surface-elevated`; the
+time in mono, because it is a figure. It is a slab and not a scrim fading up from the bottom edge,
+because a scrim is a gradient. It is hidden until the first play, so before that the teal control
+is the only one on the frame, and it fades with the cursor two seconds into playback — paused, it
+stays. There is no centred play glyph on pause, for the same reason the teal control is not
+centred.
+
+Any start — the teal control, a click on the picture, the bar, a key — selects the film's tab, so
+the rotation can never carry a playing film away. Without script, `<noscript>` hides the custom
+button, the custom elements never upgrade, and the `controls` attribute in the markup makes the
+native player the whole interface, so there is no state in which a button is drawn that does
+nothing.
 
 The encode is served from an **R2 bucket on its own hostname**, not from this repo and not
 from `public/`. Workers static assets cap a file at 25 MiB and the 1080p encode is 56 MB;
@@ -1280,8 +1295,9 @@ reading column is not charming.
   consumed by Tailwind v4's `@theme`, so every utility class on the page derives from the app's
   palette and the two cannot silently diverge.
 - **Astro 5** with React islands for the four interactive pieces only: the spider, the swarm, the
-  early-access form, and the FAQ. Everything else ships zero JS, with three exceptions of a few
-  lines each: the install block's copy button, the nav drawer, and the film's play control. The
+  early-access form, and the FAQ. Everything else ships zero JS, with two exceptions of a few
+  lines each — the install block's copy button and the nav drawer — and the film's player, which
+  is Media Chrome's web components rather than an island (see "The film"). The
   swarm is the newest island and it is the one that had to argue for itself — it is a canvas
   simulation, so "does it need to be interactive at all" has an answer other than *no*.
 - **Motion** (`motion`) for the spider; **Lenis** for smooth scroll, disabled under reduced-motion.
