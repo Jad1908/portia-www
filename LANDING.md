@@ -1113,15 +1113,25 @@ padding, `{typography.mono-sm}`. Holds spec YAML, compiled SQL, and the install 
 `{typography.mono}`, with what produced it named beside it in `{typography.mono-caption}`
 `{colors.mute}`. Every number on the page is one of these or it is not on the page.
 
-**`list-row`** — 8px vertical padding, no fill, no rule. **Marker rule**, decided here: a list of
-*facts or artifacts* leads with a mono `[+]` bracket marker in `{colors.mute}`, borrowed from
-OpenCode; a list of *prose claims* gets no marker at all. The brackets are a mono device and stay on
-the mono side of the split — using them to bullet an English sentence would be exactly the collapse
-this file spent a section refusing. This is the one OpenCode texture kept, and it is deliberately
-demoted: it is not the identity, because the split is.
+**`list-row`** — 8px vertical padding, no fill, no rule. **Marker rule**, decided here: a row that
+needs a marker gets a **6px round dot in `{colors.mute}`**, centred on the first line of text, and
+there is no other marker on the page. It is a shape rather than a glyph, so it sits on neither side
+of the mono/prose split and brackets nothing.
+
+**The mono `[+]` bracket marker, borrowed from OpenCode, is retired.** It was the last OpenCode
+texture kept, and it cost more than it gave: next to the FAQ's `+`, the page's one real disclosure,
+a `[+]` in front of static text read as a second control, and visitors went looking for the thing
+it would open. Nothing in this system that is not a control may look like one. This is also why the
+dot is not a `+`, a chevron or an arrow.
+
+The dot is centred with the row's own line-height (`--bullet-line`), not a hand-tuned offset, so a
+row set at a different size keeps it on the middle of line one.
 
 **`faq-row`** — 12px vertical, 1px `{colors.hairline}` bottom rule, `+` / `−` marker. No chevrons,
-no accordion chrome.
+no accordion chrome. The section's headline is just **"FAQ"**: it used to be "The obvious
+objections.", which framed three questions as objections to be answered, the defensive posture
+"The third build", item 5, took out of the rest of the page. The `+` / `−` is the one place a plus
+appears, because it is the one place it opens something.
 
 **`badge`** — `{colors.accent-soft}` fill, `{colors.accent-text}` label,
 `{typography.mono-caption}`, `{rounded.xs}`. For status-of-the-product tags. **One word carries
@@ -1137,9 +1147,9 @@ active row carries a 1px `{colors.ink}` rule down its left edge and lifts its in
 every other property the three rows are identical.
 
 **`claim`** — one short line of consequence, set at `{typography.heading-md}` so it is read rather
-than skimmed, with a mono `[+]` marker and a hairline top rule. `lead` in `{colors.ink}`, the rest
+than skimmed, with the `list-row` dot and a hairline top rule. `lead` in `{colors.ink}`, the rest
 in `{colors.body}`, so the claim lands before its qualification does. **Two or three per section is
-the budget.** More than that and it is prose with brackets on it.
+the budget.** More than that and it is prose with bullets on it.
 
 **`marquee-item`** — a brand glyph at 22px beside its wordmark in `{typography.heading-sm}`, the
 pair in `{colors.mute}`. See "The logo bands" below.
