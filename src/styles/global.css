@@ -386,10 +386,24 @@ pre {
   white-space: pre;
 }
 
-/* ---- list-row. The marker rule, decided in LANDING.md: a list of *facts or
- * artifacts* leads with a mono `[+]`; a list of *prose claims* gets no marker
- * at all, because bracketing an English sentence is the collapse the whole
- * type split refuses. ---- */
+/* ---- bullet. The one list marker on the page: a 6px `mute` dot, centred on the
+ * row's first line. It replaced a mono `[+]`, which read as a control: the
+ * FAQ's `+` is the page's one real disclosure, and a second plus beside static
+ * text looked clickable. A dot is not a control anywhere.
+ *
+ * The rows set `--bullet-line` to their own line-height, which is how the dot
+ * finds the middle of line one at whatever size the row is set. ---- */
+.list--marked .list-row::before,
+.claim::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--portia-mute);
+  margin-top: calc((var(--bullet-line, 1.5) * 1em - 6px) / 2);
+}
+
+/* ---- list-row ---- */
 .list {
   list-style: none;
   margin: 0;
@@ -403,12 +417,6 @@ pre {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: var(--spacing-md);
-}
-.list--marked .list-row::before {
-  content: "[+]";
-  font-family: var(--font-mono);
-  font-size: var(--text-mono);
-  color: var(--portia-mute);
 }
 
 /* ---- badge. Status of the *product*, never a metric, and it never scales
@@ -741,21 +749,13 @@ pre {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: var(--spacing-md);
-  align-items: baseline;
+  align-items: start;
   padding-block: var(--spacing-md);
   border-top: 1px solid var(--portia-hairline);
   font-size: var(--text-heading-md);
   line-height: 1.4;
+  --bullet-line: 1.4;
   color: var(--portia-body);
-}
-.claim::before {
-  /* The mono bracket marker, from LANDING.md's marker rule. These are
-   * artifacts and facts, which is what earns the bracket; a list of prose
-   * claims would get no marker at all. */
-  content: "[+]";
-  font-family: var(--font-mono);
-  font-size: var(--text-mono-caption);
-  color: var(--portia-mute);
 }
 .claim strong {
   font-weight: 600;
